@@ -10,9 +10,10 @@ public class ServiceInfo {
     private final Boolean isOnline = true;
 
     private final String RemoteAddr;
+    private final String RemoteUser;
 
-    public ServiceInfo(String ip) {
-        RemoteAddr = ip;
+    public ServiceInfo(String ip,String user) {
+        RemoteAddr = ip; RemoteUser = user;
     }
 
     public String getVersion() {
@@ -26,4 +27,5 @@ public class ServiceInfo {
     public String getRemoteAddr() {
         return RemoteAddr;
     }
+    public String getRemoteUser() { return RemoteUser; }
 }
