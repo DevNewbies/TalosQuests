@@ -5,7 +5,7 @@ TalosQuests is an RPG Quest Game for Mobile Phones on the Real World.
 
 
 # Build Guide - Commands
-Prepare Project for Android - tns prepare android
-Build Project for Android - tns build android
-Deploy Project on Device - tns deploy android
+Prepare Project for Android - tns prepare android <br />
+Build Project for Android - tns build android <br />
+Deploy Project on Device - tns deploy android <br />
 AutoDeploy Project on Device - tns livesync android --watch
