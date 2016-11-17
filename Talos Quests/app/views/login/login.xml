@@ -1,0 +1,9 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo">
+  <StackLayout>
+    <TextField hint="Username" autocorrect="false" id="ArgUsername" />
+    <TextField hint="Password" secure="true" id="ArgPassword" />
+
+    <Button text="Login" tap="LoginProcess" class="CustomButton" />
+    <Button text="Register" tap="RegisterProcess" class="CustomButton"/>
+  </StackLayout>
+</Page>
