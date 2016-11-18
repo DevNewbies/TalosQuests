@@ -3,5 +3,21 @@
       <ActionBar title="Talos Quests | Settings"/>
   </Page.actionBar>
   <StackLayout>
+
+    <StackLayout class="SwitchTheme" orientation="horizontal">
+      <Label text="Sound Effects" />
+      <Switch checked="{{ SoundEffectsEnabled }}" />
+    </StackLayout>
+
+    <StackLayout class="SwitchTheme"  orientation="horizontal">
+      <Label text="Music" />
+      <Switch checked="{{ MusicEnabled }}" />
+    </StackLayout>
+
+    <StackLayout class="SwitchTheme"  orientation="horizontal">
+      <Label text="Battery Economy" />
+      <Switch checked="{{ BatteryEconomyEnabled }}" />
+    </StackLayout>
+
   </StackLayout>
 </Page>
