@@ -47,8 +47,7 @@ public class UserModel {
         setId(0);
     }
     public static UserModel GetEmptyUser() {
-        UserModel p = new UserModel("","");
-        p.id=-1;
+        UserModel p = new UserModel();
         return p;
     }
 }
