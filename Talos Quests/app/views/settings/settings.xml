@@ -1,0 +1,7 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo">
+  <Page.actionBar>
+      <ActionBar title="Talos Quests | Settings"/>
+  </Page.actionBar>
+  <StackLayout>
+  </StackLayout>
+</Page>
