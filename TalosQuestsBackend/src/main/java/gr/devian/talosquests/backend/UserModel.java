@@ -74,6 +74,7 @@ public class UserModel {
     @JsonIgnore
     public String getPassword() {
         return password;
+
     }
     public UserModel(String d) {
         displayName=d;
