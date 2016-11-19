@@ -16,7 +16,7 @@ public class UserController {
 
     static ArrayList<UserModel> users = new ArrayList<UserModel>();
     static {
-        users.add(new UserModel("Chrysa Tsinou"));
+        users.add(new UserModel("Chrysa Tsiiiinou"));
         users.add(new UserModel("Nikolas Mavropoylos"));
         users.add(new UserModel("Nikos Alumaras"));
         users.add(new UserModel("Iordanis Kostelidis"));
