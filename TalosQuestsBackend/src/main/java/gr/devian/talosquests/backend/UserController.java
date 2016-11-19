@@ -20,7 +20,7 @@ public class UserController {
         users.add(new UserModel("Nikolas Mavropoylos"));
         users.add(new UserModel("Nikos Alumaras"));
         users.add(new UserModel("Iordanis Kostelidis"));
-        users.add(new UserModel("Antonis Misirgis"));
+        users.add(new UserModel("Antonis Misirgiss"));
         users.add(new UserModel("Kwstas Giatsios"));
         users.add(new UserModel("Fillipos Theoxaridis"));
 
