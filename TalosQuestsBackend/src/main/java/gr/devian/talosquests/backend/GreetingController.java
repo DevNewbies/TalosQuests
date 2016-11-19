@@ -14,8 +14,9 @@ public class GreetingController {
 
     @RequestMapping("/greeting")
     public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) throws Exception {
-        //throw new Exception("test");
+
         return new Greeting(counter.incrementAndGet(),
                 String.format(template, name));
+
     }
 }

@@ -16,14 +16,13 @@ public class UserController {
 
     static ArrayList<UserModel> users = new ArrayList<UserModel>();
     static {
-        users.add(new UserModel("Test","test"));
-        users.add(new UserModel("Chrysa","Tsinou"));
-        users.add(new UserModel("Nikolas","Mavropoylos"));
-        users.add(new UserModel("Nikos","Alumaras"));
-        users.add(new UserModel("Iordanis","Kostelidis"));
-        users.add(new UserModel("Antonis","Misirgis"));
-        users.add(new UserModel("Kwstas","Giatsios"));
-        users.add(new UserModel("Fillipos","Theoxaridis"));
+        users.add(new UserModel("Chrysa Tsinou"));
+        users.add(new UserModel("Nikolas Mavropoylos"));
+        users.add(new UserModel("Nikos Alumaras"));
+        users.add(new UserModel("Iordanis Kostelidis"));
+        users.add(new UserModel("Antonis Misirgis"));
+        users.add(new UserModel("Kwstas Giatsios"));
+        users.add(new UserModel("Fillipos Theoxaridis"));
 
     }
 
@@ -54,11 +53,11 @@ public class UserController {
     }
     @RequestMapping(value="/{name}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void UpdateUserById(@PathVariable("name") long id,@RequestBody UserModel usr) {
-        System.out.println(usr.getName());
+        System.out.println(usr.getDisplayName());
         for (UserModel u : users) {
             if (id == u.getId()) {
-                u.setName(usr.getName());
-                u.setSurname(usr.getSurname());
+                u.setDisplayName(usr.getDisplayName());
+
                 return;
             }
         }
