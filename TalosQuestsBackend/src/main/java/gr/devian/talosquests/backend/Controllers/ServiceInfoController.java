@@ -1,26 +1,25 @@
-package gr.devian.talosquests.backend;
+package gr.devian.talosquests.backend.Controllers;
 
+import gr.devian.talosquests.backend.Models.ServiceInfo;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Created by Nikolas on 13/11/2016.
  */
 
 @RestController
-@RequestMapping("/ServiceInfo")
+@RequestMapping("/")
 public class ServiceInfoController {
 
     @Autowired(required = true)
     private HttpServletRequest request;
 
 
-    @RequestMapping(value="" , method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public ServiceInfo getServiceInfo() {
         return new ServiceInfo(request.getRemoteAddr());
     }

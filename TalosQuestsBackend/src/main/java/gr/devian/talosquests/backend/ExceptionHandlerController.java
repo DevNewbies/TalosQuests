@@ -2,13 +2,11 @@ package gr.devian.talosquests.backend;
 
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.boot.autoconfigure.web.ErrorController;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.NoHandlerFoundException;
-
-import java.util.Date;
 
 /**
  * Created by Nikolas on 14/11/2016.

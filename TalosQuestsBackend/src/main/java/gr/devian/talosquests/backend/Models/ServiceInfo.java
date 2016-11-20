@@ -1,4 +1,4 @@
-package gr.devian.talosquests.backend;
+package gr.devian.talosquests.backend.Models;
 
 /**
  * Created by Nikolas on 13/11/2016.

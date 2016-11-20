@@ -1,14 +1,24 @@
-package gr.devian.talosquests.backend;
+package gr.devian.talosquests.backend.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.stereotype.Component;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by Nikolas on 19/11/2016.
  */
-public class UserModel {
+@Component
+@Entity
+public class User {
     static private final AtomicLong counter = new AtomicLong();
+
+
+    @Id
+    @GeneratedValue
     private long id;
     private long facebookId;
     private String displayName;
@@ -76,15 +86,15 @@ public class UserModel {
         return password;
 
     }
-    public UserModel(String d) {
+    public User(String d) {
         displayName=d;
     }
 
-    public UserModel() {
+    public User() {
 
     }
-    public static UserModel GetEmptyUser() {
-        UserModel p = new UserModel();
+    public static User GetEmptyUser() {
+        User p = new User();
         return p;
     }
 }
