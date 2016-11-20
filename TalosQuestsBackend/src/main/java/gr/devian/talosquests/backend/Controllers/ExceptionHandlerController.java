@@ -1,12 +1,12 @@
-package gr.devian.talosquests.backend;
+package gr.devian.talosquests.backend.Controllers;
 
+import gr.devian.talosquests.backend.Models.ResponseModel;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.NoHandlerFoundException;
 
 /**
  * Created by Nikolas on 14/11/2016.
@@ -17,17 +17,13 @@ public class ExceptionHandlerController implements ErrorController {
 
     public static final String DEFAULT_ERROR_VIEW = "error";
     @ExceptionHandler(Exception.class)
-    public ErrorHandlerSchema defaultErrorHandler(HttpServletRequest request, Exception e) throws Exception{
-        ErrorHandlerSchema t = new ErrorHandlerSchema(e);
-
-        return t;
+    public ResponseModel defaultErrorHandler(HttpServletRequest request, Exception e) throws Exception{
+        return ResponseModel.CreateFailModel(e.getMessage(),500);
     }
 
     @RequestMapping(value = "/error")
-    public ErrorHandlerSchema error() {
-        ErrorHandlerSchema t = new ErrorHandlerSchema(new NoHandlerFoundException("a","a",null));
-
-        return t;
+    public ResponseModel error() {
+        return ResponseModel.CreateFailModel("Method not Found",404);
     }
 
     @Override
