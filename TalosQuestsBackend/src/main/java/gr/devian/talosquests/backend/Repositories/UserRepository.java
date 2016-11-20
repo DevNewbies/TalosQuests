@@ -11,5 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Repository
 public interface UserRepository extends CrudRepository<User,Long> {
-
+    User findUserByFacebookId(long facebookId);
+    User findUserByUsername(String username);
+    User findUserByAccessToken(String accessToken);
 }

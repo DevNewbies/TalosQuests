@@ -31,70 +31,60 @@ public class User {
         return id;
     }
 
+    @JsonIgnore
     public long getFacebookId() {
         return facebookId;
     }
-
     public String getDisplayName() {
         return displayName;
     }
-
+    @JsonIgnore
     public String getUsername() {
         return username;
     }
-
+    @JsonIgnore
     public String getDeviceImei() {
         return deviceImei;
     }
-
+    @JsonIgnore
     public String getAccessToken() {
         return accessToken;
     }
-
+    @JsonIgnore
+    public String getPassword() { return password; }
 
 
     public void setId(long id) {
         this.id = id;
     }
-
     public void setFacebookId(long facebookId) {
         this.facebookId = facebookId;
     }
-
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
-
     public void setUsername(String username) {
         this.username = username;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
-
     public void setDeviceImei(String deviceImei) {
         this.deviceImei = deviceImei;
     }
-
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
 
-    @JsonIgnore
-    public String getPassword() {
-        return password;
+    public User() {}
 
-    }
-    public User(String d) {
-        displayName=d;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Display name: " + displayName + "\n");
+        sb.append("Username: " + username + "\n");
+        sb.append("ID: " + id + "\n");
+        return sb.toString();
     }
 
-    public User() {
-
-    }
-    public static User GetEmptyUser() {
-        User p = new User();
-        return p;
-    }
 }
