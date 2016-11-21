@@ -1,32 +1,48 @@
-var createViewModel = require("./login-view-model").createViewModel;
-var CurrentPage;
-var ArgUsername;
-var ArgPassword;
+var dialogsModule = require("ui/dialogs");
+var frameModule = require("ui/frame");
+var config = require("../../shared/config");
+var UserViewModel = require("../../shared/view-models/user-view-model");
+var Observable = require("data/observable").Observable;
+var user = new UserViewModel();
+var page;
+/*var user = new UserViewModel({
+    email: "username@domain.com",
+    password: "password"
+});*/
+var indicator = new Observable({
+    isLoading: true,
+    isItemVisible: false
+});
+/*indicator.hideIndicator = function() {
+    indicator.isLoading=false;
+    indicator.isItemVisible=true;
+    page.bindingContext= indicator;
+};*/
 
-function onNavigatingTo(args) {
-    CurrentPage = args.object;
-    CurrentPage.bindingContext = createViewModel();
-}
-
-exports.onNavigatingTo = onNavigatingTo;
-
-exports.LoginProcess = function() {    
-    ArgUsername = CurrentPage.getViewById("ArgUsername").text;
-    ArgPassword = CurrentPage.getViewById("ArgPassword").text;
-
-    if(ArgUsername == "" && ArgPassword == "") {
-        alert("You must enter your Username and your Password","OK");
-    } else if(ArgUsername == "") {
-        alert("You must enter your Username", "OK");
-    } else if(ArgPassword == "") {
-        alert("You must enter your Password", "OK");
-    } else {
-        alert("Username = " + ArgUsername + "\n" + "Password = " + ArgPassword, "OK");
-        // To-Do : Navigate To Main Menu
-    }
-}
-
-exports.RegisterProcess = function() {
-    // To-Do : Navigate To Register Page
-    alert("Register Triggered", "OK");
-}
+exports.loaded = function(args) {
+    page = args.object;
+};
+function hideIndicator(){
+    indicator.isLoading=false;
+    indicator.isItemVisible=true;
+    page.bindingContext= indicator;
+};
+exports.signIn = function() {
+    page.bindingContext= indicator;
+    user.login().catch(function(error){
+            hideIndicator()
+            console.log(error);
+            dialogsModule.alert({
+                message: "Username or password are incorrect.",
+                okButtonText: "OK"
+            });
+            return Promise.reject();
+        })
+        .then(function() {
+            hideIndicator()
+            frameModule.topmost().navigate("views/test/test");
+        });
+};
+exports.register = function() {
+    frameModule.topmost().navigate("views/register/register");
+};
