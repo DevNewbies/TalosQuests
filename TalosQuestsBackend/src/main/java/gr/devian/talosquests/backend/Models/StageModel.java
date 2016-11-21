@@ -1,6 +1,6 @@
 package gr.devian.talosquests.backend.Models;
 
-import com.google.maps.model.LatLng;
+
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class StageModel {
     private int modelId;
-    private LatLng location;
+    //private LatLng location;
     private int difficulty;
     private List<QuestModel> quests;
     private int exp;
@@ -23,13 +23,13 @@ public class StageModel {
         this.modelId = modelId;
     }
 
-    public LatLng getLocation() {
-        return location;
-    }
+    //public LatLng getLocation() {
+    //    return location;
+    //}
 
-    public void setLocation(LatLng location) {
-        this.location = location;
-    }
+    //public void setLocation(LatLng location) {
+    //    this.location = location;
+    //}
 
     public int getDifficulty() {
         return difficulty;

@@ -29,32 +29,32 @@ public class User {
     private String email;
     private int level;
     private long exp;
-    private Game game;
+    //private Game game;
 
     public long getId() {
         return id;
     }
 
-    @JsonIgnore
+
     public long getFacebookId() {
         return facebookId;
     }
     public String getDisplayName() {
         return displayName;
     }
-    @JsonIgnore
+
     public String getUsername() {
         return username;
     }
-    @JsonIgnore
+
     public String getDeviceImei() {
         return deviceImei;
     }
-    @JsonIgnore
+
     public String getAccessToken() {
         return accessToken;
     }
-    @JsonIgnore
+
     public String getPassword() { return password; }
 
 
