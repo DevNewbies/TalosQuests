@@ -1,18 +1,10 @@
-﻿.title {
-    font-size: 30;
+.title {
+    font-size: 2;
     horizontal-align: center;
-    margin: 20;
+    margin: 12;
 }
 
 button {
-    font-size: 42;
+    font-size: 8;
     horizontal-align: center;
-}
-
-.message {
-    font-size: 20;
-    color: #284848;
-    horizontal-align: center;
-    margin: 0 20;
-    text-align: center;
 }
