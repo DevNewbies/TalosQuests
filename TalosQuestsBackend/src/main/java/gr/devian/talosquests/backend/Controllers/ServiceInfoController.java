@@ -21,6 +21,6 @@ public class ServiceInfoController {
 
     @RequestMapping(method = RequestMethod.GET)
     public ServiceInfo getServiceInfo() {
-        return new ServiceInfo(request.getRemoteAddr());
+        return new ServiceInfo(request.getHeader("X-Forwarded-For"));
     }
 }

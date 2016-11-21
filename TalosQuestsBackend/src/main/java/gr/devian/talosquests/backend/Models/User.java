@@ -26,6 +26,10 @@ public class User {
     private String password;
     private String deviceImei;
     private String accessToken;
+    private String email;
+    private int level;
+    private long exp;
+    private Game game;
 
     public long getId() {
         return id;
