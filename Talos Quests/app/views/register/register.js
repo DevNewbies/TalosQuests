@@ -30,7 +30,7 @@ function completeRegistration() {
             hideIndicator()
             dialogsModule.alert("Your account was successfully created.")
                 .then(function() {
-                    frameModule.topmost().navigate("views/test/test");
+                    frameModule.topmost().navigate("views/main/main");
                 });
         }).catch(function(error) {
             console.log(error);
