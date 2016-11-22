@@ -5,10 +5,6 @@ var UserViewModel = require("../../shared/view-models/user-view-model");
 var Observable = require("data/observable").Observable;
 var user = new UserViewModel();
 var page;
-/*var user = new UserViewModel({
-    email: "username@domain.com",
-    password: "password"
-});*/
 var indicator = new Observable({
     isLoading: true,
     isItemVisible: false
@@ -40,7 +36,7 @@ exports.signIn = function() {
         })
         .then(function() {
             hideIndicator()
-            frameModule.topmost().navigate("views/test/test");
+            frameModule.topmost().navigate("views/main/main");
         });
 };
 exports.register = function() {

@@ -35,7 +35,7 @@ function User(info) {
         });
     };
     viewModel.register = function() {
-        return fetchModule.fetch(config.apiUrl + "Users", {
+        return fetchModule.fetch(config.apiUrl + "Register", {
             method: "POST",
             body: JSON.stringify({
                 facebookId: 0, 
