@@ -1,6 +1,6 @@
 package gr.devian.talosquests.backend.Repositories;
 
-import gr.devian.talosquests.backend.Models.User;
+import gr.devian.talosquests.backend.Game.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Repository
 public interface UserRepository extends CrudRepository<User,Long> {
-    User findUserByFacebookId(long facebookId);
-    User findUserByUsername(String username);
-    User findUserByAccessToken(String accessToken);
+    User findUserByUserName(String userName);
+    User findUserByEmail(String email);
 }

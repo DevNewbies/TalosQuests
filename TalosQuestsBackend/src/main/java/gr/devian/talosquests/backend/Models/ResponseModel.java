@@ -39,6 +39,13 @@ public class ResponseModel<T> {
         resp.setResponse(data);
         return resp;
     }
+    public static <E> ResponseModel<E> CreateSuccessModel(E data, int State) {
+        ResponseModel<E> resp = new ResponseModel<E>();
+        resp.setMessage("success");
+        resp.setState(State);
+        resp.setResponse(data);
+        return resp;
+    }
     public static <E> ResponseModel<E> CreateFailModel(String Message, int State) {
         ResponseModel<E> resp = new ResponseModel<E>();
         resp.setMessage(Message);

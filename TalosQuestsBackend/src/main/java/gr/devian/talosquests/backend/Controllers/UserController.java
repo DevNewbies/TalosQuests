@@ -1,12 +1,14 @@
 package gr.devian.talosquests.backend.Controllers;
 
 import com.google.common.base.Strings;
+import gr.devian.talosquests.backend.Game.UserSession;
 import gr.devian.talosquests.backend.Models.ResponseModel;
-import gr.devian.talosquests.backend.Models.User;
+import gr.devian.talosquests.backend.Game.User;
 import gr.devian.talosquests.backend.Repositories.UserRepository;
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -14,10 +16,11 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
-@RequestMapping("/Admin/User")
+@RequestMapping("/User")
 public class UserController {
 
     private UserRepository userRepository;
+
 
     @Autowired
     public void initRepo(UserRepository _userRepository) {
@@ -25,77 +28,62 @@ public class UserController {
         userRepository = _userRepository;
     }
 
-    @RequestMapping(value="" , method = RequestMethod.GET)
-    public ResponseModel<Iterable<User>> ListUsers() {
-        ResponseModel<Iterable<User>> resp;
+    /*@RequestMapping(value="" , method = RequestMethod.GET)
+    public ResponseEntity<ResponseModel<Iterable<User>>> ListUsers() {
         try {
-            resp = ResponseModel.CreateSuccessModel(userRepository.findAll());
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseModel.CreateSuccessModel(userRepository.findAll(),200));
         } catch (Exception e) {
-            resp = ResponseModel.CreateFailModel(e.getMessage(),500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseModel.CreateFailModel(e.getMessage(),500));
         }
-        return resp;
+    }*/
+
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public ResponseEntity<ResponseModel<User>> GetUserById(@RequestParam(value = "token", required = true) String token) {
+        UserSession session = UserSession.Get(token);
+        if (session != null) {
+            User usr = session.getUser();
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseModel.CreateSuccessModel(usr));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseModel.CreateFailModel("Token is not valid", 401));
+        }
     }
 
-    @RequestMapping("/{name}")
-    public ResponseModel<User> GetUserById(@PathVariable("name") long id) {
-        User usr;
-        ResponseModel<User> resp;
-        try {
-            usr = userRepository.findOne(id);
-            if (usr == null) {
-                resp = ResponseModel.CreateFailModel("User not found",404);
+
+    @RequestMapping(value = "", method = RequestMethod.DELETE)
+    public ResponseEntity<ResponseModel<String>> DeleteUserById(@RequestParam(value = "token", required = true) String token) {
+        UserSession session = UserSession.Get(token);
+        if (session != null) {
+            try {
+                userRepository.delete(session.getUser());
+                return ResponseEntity.status(HttpStatus.OK).body(ResponseModel.CreateSuccessModel("Deleted"));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseModel.CreateFailModel(e.getMessage(), 500));
             }
-            else
-                resp = ResponseModel.CreateSuccessModel(usr);
-
-        } catch (Exception e) {
-            resp = ResponseModel.CreateFailModel(e.getMessage(),500);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseModel.CreateFailModel("Token is not valid", 401));
         }
-        return resp;
     }
 
-
-    @RequestMapping(value="/{name}", method = RequestMethod.DELETE)
-    public ResponseModel<User> DeleteUserById(@PathVariable("name") long id) {
-        ResponseModel<User> resp;
-        try {
-            userRepository.delete(id);
-            resp = ResponseModel.CreateSuccessModel(null);
-        } catch (Exception e) {
-            resp = ResponseModel.CreateFailModel(e.getMessage(),500);
-        }
-        return resp;
-    }
-    @RequestMapping(value="/{name}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel<User> UpdateUserById(@PathVariable("name") long id, @RequestBody User user) {
-        System.out.println(user.toString());
-        ResponseModel<User> resp;
-        User usr;
-        try {
-
-            usr = userRepository.findOne(id);
-            System.out.println(usr.toString());
-
-            if (usr != null) {
-                if (!Strings.isNullOrEmpty(user.getDisplayName()))
-                    usr.setDisplayName(user.getDisplayName());
-                if (!Strings.isNullOrEmpty(user.getDeviceImei()))
-                    usr.setDeviceImei(user.getDeviceImei());
-                if (user.getFacebookId() != 0)
-                    usr.setFacebookId(user.getFacebookId());
-                if (!Strings.isNullOrEmpty(user.getPassword()))
-                    usr.setPassword(user.getPassword());
+    @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseModel<User>> UpdateUserById(@RequestParam(value = "token", required = true) String token, @RequestBody User user) {
+        UserSession session = UserSession.Get(token);
+        if (session != null) {
+            try {
+                User usr = session.getUser();
+                if (!Strings.isNullOrEmpty(user.getEmail()))
+                    usr.setEmail(user.getEmail());
+                if (!Strings.isNullOrEmpty(user.getDeviceIMEI()))
+                    usr.setDeviceIMEI(user.getDeviceIMEI());
+                if (!Strings.isNullOrEmpty(user.getPassWord()))
+                    usr.setPassWord(user.getPassWord());
                 userRepository.save(usr);
-                resp = ResponseModel.CreateSuccessModel(usr);
-            }
-            else {
-                resp = ResponseModel.CreateFailModel("User not found",404);
-            }
-        } catch (Exception e) {
-            System.out.println(e.toString());
-            resp = ResponseModel.CreateFailModel(e.getMessage(),500);
-        }
-        return resp;
+                return ResponseEntity.status(HttpStatus.OK).body(ResponseModel.CreateSuccessModel(usr));
 
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseModel.CreateFailModel(e.getMessage(), 500));
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseModel.CreateFailModel("Token is not valid", 401));
+        }
     }
 }

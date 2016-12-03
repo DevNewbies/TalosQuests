@@ -1,14 +1,22 @@
 package gr.devian.talosquests.backend.Controllers;
 
 import com.google.common.base.Strings;
+import gr.devian.talosquests.backend.Game.UserSession;
+import gr.devian.talosquests.backend.Game.UserToken;
 import gr.devian.talosquests.backend.Models.AuthModel;
-import gr.devian.talosquests.backend.Models.AuthToken;
 import gr.devian.talosquests.backend.Models.ResponseModel;
-import gr.devian.talosquests.backend.Models.User;
+import gr.devian.talosquests.backend.Game.User;
 import gr.devian.talosquests.backend.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by Nikolas on 20/11/2016.
@@ -25,64 +33,52 @@ public class AuthController {
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel<AuthToken> Authenticate(@RequestBody AuthModel model) {
+    public ResponseEntity<ResponseModel<UserSession>> Authenticate(@RequestBody AuthModel model) throws NoSuchAlgorithmException {
         User usr;
-        ResponseModel<AuthToken> resp;
+
         if (model != null) {
-            if (!Strings.isNullOrEmpty(model.getImei())) {
-                if (model.getFacebookId() != 0) {
-                    usr = userRepository.findUserByFacebookId(model.getFacebookId());
-                    if (usr != null) {
-                        if (usr.getDeviceImei().equals(model.getImei())) {
-                            resp = ResponseModel.CreateSuccessModel(new AuthToken());
-                        }
-                        else {
-                            resp = ResponseModel.CreateFailModel("Incorrect Credentials",401);
-                        }
-                    }
-                    else {
-                        resp = ResponseModel.CreateFailModel("No User found with these Credentials",404);
-                    }
+            /*if (model.getFacebookId() != 0) {
+                usr = userRepository.findUserByFacebookId(model.getFacebookId());
+                if (usr != null) {
+                    resp = ResponseModel.CreateSuccessModel(new AuthToken());
+                } else {
+                    resp = ResponseModel.CreateFailModel("No User found with these Credentials", 404);
                 }
-                else if (!Strings.isNullOrEmpty(model.getUserName()) && !Strings.isNullOrEmpty(model.getPassWord())) {
-                    usr = userRepository.findUserByUsername(model.getUserName());
-                    if (usr != null) {
-                        if (usr.getPassword().equals(model.getPassWord())) {
-                            resp = ResponseModel.CreateSuccessModel(new AuthToken());
+            } else*/
+            if (!Strings.isNullOrEmpty(model.getUserName()) && !Strings.isNullOrEmpty(model.getPassWord())) {
+                usr = userRepository.findUserByUserName(model.getUserName());
+                if (usr != null) {
+
+                    String saltedPass = model.getPassWord()+"."+usr.getSalt();
+                    String hashedPass = "";
+                    try {
+
+                        java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+                        byte[] array = md.digest(saltedPass.getBytes( "UTF-8" ));
+                        StringBuffer sb = new StringBuffer();
+                        for (int i = 0; i < array.length; i++) {
+                            sb.append( String.format( "%02x", array[i]));
                         }
-                        else {
-                            resp = ResponseModel.CreateFailModel("Incorrect Credentials",403);
-                        }
+                        hashedPass = sb.toString();
+                    } catch ( NoSuchAlgorithmException | UnsupportedEncodingException e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseModel.CreateFailModel(e.getMessage(), 500));
                     }
-                    else {
-                        resp = ResponseModel.CreateFailModel("No User found with these Credentials",404);
+                    if (usr.getPassWord().equals(hashedPass)) {
+
+                        UserSession sess = UserSession.Create(usr);
+                        return ResponseEntity.status(HttpStatus.OK).body(ResponseModel.CreateSuccessModel(sess));
+
+                    } else {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseModel.CreateFailModel("Wrong User Credentials", 401));
                     }
+                } else {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseModel.CreateFailModel("No such User", 401));
                 }
-                else if (!Strings.isNullOrEmpty(model.getToken())) {
-                    usr = userRepository.findUserByAccessToken(model.getToken());
-                    if (usr != null) {
-                        if (usr.getAccessToken().equals(model.getToken()) && usr.getDeviceImei().equals(model.getImei())) {
-                            resp = ResponseModel.CreateSuccessModel(new AuthToken());
-                        }
-                        else {
-                            resp = ResponseModel.CreateFailModel("Incorrect Credentials",403);
-                        }
-                    }
-                    else {
-                        resp = ResponseModel.CreateFailModel("No User found with these Credentials",404);
-                    }
-                }
-                else {
-                    resp = ResponseModel.CreateFailModel("Authentication Credentials are Incomplete",403);
-                }
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseModel.CreateFailModel("Insufficient Credentials", 400));
             }
-            else {
-                resp = ResponseModel.CreateFailModel("Authentication Credentials are Incomplete",403);
-            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseModel.CreateFailModel("Insufficient Credentials", 400));
         }
-        else {
-            resp = ResponseModel.CreateFailModel("No Authentication Credentials Given",500);
-        }
-        return resp;
     }
 }
