@@ -5,17 +5,14 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.io.Serializable;
 
 /**
  * Created by Nikolas on 2/12/2016.
  */
-@Component
-@Entity
-public class Item {
 
-    @GeneratedValue
-    @Id
-    private long id;
+public class Item implements Serializable {
+
 
     //String getName();
     //String getHint();

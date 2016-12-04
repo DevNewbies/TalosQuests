@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -35,7 +36,8 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseModel.CreateFailModel(e.getMessage(),500));
         }
-    }*/
+}*/
+
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<ResponseModel<User>> GetUserById(@RequestParam(value = "token", required = true) String token) {

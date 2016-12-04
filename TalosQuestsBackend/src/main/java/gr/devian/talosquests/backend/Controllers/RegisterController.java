@@ -1,6 +1,8 @@
 package gr.devian.talosquests.backend.Controllers;
 
 import com.google.common.base.Strings;
+import gr.devian.talosquests.backend.Game.SecurityTools;
+import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import gr.devian.talosquests.backend.Models.ResponseModel;
 import gr.devian.talosquests.backend.Game.User;
 import gr.devian.talosquests.backend.Repositories.UserRepository;
@@ -25,40 +27,29 @@ public class RegisterController {
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseModel<User>> Register(@RequestBody User user) {
-        ResponseModel<User> resp;
-        User usr;
-        try {
-
-
-            /*if (user.getFaceBook() != null) {
-                usr = userRepository.findUserByFacebookId(user.getFaceBook().getId());
-                if (usr != null) {
-                    resp = ResponseModel.CreateFailModel("User found", 404);
-                } else {
-                    userRepository.save(user);
-                    resp = ResponseModel.CreateSuccessModel(user);
-                }
-            }
-            else*/
-            if (!Strings.isNullOrEmpty(user.getUserName())) {
-                usr = userRepository.findUserByUserName(user.getUserName());
-                if (usr != null) {
-                    return ResponseEntity.status(HttpStatus.FOUND).body(ResponseModel.CreateFailModel("User found", 302));
-                } else {
-                    if (!Strings.isNullOrEmpty(user.getEmail()) && !Strings.isNullOrEmpty(user.getPassWord())) {
-                        userRepository.save(user);
-                        return ResponseEntity.status(HttpStatus.CREATED).body(ResponseModel.CreateSuccessModel(user, 202));
-                    } else {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseModel.CreateFailModel("Incomplete registration form", 400));
-                    }
-                }
+    public ResponseEntity<ResponseModel<User>> Register(@RequestBody AuthRegisterModel user) {
+        if (!Strings.isNullOrEmpty(user.getUserName())) {
+            User usr = userRepository.findUserByUserName(user.getUserName());
+            if (usr != null) {
+                return ResponseEntity.status(HttpStatus.FOUND).body(ResponseModel.CreateFailModel("User already Exists", 302));
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseModel.CreateFailModel("Incomplete registration form", 400));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseModel.CreateFailModel(e.getMessage(), 500));
-        }
+                if (!Strings.isNullOrEmpty(user.getEmail()) && !Strings.isNullOrEmpty(user.getPassWord())) {
+                    User temp = new User();
 
+                    temp.setSalt(SecurityTools.GenerateRandomToken());
+                    temp.setUserName(user.getUserName());
+                    temp.setEmail(user.getEmail());
+                    temp.setDeviceIMEI(user.getImei());
+                    temp.setPassWord(SecurityTools.MD5(user.getPassWord() + "_saltedPass:" + temp.getSalt() + "_hashedByUsername:" + user.getUserName()));
+
+                    userRepository.save(temp);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(ResponseModel.CreateSuccessModel(temp, 201));
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseModel.CreateFailModel("Incomplete registration form", 400));
+                }
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseModel.CreateFailModel("Incomplete registration form", 400));
+        }
     }
 }

@@ -1,5 +1,6 @@
 package gr.devian.talosquests.backend.Game;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.Entity;
@@ -60,6 +61,23 @@ public class UserSession {
                 cal.add(Calendar.DAY_OF_WEEK, 7);
                 usrSes.expires = cal.getTime();
                 return usrSes;
+            }
+        }
+        return null;
+    }
+    public static UserSession Get(User usr) {
+        for (UserSession userSession : List.values()) {
+            if (userSession.getUser().getId() == usr.getId()) {
+                if (userSession.expires.before(new Date())) {
+                    List.remove(userSession);
+                    return null;
+                } else {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(new Date());
+                    cal.add(Calendar.DAY_OF_WEEK, 7);
+                    userSession.expires = cal.getTime();
+                    return userSession;
+                }
             }
         }
         return null;

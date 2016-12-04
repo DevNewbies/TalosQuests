@@ -7,18 +7,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import java.io.Serializable;
 
 /**
  * Created by Nikolas on 3/12/2016.
  */
-@Component
-@Entity
-public class QuestLocation {
-    @Id
-    @GeneratedValue
+
+public class QuestLocation implements Serializable {
+
     private long id;
     private LatLng location;
-    @OneToOne
+
     private Quest quest;
 
     public QuestLocation() {

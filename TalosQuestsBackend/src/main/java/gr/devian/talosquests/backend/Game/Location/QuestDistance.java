@@ -7,17 +7,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import java.io.Serializable;
 
 /**
  * Created by Nikolas on 2/12/2016.
  */
-@Component
-@Entity
-public class QuestDistance {
-    @Id
-    @GeneratedValue
+
+public class QuestDistance implements Serializable {
+
     private long id;
-    @OneToOne
     private Quest quest;
     private Distance distance;
     private Duration duration;

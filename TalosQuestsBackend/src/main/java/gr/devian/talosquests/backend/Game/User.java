@@ -22,7 +22,7 @@ public class User {
     @Column(name = "id", updatable=false, nullable=false)
     private long id;
 
-
+    @JsonIgnore
     private ArrayList<Game> games;
     private String userName;
     @JsonIgnore
@@ -31,12 +31,13 @@ public class User {
     private String email;
     @JsonIgnore
     private String salt;
-    @OneToOne
+    @Transient
+    @JsonIgnore
     private UserSession activeSession;
     @OneToOne
+    @JsonIgnore
     private Game activeGame;
     private String deviceIMEI;
-    private boolean isLoggedIn;
 
 
     public long getId() {
@@ -47,9 +48,6 @@ public class User {
         this.id = id;
     }
 
-    public boolean isLoggedIn() {
-        return isLoggedIn;
-    }
 
     public ArrayList<Game> getGames() {
         return games;

@@ -8,26 +8,23 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import java.io.Serializable;
 import java.time.Duration;
 import java.util.Date;
 
 /**
  * Created by Nikolas on 2/12/2016.
  */
-@Component
-@Entity
-public class UserQuest {
-    @GeneratedValue
-    @Id
+
+public class UserQuest implements Serializable {
+
     private long id;
-    @OneToOne
     private Quest quest;
     private Date started;
     private Date completed;
     private Duration duration;
     private Boolean succeed;
     private Boolean active;
-    @OneToOne
     private QuestDistance questDistance;
 
     public UserQuest(Quest quest, QuestDistance questDistance) {

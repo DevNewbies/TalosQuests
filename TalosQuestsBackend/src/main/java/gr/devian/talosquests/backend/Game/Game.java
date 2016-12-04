@@ -24,7 +24,6 @@ public class Game {
     @Id
     private long id;
     private LatLng currentUserLocation;
-    @OneToOne
     private UserQuest activeQuest;
     private int experiencePoints;
     private ArrayList<UserQuest> history;

@@ -11,6 +11,6 @@ import java.io.Serializable;
  * Created by Nikolas on 2/12/2016.
  */
 
-public class IQuestDifficulty implements Serializable {
+public class QuestDifficulty implements Serializable {
 
 }
