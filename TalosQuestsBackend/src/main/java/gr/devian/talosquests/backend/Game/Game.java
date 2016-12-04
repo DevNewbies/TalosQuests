@@ -31,20 +31,7 @@ public class Game {
 
 
     static {
-        Reflections reflections = new Reflections("gr.devian.talosquests.backend");
-        Set<Class<? extends Quest>> classes = reflections.getSubTypesOf(Quest.class);
-        for (Class clazz : classes) {
-            if (!Modifier.isInterface(clazz.getModifiers())) {
-                System.out.println(clazz.getName());
-                try {
-                    PrintWriter writer = new PrintWriter("C:/Users/Nikolas/test.txt", "UTF-8");
-                    writer.println(clazz.getName());
-                    writer.close();
-                } catch (IOException e) {
-                    // do something
-                }
-            }
-        }
+
     }
 
 
