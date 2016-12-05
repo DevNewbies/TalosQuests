@@ -40,9 +40,6 @@ public class AuthControllerTesting extends AbstractTest {
 
     private MockMvc mockMvc;
 
-
-
-
     @Autowired
     UserRepository userRepository;
 

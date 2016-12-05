@@ -1,6 +1,7 @@
 package gr.devian.talosquests.backend.Services;
 
 import com.google.common.base.Strings;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import gr.devian.talosquests.backend.Models.ResponseModel;
 import gr.devian.talosquests.backend.Models.User;
@@ -102,7 +103,7 @@ public class UserService {
 
     }
 
-    public Session getSessionByUser(User user) {
+    public Session getSessionByUser(User user)  {
         if (user == null)
             return null;
 
@@ -128,7 +129,11 @@ public class UserService {
         Session session = getSessionByUser(user);
 
         if (session != null) {
-            removeSession(session);
+            try {
+                removeSession(session);
+            } catch (Exception e){
+
+            }
         }
 
         session = new Session(user);
@@ -137,8 +142,14 @@ public class UserService {
     }
 
     private Session checkSessionState(Session session) {
+        if (session == null)
+            return null;
         if (session.getExpireDate().before(new Date())) {
-            removeSession(session);
+            try {
+                removeSession(session);
+            } catch (Exception e){
+
+            }
             return null;
         } else {
             Calendar cal = Calendar.getInstance();
@@ -158,9 +169,10 @@ public class UserService {
     }
 
     @CacheEvict(value="TalosQuests")
-    public void removeSession(Session session) {
+    public void removeSession(Session session) throws TalosQuestsNullSessionException {
         if (session == null)
-            return;
+            throw new TalosQuestsNullSessionException();
+
         sessionRepository.delete(session);
     }
 
