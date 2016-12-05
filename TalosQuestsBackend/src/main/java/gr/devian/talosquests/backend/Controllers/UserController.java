@@ -41,16 +41,13 @@ public class UserController extends BaseController {
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     public ResponseEntity<ResponseModel<String>> DeleteUserById(@RequestParam(value = "token", required = true) String token, @RequestParam(value = "password", required = true) String password) {
 
-
-        logger.warn("> Request(Token,Password)=(" + token + "," + password + ")");
-
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseModel.CreateFailModel("Token is not valid", 401));
 
         String saltedPass = password + "_saltedPass:" + session.getUser().getSalt() + "_hashedByUsername:" + session.getUser().getUserName();
         String hashedPass = SecurityTools.MD5(saltedPass);
-        logger.warn("> SessionedUser(Username,Password,Salt,HashedPass)=(" + session.getUser().getUserName() + "," + session.getUser().getPassWord() + "," + session.getUser().getSalt() + ","+hashedPass+")");
+
         if (session.getUser().getPassWord().equals(hashedPass)) {
             userService.removeUser(session.getUser());
             return ResponseEntity.status(HttpStatus.OK).body(ResponseModel.CreateSuccessModel("Deleted"));
@@ -64,13 +61,12 @@ public class UserController extends BaseController {
     public ResponseEntity<ResponseModel<User>> UpdateUserById(@RequestParam(value = "token", required = true) String token, @RequestParam(value = "password", required = true) String password, @RequestBody(required = true) AuthRegisterModel model) {
 
 
-        logger.warn("> Request(Token,Password)=(" + token + "," + password + ")");
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseModel.CreateFailModel("Token is not valid", 401));
         String saltedPass = password + "_saltedPass:" + session.getUser().getSalt() + "_hashedByUsername:" + session.getUser().getUserName();
         String hashedPass = SecurityTools.MD5(saltedPass);
-        logger.warn("> SessionedUser(Username,Password,Salt,HashedPass)=(" + session.getUser().getUserName() + "," + session.getUser().getPassWord() + "," + session.getUser().getSalt() + ","+hashedPass+")");
+
         if (session.getUser().getPassWord().equals(hashedPass)) {
             User user = userService.updateUser(session.getUser(), model);
             if (user == null)
