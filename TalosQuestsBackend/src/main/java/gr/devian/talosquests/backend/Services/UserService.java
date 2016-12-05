@@ -38,28 +38,26 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    @Cacheable(value = "TalosQuests", key = "#id")
     public User getUserById(Long id) {
         if (id < 0)
             return null;
 
         return userRepository.findOne(id);
     }
-    @Cacheable(value = "TalosQuests", key = "#userName")
     public User getUserByUsername(String userName) {
         if (Strings.isNullOrEmpty(userName))
             return null;
 
         return userRepository.findUserByUserName(userName);
     }
-    @Cacheable(value = "TalosQuests", key = "#email")
+
     public User getUserByEmail(String email) {
         if (Strings.isNullOrEmpty(email))
             return null;
 
         return userRepository.findUserByEmail(email);
     }
-    @CachePut(value = "TalosQuests", key = "#result.id")
+
     public User createUser(AuthRegisterModel model) {
 
         if (Strings.isNullOrEmpty(model.getUserName())
@@ -74,7 +72,7 @@ public class UserService {
 
         return user;
     }
-    @CachePut(value = "TalosQuests", key = "#user.id")
+
     public User updateUser(User user, AuthRegisterModel model) {
         if (model == null)
             return null;
@@ -90,7 +88,7 @@ public class UserService {
 
         return user;
     }
-    @CacheEvict(value="TalosQuests", key = "#user.id")
+
     public void removeUser(User user) {
         if (user == null)
             return;
@@ -168,7 +166,6 @@ public class UserService {
         sessionRepository.save(session);
     }
 
-    @CacheEvict(value="TalosQuests")
     public void removeSession(Session session) throws TalosQuestsNullSessionException {
         if (session == null)
             throw new TalosQuestsNullSessionException();
