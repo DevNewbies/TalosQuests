@@ -149,6 +149,13 @@ public class UserService {
             return session;
         }
     }
+    public void expireSession(Session session) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.DAY_OF_WEEK, -7);
+        session.setExpireDate(cal.getTime());
+        sessionRepository.save(session);
+    }
 
     @CacheEvict(value="TalosQuests")
     public void removeSession(Session session) {

@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -108,10 +110,6 @@ public class UserServiceTest extends AbstractTest {
         assertTrue("Failure - Expected list to be empty",list.isEmpty());
     }
 
-    @Test
-    public void failingTest() {
-        assertTrue(false);
-    }
 
     @Test
     public void testFindByIdWhenExists() {
@@ -175,4 +173,13 @@ public class UserServiceTest extends AbstractTest {
         assertEquals("Failure - Session Ids not Equals", session.getSessionId(),testSession.getSessionId());
 
     }
+
+    @Test
+    public void testGetSessionByUserWhenExpired() {
+        userService.expireSession(testSession);
+        Session session = userService.getSessionByUser(testUserWithSession);
+
+        assertNull("Failure - Expected null", session);
+    }
+
 }

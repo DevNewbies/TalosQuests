@@ -63,6 +63,7 @@ public class AuthControllerTesting extends AbstractTest {
         authRegModel.setUserName("test");
         authRegModel.setPassWord("test");
         authRegModel.setEmail("test@test.test");
+        authRegModel.setImei("test");
 
         User user = userService.createUser(authRegModel);
 
