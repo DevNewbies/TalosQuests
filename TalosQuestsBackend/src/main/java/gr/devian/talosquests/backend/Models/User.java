@@ -1,10 +1,7 @@
-package gr.devian.talosquests.backend.Game;
+package gr.devian.talosquests.backend.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gr.devian.talosquests.backend.Game.Social.Models.FacebookAccount;
-import gr.devian.talosquests.backend.Repositories.UserRepository;
-import jdk.nashorn.internal.ir.annotations.Ignore;
-import org.springframework.beans.factory.annotation.Autowired;
+import gr.devian.talosquests.backend.Utilities.SecurityTools;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -20,7 +17,7 @@ public class User {
     @Id
     @GeneratedValue
     @Column(name = "id", updatable=false, nullable=false)
-    private long id;
+    private Long id;
 
     @JsonIgnore
     private ArrayList<Game> games;
@@ -31,16 +28,13 @@ public class User {
     private String email;
     @JsonIgnore
     private String salt;
-    @Transient
-    @JsonIgnore
-    private UserSession activeSession;
     @OneToOne
     @JsonIgnore
     private Game activeGame;
     private String deviceIMEI;
 
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -97,14 +91,6 @@ public class User {
         this.salt = salt;
     }
 
-    public UserSession getActiveSession() {
-        return activeSession;
-    }
-
-    public void setActiveSession(UserSession activeSession) {
-        this.activeSession = activeSession;
-    }
-
     public Game getActiveGame() {
         return activeGame;
     }
@@ -125,16 +111,11 @@ public class User {
 
     }
 
-    public static User create() {
-        return null;
+    public User(String userName, String passWord, String email, String deviceIMEI) {
+        salt = SecurityTools.GenerateRandomToken();
+        this.userName = userName;
+        this.passWord = SecurityTools.MD5(passWord + "_saltedPass:" + salt + "_hashedByUsername:" + userName);
+        this.email = email;
+        this.deviceIMEI = deviceIMEI;
     }
-    public static boolean update(User usr) {
-        try {
-            //userRepository.save(usr);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
 }

@@ -1,4 +1,4 @@
-package gr.devian.talosquests.backend.Game;
+package gr.devian.talosquests.backend.Utilities;
 
 import gr.devian.talosquests.backend.Models.ResponseModel;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package gr.devian.talosquests.backend.Game;
+package gr.devian.talosquests.backend.Models;
 
 import java.util.ArrayList;
 

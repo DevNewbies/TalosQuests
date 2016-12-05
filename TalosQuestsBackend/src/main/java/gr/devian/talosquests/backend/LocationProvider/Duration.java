@@ -1,4 +1,4 @@
-package gr.devian.talosquests.backend.Game.Location;
+package gr.devian.talosquests.backend.LocationProvider;
 
 import java.io.Serializable;
 

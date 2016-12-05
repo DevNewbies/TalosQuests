@@ -1,8 +1,5 @@
-package gr.devian.talosquests.backend.Game.Location;
+package gr.devian.talosquests.backend.LocationProvider;
 
-import org.springframework.stereotype.Component;
-
-import javax.persistence.Entity;
 import java.io.Serializable;
 
 /**

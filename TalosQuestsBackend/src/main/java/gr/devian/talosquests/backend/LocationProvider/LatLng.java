@@ -1,4 +1,4 @@
-package gr.devian.talosquests.backend.Game.Location;
+package gr.devian.talosquests.backend.LocationProvider;
 
 import java.io.Serializable;
 
@@ -11,11 +11,11 @@ public class LatLng extends com.google.maps.model.LatLng implements Serializable
 
 
     public LatLng(com.google.maps.model.LatLng latlng) {
-        super(latlng.lat,latlng.lng);
+        super(latlng.lat, latlng.lng);
     }
 
 
     public static com.google.maps.model.LatLng getLatLng(LatLng latlng) {
-        return new com.google.maps.model.LatLng(latlng.lat,latlng.lng);
+        return new com.google.maps.model.LatLng(latlng.lat, latlng.lng);
     }
 }

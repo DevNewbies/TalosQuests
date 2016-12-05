@@ -1,13 +1,14 @@
 package gr.devian.talosquests.backend.Controllers;
 
 import com.google.common.base.Strings;
-import gr.devian.talosquests.backend.Game.SecurityTools;
-import gr.devian.talosquests.backend.Game.UserSession;
+import gr.devian.talosquests.backend.Services.UserService;
+import gr.devian.talosquests.backend.Utilities.SecurityTools;
+import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import gr.devian.talosquests.backend.Models.ResponseModel;
-import gr.devian.talosquests.backend.Game.User;
+import gr.devian.talosquests.backend.Models.User;
 import gr.devian.talosquests.backend.Repositories.UserRepository;
-import gr.devian.talosquests.backend.Repositories.UserSessionRepository;
+import gr.devian.talosquests.backend.Repositories.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,43 +21,30 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/Auth")
 public class AuthController {
-    private UserRepository userRepository;
-
 
     @Autowired
-    private UserSessionRepository sessionRepository;
-
-    @Autowired
-    public void initRepo(UserRepository _userRepository) {
-
-        userRepository = _userRepository;
-    }
+    private UserService userService;
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseModel<UserSession>> Authenticate(@RequestBody AuthRegisterModel userModel) {
+    public ResponseEntity<ResponseModel<Session>> Authenticate(@RequestBody AuthRegisterModel userModel) {
         if (userModel != null) {
             if (!Strings.isNullOrEmpty(userModel.getUserName()) && !Strings.isNullOrEmpty(userModel.getPassWord())) {
                 try {
-                    User usr = userRepository.findUserByUserName(userModel.getUserName());
-                    if (usr != null) {
+                    User user = userService.getUserByUsername(userModel.getUserName());
+                    if (user != null) {
 
-                        String saltedPass = userModel.getPassWord() + "_saltedPass:" + usr.getSalt() + "_hashedByUsername:" + userModel.getUserName();
+                        String saltedPass = userModel.getPassWord() + "_saltedPass:" + user.getSalt() + "_hashedByUsername:" + userModel.getUserName();
                         String hashedPass = SecurityTools.MD5(saltedPass);
 
-                        if (usr.getPassWord().equals(hashedPass)) {
-                            UserSession ses = UserSession.Get(usr);
-                            if (ses == null) {
-                                sessionRepository.deleteUserSessionByUser(usr);
-                                ses = UserSession.Create(usr);
+                        if (user.getPassWord().equals(hashedPass)) {
+                            Session session = userService.getSessionByUser(user);
+                            if (session == null) {
+                                session = userService.createSession(user);
                             }
-                            usr.setActiveSession(ses);
-
-                            sessionRepository.save(ses);
-                            userRepository.save(usr);
 
                             return ResponseEntity
                                     .status(HttpStatus.OK)
-                                    .body(ResponseModel.CreateSuccessModel(ses));
+                                    .body(ResponseModel.CreateSuccessModel(session));
 
                         } else {
                             return ResponseEntity

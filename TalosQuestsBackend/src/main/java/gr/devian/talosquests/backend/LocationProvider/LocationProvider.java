@@ -1,4 +1,4 @@
-package gr.devian.talosquests.backend.Game.Location;
+package gr.devian.talosquests.backend.LocationProvider;
 
 import com.google.maps.DistanceMatrixApi;
 import com.google.maps.GeoApiContext;
@@ -6,10 +6,14 @@ import com.google.maps.GeocodingApi;
 import com.google.maps.model.DistanceMatrix;
 import com.google.maps.model.DistanceMatrixElement;
 import com.google.maps.model.TravelMode;
-import gr.devian.talosquests.backend.Game.Quest;
+import gr.devian.talosquests.backend.Models.Quest;
+import gr.devian.talosquests.backend.Models.User;
+import gr.devian.talosquests.backend.Utilities.Tuple;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Nikolas on 2/12/2016.
@@ -32,13 +36,13 @@ public class LocationProvider {
                 LatLng.getLatLng(latlng)).await()[0].formattedAddress;
     }
 
-    public static QuestDistance getQuestDistance(LatLng origin, Quest quest) throws Exception {
+    public static Location getQuestDistance(LatLng origin, Quest quest) throws Exception {
         DistanceMatrix dMatrix = DistanceMatrixApi.getDistanceMatrix(GeoAPIHandler, new String[]{origin.toString()}, new String[]{quest.getLocation().toString()}).mode(TravelMode.WALKING).await();
-        return new QuestDistance(new Distance(dMatrix.rows[0].elements[0].distance), new Duration(dMatrix.rows[0].elements[0].duration), origin, quest.getLocation(),quest);
+        return new Location(new Duration(dMatrix.rows[0].elements[0].duration), new Distance(dMatrix.rows[0].elements[0].distance), origin);
     }
 
-    public static ArrayList<QuestDistance> getQuestDistances(LatLng origin, List<Quest> quests) throws Exception {
-        ArrayList<QuestDistance> qDList = new ArrayList<>();
+    public static HashMap<Quest,Location> getQuestDistances(LatLng origin, List<Quest> quests) throws Exception {
+        HashMap<Quest,Location> mapQuqestDirDur = new HashMap<>();
         String[] destinationsStr = new String[quests.size()];
         int i = 0;
         for (Quest quest : quests) {
@@ -49,22 +53,27 @@ public class LocationProvider {
 
         i = 0;
         for (DistanceMatrixElement element : dMatrix.rows[0].elements) {
-            QuestDistance dist = new QuestDistance(new Distance(element.distance), new Duration(element.duration), origin, quests.get(i).getLocation(), quests.get(i));
-            qDList.add(dist);
+            Distance dist = new Distance(element.distance);
+            Duration dur = new Duration(element.duration);
+            mapQuqestDirDur.put(quests.get(i),new Location(dur,dist,origin));
+            i++;
         }
-        return qDList;
+        return mapQuqestDirDur;
     }
 
-    public static QuestDistance getClosestQuestDistance(LatLng origin, ArrayList<Quest> availableQuests) throws Exception {
+    public static Tuple<Quest,Location> getClosestQuestDistance(LatLng origin, ArrayList<Quest> availableQuests) throws Exception {
         long min = 9999;
-        QuestDistance minQuestDistance = null;
+        Location minLocation = null;
+        Quest minQuest = null;
 
-        for (QuestDistance questDistance : getQuestDistances(origin, availableQuests)) {
-            if (questDistance.getDistance().inMeters < min) {
-                min = questDistance.getDistance().inMeters;
-                minQuestDistance = questDistance;
+
+        for (Map.Entry<Quest,Location> entry : getQuestDistances(origin, availableQuests).entrySet()) {
+            if (entry.getValue().getDistance().inMeters < min) {
+                min = entry.getValue().getDistance().inMeters;
+                minQuest = entry.getKey();
+                minLocation = entry.getValue();
             }
         }
-        return minQuestDistance;
+        return new Tuple<Quest,Location>(minQuest,minLocation);
     }
 }

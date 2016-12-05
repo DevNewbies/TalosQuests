@@ -1,4 +1,4 @@
-package gr.devian.talosquests.backend.Game.Social.Models;
+package gr.devian.talosquests.backend.Models;
 
 import org.springframework.stereotype.Component;
 

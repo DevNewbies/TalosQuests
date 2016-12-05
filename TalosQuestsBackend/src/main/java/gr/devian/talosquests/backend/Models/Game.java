@@ -1,16 +1,14 @@
-package gr.devian.talosquests.backend.Game;
+package gr.devian.talosquests.backend.Models;
 
-import gr.devian.talosquests.backend.Game.Location.LatLng;
-import gr.devian.talosquests.backend.Game.Location.LocationProvider;
-import gr.devian.talosquests.backend.Game.Location.QuestDistance;
-import gr.devian.talosquests.backend.Repositories.UserRepository;
-import org.reflections.Reflections;
+import gr.devian.talosquests.backend.Exceptions.*;
+import gr.devian.talosquests.backend.LocationProvider.*;
+import gr.devian.talosquests.backend.Repositories.*;
+import gr.devian.talosquests.backend.Utilities.Tuple;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -24,9 +22,9 @@ public class Game {
     @Id
     private long id;
     private LatLng currentUserLocation;
-    private UserQuest activeQuest;
+    private Quest activeQuest;
     private int experiencePoints;
-    private ArrayList<UserQuest> history;
+    private ArrayList<Quest> history;
     private static ArrayList<Quest> Quests;
 
 
@@ -34,8 +32,11 @@ public class Game {
 
     }
 
+    @Autowired
+    @Transient
+    private UserRepository userRepository;
 
-    public ArrayList<UserQuest> getHistory() {
+    public ArrayList<Quest> getHistory() {
         return history;
     }
 
@@ -43,7 +44,7 @@ public class Game {
         return Quests;
     }
 
-    public UserQuest getActiveQuest() {
+    public Quest getActiveQuest() {
         return activeQuest;
     }
 
@@ -51,7 +52,7 @@ public class Game {
         return experiencePoints;
     }
 
-    public void setActiveQuest(UserQuest activeQuest) {
+    public void setActiveQuest(Quest activeQuest) {
         this.activeQuest = activeQuest;
     }
 
@@ -64,8 +65,8 @@ public class Game {
 
         for (Quest quest : Quests) {
             boolean add = true;
-            for (UserQuest uquest : history) {
-                if (uquest.getQuest().equals(uquest)) {
+            for (Quest uquest : history) {
+                if (uquest.equals(uquest)) {
                     add = false;
                 }
             }
@@ -75,31 +76,31 @@ public class Game {
         return availableQuests;
     }
 
-    public void startQuest() throws Exception {
+    public void startQuest() throws TalosQuestsLocationProviderServiceUnavailableException, TalosQuestsGameInProgressException {
         if (activeQuest == null) {
             ArrayList<Quest> availableQuests = getAvailableQuests();
             if (availableQuests.size() > 0) {
                 try {
-                    QuestDistance closestQuestDistance = LocationProvider.getClosestQuestDistance(currentUserLocation, availableQuests);
-                    activeQuest = new UserQuest(closestQuestDistance.getQuest(), closestQuestDistance);
+                    Tuple<Quest,Location> closestQuestDistance = LocationProvider.getClosestQuestDistance(currentUserLocation, availableQuests);
+                    activeQuest = closestQuestDistance.left;
+
                 } catch (Exception e) {
-                    //throw TalosQuestsLocationProviderServiceOffline
+                    throw new TalosQuestsLocationProviderServiceUnavailableException();
                 }
             } else {
                 gameFinalize();
             }
         } else {
-            //throw TalosQuestsGameInProgressException
+            throw new TalosQuestsGameInProgressException();
         }
     }
 
-    public void finishQuest(boolean succeed) {
+    public void finishQuest(boolean succeed) throws TalosQuestsGameNotInProgressException {
         if (activeQuest != null) {
             activeQuest.finish(succeed);
-
             activeQuest = null;
         } else {
-            //throw TalosQuestsGameNotInProgressException
+            throw new TalosQuestsGameNotInProgressException();
         }
     }
 

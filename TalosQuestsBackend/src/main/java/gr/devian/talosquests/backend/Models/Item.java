@@ -1,4 +1,4 @@
-package gr.devian.talosquests.backend.Game;
+package gr.devian.talosquests.backend.Models;
 
 import org.springframework.stereotype.Component;
 
@@ -11,6 +11,10 @@ import java.io.Serializable;
  * Created by Nikolas on 2/12/2016.
  */
 
-public class QuestDifficulty implements Serializable {
+public class Item implements Serializable {
+
+
+    //String getName();
+    //String getHint();
 
 }

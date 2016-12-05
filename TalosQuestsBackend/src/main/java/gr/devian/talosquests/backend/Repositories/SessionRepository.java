@@ -1,17 +1,20 @@
 package gr.devian.talosquests.backend.Repositories;
 
+/**
+ * Created by Nikolas on 3/12/2016.
+ */
+
 import gr.devian.talosquests.backend.Models.User;
+import gr.devian.talosquests.backend.Models.Session;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Created by Nikolas on 20/11/2016.
- */
 @Transactional
 @Repository
-public interface UserRepository extends JpaRepository<User,Long> {
-    User findUserByUserName(String userName);
-    User findUserByEmail(String email);
+public interface SessionRepository extends JpaRepository<Session,Long> {
+    Session findSessionByToken(String token);
+    Session findSessionByUser(User user);
+    void deleteSessionByUser(User user);
 }

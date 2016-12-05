@@ -1,25 +1,16 @@
 package gr.devian.talosquests.backend.Models;
 
+import org.springframework.stereotype.Component;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import java.io.Serializable;
+
 /**
- * Created by Nikolas on 21/11/2016.
+ * Created by Nikolas on 2/12/2016.
  */
-public class QuestChoice {
-    public int getChoiceId() {
-        return choiceId;
-    }
 
-    public void setChoiceId(int choiceId) {
-        this.choiceId = choiceId;
-    }
+public class QuestChoice implements Serializable {
 
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    private int choiceId;
-    private String body;
 }
