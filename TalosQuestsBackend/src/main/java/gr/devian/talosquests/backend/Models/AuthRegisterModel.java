@@ -14,6 +14,12 @@ public class AuthRegisterModel {
 
     public AuthRegisterModel(){}
 
+    public AuthRegisterModel(String userName, String passWord, String email, String imei) {
+        this.userName = userName;
+        this.passWord = passWord;
+        this.email = email;
+        this.imei = imei;
+    }
 
     public String getUserName() {
         return userName;

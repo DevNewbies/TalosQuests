@@ -25,6 +25,10 @@ public class Session {
     private String token;
     private Date expires;
 
+    public long getSessionId() {
+        return sessionId;
+    }
+
     public void setExpireDate(Date expires) {
         this.expires = expires;
     }

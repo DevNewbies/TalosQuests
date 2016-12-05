@@ -12,7 +12,7 @@ public class Location implements Serializable {
     private Distance distance;
     private LatLng location;
 
-    Location(Duration duration, Distance distance, LatLng location) {
+    public Location(Duration duration, Distance distance, LatLng location) {
         this.duration = duration;
         this.distance = distance;
         this.location = location;

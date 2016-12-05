@@ -1,4 +1,4 @@
-package gr.devian.talosquests.backend.LocationProvider;
+package gr.devian.talosquests.backend.Services;
 
 import com.google.maps.DistanceMatrixApi;
 import com.google.maps.GeoApiContext;
@@ -6,9 +6,12 @@ import com.google.maps.GeocodingApi;
 import com.google.maps.model.DistanceMatrix;
 import com.google.maps.model.DistanceMatrixElement;
 import com.google.maps.model.TravelMode;
+import gr.devian.talosquests.backend.LocationProvider.*;
 import gr.devian.talosquests.backend.Models.Quest;
 import gr.devian.talosquests.backend.Models.User;
 import gr.devian.talosquests.backend.Utilities.Tuple;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,12 +21,16 @@ import java.util.Map;
 /**
  * Created by Nikolas on 2/12/2016.
  */
-public class LocationProvider {
+@Service
+public class LocationService {
+
+    @Value("${googleapi.key}")
+    private static String apiKey;
 
     private static GeoApiContext GeoAPIHandler;
 
     static {
-        GeoAPIHandler = new GeoApiContext().setApiKey("AIzaSyBYSx7H98T4SCeqBPCz6lMDpDhfKBbXmHo");
+        GeoAPIHandler = new GeoApiContext().setApiKey(apiKey);
     }
 
     public static LatLng getLatLng(String address) throws Exception {

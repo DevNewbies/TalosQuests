@@ -17,4 +17,5 @@ public interface SessionRepository extends JpaRepository<Session,Long> {
     Session findSessionByToken(String token);
     Session findSessionByUser(User user);
     void deleteSessionByUser(User user);
+    void deleteSessionByToken(String token);
 }

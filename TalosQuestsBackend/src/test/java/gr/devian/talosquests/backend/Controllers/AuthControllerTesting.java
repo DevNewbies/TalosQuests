@@ -1,6 +1,7 @@
-package gr.devian.talosquests.backend;
+package gr.devian.talosquests.backend.Controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gr.devian.talosquests.backend.AbstractTest;
 import gr.devian.talosquests.backend.Services.UserService;
 import gr.devian.talosquests.backend.Utilities.SecurityTools;
 import gr.devian.talosquests.backend.Models.User;
@@ -30,10 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Created by Nikolas on 4/12/2016.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
 @Transactional
-public class AuthControllerTesting {
+public class AuthControllerTesting extends AbstractTest {
 
     @Autowired
     private WebApplicationContext context;
@@ -54,7 +53,7 @@ public class AuthControllerTesting {
     UserService userService;
 
     @Before
-    public void setup() {
+    public void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
         sessionRepository.deleteAllInBatch();
         userRepository.deleteAllInBatch();

@@ -31,33 +31,32 @@ public class AuthController {
             if (!Strings.isNullOrEmpty(userModel.getUserName()) && !Strings.isNullOrEmpty(userModel.getPassWord())) {
                 try {
                     User user = userService.getUserByUsername(userModel.getUserName());
-                    if (user != null) {
+                    if (user == null)
+                        return ResponseEntity
+                                .status(HttpStatus.UNAUTHORIZED)
+                                .body(ResponseModel.CreateFailModel("No such User", 401));
 
-                        String saltedPass = userModel.getPassWord() + "_saltedPass:" + user.getSalt() + "_hashedByUsername:" + userModel.getUserName();
-                        String hashedPass = SecurityTools.MD5(saltedPass);
 
-                        if (user.getPassWord().equals(hashedPass)) {
-                            Session session = userService.getSessionByUser(user);
-                            if (session == null) {
-                                session = userService.createSession(user);
-                            }
+                    String saltedPass = userModel.getPassWord() + "_saltedPass:" + user.getSalt() + "_hashedByUsername:" + userModel.getUserName();
+                    String hashedPass = SecurityTools.MD5(saltedPass);
 
-                            return ResponseEntity
-                                    .status(HttpStatus.OK)
-                                    .body(ResponseModel.CreateSuccessModel(session));
-
-                        } else {
-                            return ResponseEntity
-                                    .status(HttpStatus.UNAUTHORIZED)
-                                    .body(ResponseModel.CreateFailModel("Wrong User Credentials", 401));
+                    if (user.getPassWord().equals(hashedPass)) {
+                        Session session = userService.getSessionByUser(user);
+                        if (session == null) {
+                            session = userService.createSession(user);
                         }
 
+                        return ResponseEntity
+                                .status(HttpStatus.OK)
+                                .body(ResponseModel.CreateSuccessModel(session));
 
                     } else {
                         return ResponseEntity
                                 .status(HttpStatus.UNAUTHORIZED)
-                                .body(ResponseModel.CreateFailModel("No such User", 401));
+                                .body(ResponseModel.CreateFailModel("Wrong User Credentials", 401));
                     }
+
+
                 } catch (Exception e) {
                     return ResponseEntity
                             .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -68,9 +67,7 @@ public class AuthController {
                         .status(HttpStatus.BAD_REQUEST)
                         .body(ResponseModel.CreateFailModel("Insufficient Credentials", 400));
             }
-        } else
-
-        {
+        } else {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(ResponseModel.CreateFailModel("Insufficient Credentials", 400));

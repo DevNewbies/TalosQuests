@@ -3,6 +3,7 @@ package gr.devian.talosquests.backend.Models;
 import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.LocationProvider.*;
 import gr.devian.talosquests.backend.Repositories.*;
+import gr.devian.talosquests.backend.Services.LocationService;
 import gr.devian.talosquests.backend.Utilities.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -81,7 +82,7 @@ public class Game {
             ArrayList<Quest> availableQuests = getAvailableQuests();
             if (availableQuests.size() > 0) {
                 try {
-                    Tuple<Quest,Location> closestQuestDistance = LocationProvider.getClosestQuestDistance(currentUserLocation, availableQuests);
+                    Tuple<Quest,Location> closestQuestDistance = LocationService.getClosestQuestDistance(currentUserLocation, availableQuests);
                     activeQuest = closestQuestDistance.left;
 
                 } catch (Exception e) {

@@ -9,6 +9,9 @@ import gr.devian.talosquests.backend.Repositories.UserRepository;
 import gr.devian.talosquests.backend.Repositories.SessionRepository;
 import gr.devian.talosquests.backend.Utilities.SecurityTools;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,42 +32,48 @@ public class UserService {
     @Autowired
     SessionRepository sessionRepository;
 
+
     public Collection<User> findAllUsers() {
         return userRepository.findAll();
     }
 
+    @Cacheable(value = "TalosQuests", key = "#id")
     public User getUserById(Long id) {
-        if (id < 0) {
+        if (id < 0)
             return null;
-        }
+
         return userRepository.findOne(id);
     }
-
+    @Cacheable(value = "TalosQuests", key = "#userName")
     public User getUserByUsername(String userName) {
-        if (Strings.isNullOrEmpty(userName)) {
+        if (Strings.isNullOrEmpty(userName))
             return null;
-        }
+
         return userRepository.findUserByUserName(userName);
     }
-
+    @Cacheable(value = "TalosQuests", key = "#email")
     public User getUserByEmail(String email) {
-        if (Strings.isNullOrEmpty(email)) {
+        if (Strings.isNullOrEmpty(email))
             return null;
-        }
+
         return userRepository.findUserByEmail(email);
     }
-
+    @CachePut(value = "TalosQuests", key = "#result.id")
     public User createUser(AuthRegisterModel model) {
 
-        if (Strings.isNullOrEmpty(model.getEmail()) || Strings.isNullOrEmpty(model.getPassWord()))
+        if (Strings.isNullOrEmpty(model.getUserName())
+                || Strings.isNullOrEmpty(model.getEmail())
+                || Strings.isNullOrEmpty(model.getPassWord())
+                || Strings.isNullOrEmpty(model.getImei()))
             return null;
 
         User user = new User(model.getUserName(), model.getPassWord(), model.getEmail(), model.getImei());
+
         userRepository.save(user);
 
         return user;
     }
-
+    @CachePut(value = "TalosQuests", key = "#user.id")
     public User updateUser(User user, AuthRegisterModel model) {
         if (model == null)
             return null;
@@ -80,12 +89,17 @@ public class UserService {
 
         return user;
     }
-
+    @CacheEvict(value="TalosQuests", key = "#user.id")
     public void removeUser(User user) {
         if (user == null)
             return;
         sessionRepository.deleteSessionByUser(user);
         userRepository.delete(user);
+    }
+
+    @CacheEvict(value="TalosQuests", allEntries = true)
+    public void evictCache() {
+
     }
 
     public Session getSessionByUser(User user) {
@@ -124,7 +138,7 @@ public class UserService {
 
     private Session checkSessionState(Session session) {
         if (session.getExpireDate().before(new Date())) {
-            sessionRepository.delete(session);
+            removeSession(session);
             return null;
         } else {
             Calendar cal = Calendar.getInstance();
@@ -136,10 +150,15 @@ public class UserService {
         }
     }
 
-
+    @CacheEvict(value="TalosQuests")
     public void removeSession(Session session) {
         if (session == null)
             return;
         sessionRepository.delete(session);
+    }
+
+    public void wipe() {
+        sessionRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
     }
 }

@@ -21,10 +21,13 @@ public class User {
 
     @JsonIgnore
     private ArrayList<Game> games;
+
+    @Column(unique=true)
     private String userName;
     @JsonIgnore
     private String passWord;
     private FacebookAccount faceBook;
+    @Column(unique=true)
     private String email;
     @JsonIgnore
     private String salt;
