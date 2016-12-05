@@ -1,6 +1,7 @@
 package gr.devian.talosquests.backend;
 
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
+import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Models.User;
 import gr.devian.talosquests.backend.Repositories.SessionRepository;
 import gr.devian.talosquests.backend.Repositories.UserRepository;
@@ -24,6 +25,9 @@ public abstract class AbstractUserControllerTest extends  AbstractControllerTest
     protected AuthRegisterModel invalidModel;
     protected AuthRegisterModel insufficientDataModel;
 
+    protected User user;
+    protected Session session;
+
     @Before
     public void setUp() {
         super.setUp();
@@ -37,9 +41,9 @@ public abstract class AbstractUserControllerTest extends  AbstractControllerTest
 
         insufficientDataModel = new AuthRegisterModel();
 
-        User user = userService.createUser(validModel);
+        user = userService.createUser(validModel);
 
-        userService.createSession(user);
+        session = userService.createSession(user);
 
     }
 }

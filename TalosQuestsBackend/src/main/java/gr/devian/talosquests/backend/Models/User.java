@@ -67,7 +67,7 @@ public class User {
     }
 
     public void setPassWord(String passWord) {
-        this.passWord = passWord;
+        this.passWord = SecurityTools.MD5(passWord + "_saltedPass:" + salt + "_hashedByUsername:" + userName);
     }
 
     public FacebookAccount getFaceBook() {

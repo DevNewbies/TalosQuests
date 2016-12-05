@@ -68,8 +68,10 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler i
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         String var = ex.getParameterName();
         if (var.equals("token")) {
-            System.out.println("Token");
             return new ResponseEntity<Object>(ResponseModel.CreateFailModel("You need to provide a Token to access this private resource.", 401), HttpStatus.UNAUTHORIZED);
+
+        } else if (var.equals("password")) {
+            return new ResponseEntity<Object>(ResponseModel.CreateFailModel("You need to provide a Password to access this private resource.", 401), HttpStatus.UNAUTHORIZED);
 
         } else {
             System.out.println(var);

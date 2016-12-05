@@ -27,45 +27,40 @@ public class AuthController extends BaseController {
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseModel<Session>> Authenticate(@RequestBody AuthRegisterModel userModel) {
-        if (userModel != null) {
-            if (!Strings.isNullOrEmpty(userModel.getUserName()) && !Strings.isNullOrEmpty(userModel.getPassWord())) {
-                try {
-                    User user = userService.getUserByUsername(userModel.getUserName());
-                    if (user == null)
-                        return ResponseEntity
-                                .status(HttpStatus.UNAUTHORIZED)
-                                .body(ResponseModel.CreateFailModel("No such User", 401));
+
+        if (!Strings.isNullOrEmpty(userModel.getUserName()) && !Strings.isNullOrEmpty(userModel.getPassWord())) {
+            try {
+                User user = userService.getUserByUsername(userModel.getUserName());
+                if (user == null)
+                    return ResponseEntity
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .body(ResponseModel.CreateFailModel("No such User", 401));
 
 
-                    String saltedPass = userModel.getPassWord() + "_saltedPass:" + user.getSalt() + "_hashedByUsername:" + userModel.getUserName();
-                    String hashedPass = SecurityTools.MD5(saltedPass);
+                String saltedPass = userModel.getPassWord() + "_saltedPass:" + user.getSalt() + "_hashedByUsername:" + userModel.getUserName();
+                String hashedPass = SecurityTools.MD5(saltedPass);
 
-                    if (user.getPassWord().equals(hashedPass)) {
-                        Session session = userService.getSessionByUser(user);
-                        if (session == null) {
-                            session = userService.createSession(user);
-                        }
-
-                        return ResponseEntity
-                                .status(HttpStatus.OK)
-                                .body(ResponseModel.CreateSuccessModel(session));
-
-                    } else {
-                        return ResponseEntity
-                                .status(HttpStatus.UNAUTHORIZED)
-                                .body(ResponseModel.CreateFailModel("Wrong User Credentials", 401));
+                if (user.getPassWord().equals(hashedPass)) {
+                    Session session = userService.getSessionByUser(user);
+                    if (session == null) {
+                        session = userService.createSession(user);
                     }
 
-
-                } catch (Exception e) {
                     return ResponseEntity
-                            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body(ResponseModel.CreateFailModel(e.getMessage(), 500));
+                            .status(HttpStatus.OK)
+                            .body(ResponseModel.CreateSuccessModel(session));
+
+                } else {
+                    return ResponseEntity
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .body(ResponseModel.CreateFailModel("Wrong User Credentials", 401));
                 }
-            } else {
+
+
+            } catch (Exception e) {
                 return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body(ResponseModel.CreateFailModel("Insufficient Credentials", 400));
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(ResponseModel.CreateFailModel(e.getMessage(), 500));
             }
         } else {
             return ResponseEntity
