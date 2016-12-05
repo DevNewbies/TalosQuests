@@ -1,0 +1,13 @@
+<Page xmlns="http://www.nativescript.org/tns.xsd" loaded="loaded">
+	<GridLayout rows="*" columns="*" >
+		<StackLayout orientation="vertical" visibility="{{ isItemVisible ? 'visible' : 'collapsed' }}">
+			<TextField text="{{ username }}" hint="Username" keyboardType="email"  autocorrect="false" autocapitalizationType="none"
+			id="username"/>
+			<TextField text="{{ password }}" hint="Password" secure="true" />
+			<Button text="Sign in" class="link" tap="signIn" />
+			<Button text="Sign up" class="link" tap="register"/>
+			<Button text="fb" tap="fbSignIn" id="fButton"/>	
+		</StackLayout>
+	<ActivityIndicator busy="{{ isLoading }}" row="1" col="1" rowSpan="1" colSpan="1"/>
+	</GridLayout>
+</Page>
