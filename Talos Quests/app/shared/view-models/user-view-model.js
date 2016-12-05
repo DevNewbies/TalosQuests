@@ -7,20 +7,18 @@ function User(info) {
 
     // You can add properties to observables on creation
     var viewModel = new Observable({
-        email: info.email || "",
-        password: info.password || "",
-        name: info.name || ""
+        email:  info.email || "",
+        password:  info.password || "",
+        username: info.username || "",
+        isLoading: false,
+        isItemVisible: true
     });
     viewModel.login = function() {
-        //return fetchModule.fetch(config.apiUrl + "oauth/token", {
         return fetchModule.fetch(config.apiUrl + "Auth", {
             method: "POST",
             body: JSON.stringify({
-                facebookId: 0, 
-                userName: viewModel.get("email"), 
-                passWord: viewModel.get("password"),
-                token: 0
-                //grant_type: "password"
+                userName: viewModel.username,
+                passWord: viewModel.password
             }),
             headers: {
                 "Content-Type": "application/json"
@@ -28,20 +26,22 @@ function User(info) {
         })
         .then(handleErrors)
         .then(function(response) {
+            //console.log(JSON.stringify(response));
             return response.json();
         })
-        .then(function(data) {
-            config.token = data.Result.access_token;
-        });
+        //.then(function(data) {
+            //config.token = data.Result.access_token;
+           // console.log(data.stringify);
+        //});
     };
     viewModel.register = function() {
         return fetchModule.fetch(config.apiUrl + "Register", {
             method: "POST",
             body: JSON.stringify({
-                facebookId: 0, 
-                userName: viewModel.get("email"), 
-                passWord: viewModel.get("password"),
-                fullName: viewModel.get("name")
+                userName: viewModel.username, 
+                passWord: viewModel.password,
+                email: viewModel.email,
+                imei: 2223566
             }),
             headers: {
                 "Content-Type": "application/json"
@@ -54,7 +54,7 @@ function User(info) {
 function handleErrors(response) {
     if (!response.ok) {
         console.log(JSON.stringify(response));
-        throw Error(response.statusText);
+       throw Error(response.status);
     }
     return response;
 }

@@ -4,41 +4,52 @@ var UserViewModel = require("../../shared/view-models/user-view-model");
 var Observable = require("data/observable").Observable;
 var user = new UserViewModel();
 var page;
-/*var user = new UserViewModel({
-    email: email,
-    password: password,
-    name: name
-});*/
-var indicator = new Observable({
-    isLoading: true,
-    isItemVisible: false
-});
 exports.loaded = function(args) {
-     page = args.object;
+    page = args.object;
+    page.bindingContext= user;
 };
 exports.register = function() {
-    page.bindingContext= indicator;
     completeRegistration();
 };
 function hideIndicator(){
-    indicator.isLoading=false;
-    indicator.isItemVisible=true;
-    page.bindingContext= indicator;
+    user.isLoading= false;
+    user.isItemVisible= true;
+};
+function showIndicator(){
+    user.isLoading=true;
+    user.isItemVisible=false;
 };
 function completeRegistration() {
-    user.register().then(function() {
-            hideIndicator()
+    showIndicator();
+    user.register().then(function(r) {
+            hideIndicator();   
             dialogsModule.alert("Your account was successfully created.")
                 .then(function() {
                     frameModule.topmost().navigate("views/main/main");
                 });
         }).catch(function(error) {
             console.log(error);
-            hideIndicator()
-            dialogsModule
-                .alert({
-                    message: "Unfortunately we were unable to create your account.",
+             if(error.message==="301")
+            {
+                hideIndicator();
+                dialogsModule.alert({
+                    message: "Username is already used!",
                     okButtonText: "OK"
                 });
+                log.hideIndicator();
+            }else if(error.message==="400")
+            {
+                hideIndicator();
+                dialogsModule.alert({
+                    message: "You did not filled all the fields!",
+                    okButtonText: "OK"
+                });
+            }else{
+                hideIndicator();
+                dialogsModule.alert({
+                    message: "Something went wrong.Try again!",
+                    okButtonText: "OK"
+                });
+            }
         });
 }
