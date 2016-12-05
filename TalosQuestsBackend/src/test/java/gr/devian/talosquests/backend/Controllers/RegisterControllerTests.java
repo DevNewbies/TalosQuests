@@ -62,6 +62,8 @@ public class RegisterControllerTests extends AbstractUserControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andReturn();
 
+
+
     }
 
     @Test
