@@ -39,32 +39,41 @@ public class UserController extends BaseController {
 
 
     @RequestMapping(value = "", method = RequestMethod.DELETE)
-    public ResponseEntity<ResponseModel<String>> DeleteUserById(@RequestParam(value = "token", required = true) String token, @RequestParam(value = "pass", required = true) String pass) {
+    public ResponseEntity<ResponseModel<String>> DeleteUserById(@RequestParam(value = "token", required = true) String token, @RequestParam(value = "password", required = true) String password) {
+
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseModel.CreateFailModel("Token is not valid", 401));
 
-        String saltedPass = pass + "_saltedPass:" + session.getUser().getSalt() + "_hashedByUsername:" + session.getUser().getUserName();
+        String saltedPass = password + "_saltedPass:" + session.getUser().getSalt() + "_hashedByUsername:" + session.getUser().getUserName();
         String hashedPass = SecurityTools.MD5(saltedPass);
 
-        if (session.getUser().getPassWord() == hashedPass)
+        if (session.getUser().getPassWord().equals(hashedPass)) {
             userService.removeUser(session.getUser());
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseModel.CreateSuccessModel("Deleted"));
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseModel.CreateSuccessModel("Deleted"));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseModel.CreateFailModel("Unauthorized", 401));
 
 
     }
 
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseModel<User>> UpdateUserById(@RequestParam(value = "token", required = true) String token, @RequestBody AuthRegisterModel model) {
+    public ResponseEntity<ResponseModel<User>> UpdateUserById(@RequestParam(value = "token", required = true) String token, @RequestParam(value = "password", required = true) String password, @RequestBody(required = true) AuthRegisterModel model) {
+
+
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseModel.CreateFailModel("Token is not valid", 401));
+        String saltedPass = password + "_saltedPass:" + session.getUser().getSalt() + "_hashedByUsername:" + session.getUser().getUserName();
+        String hashedPass = SecurityTools.MD5(saltedPass);
 
-        User user = userService.updateUser(session.getUser(),model);
-        if (user == null)
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseModel.CreateFailModel("Unexpected Internal Errors Occurred. User couldn't be updated.", 500));
-
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseModel.CreateSuccessModel(user));
+        if (session.getUser().getPassWord().equals(hashedPass)) {
+            User user = userService.updateUser(session.getUser(), model);
+            if (user == null)
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseModel.CreateFailModel("Unexpected Internal Errors Occurred. User couldn't be updated.", 500));
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseModel.CreateSuccessModel(user));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseModel.CreateFailModel("Unauthorized", 401));
 
 
     }

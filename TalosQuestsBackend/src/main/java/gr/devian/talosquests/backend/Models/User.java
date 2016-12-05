@@ -41,25 +41,13 @@ public class User {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
 
     public ArrayList<Game> getGames() {
         return games;
     }
 
-    public void setGames(ArrayList<Game> games) {
-        this.games = games;
-    }
-
     public String getUserName() {
         return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public String getPassWord() {
@@ -67,7 +55,7 @@ public class User {
     }
 
     public void setPassWord(String passWord) {
-        this.passWord = passWord;
+        this.passWord = SecurityTools.MD5(passWord + "_saltedPass:" + salt + "_hashedByUsername:" + userName);
     }
 
     public FacebookAccount getFaceBook() {
@@ -88,10 +76,6 @@ public class User {
 
     public String getSalt() {
         return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
     }
 
     public Game getActiveGame() {

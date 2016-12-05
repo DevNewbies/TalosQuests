@@ -58,7 +58,7 @@ public class AuthControllerTests extends AbstractUserControllerTest {
     }
 
     @Test
-    public void UnauthorizedOnWrongCredentials() throws Exception {
+    public void UnauthorizedOnNonExistentUser() throws Exception {
 
         mockMvc.perform(post("/Auth")
                 .content(mapToJson(invalidModel))
@@ -69,10 +69,37 @@ public class AuthControllerTests extends AbstractUserControllerTest {
                 .andReturn();
 
     }
+    @Test
+    public void UnauthorizedOnWrongCredentials() throws Exception {
+
+        validModel.setPassWord("bla");
+        mockMvc.perform(post("/Auth")
+                .content(mapToJson(validModel))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andReturn();
+
+    }
 
     @Test
-    public void AuthorizedOnCorrectCredentials() throws Exception {
+    public void AuthorizedOnCorrectCredentialsWithUsernamePassword() throws Exception {
+        validModel.setEmail("");
+        validModel.setImei("");
+        mockMvc.perform(post("/Auth")
+                .content(mapToJson(validModel))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.state",is(200)))
+                .andReturn();
 
+    }
+    @Test
+    public void AuthorizedOnCorrectCredentialsWithEmailPassword() throws Exception {
+        validModel.setUserName("");
+        validModel.setImei("");
         mockMvc.perform(post("/Auth")
                 .content(mapToJson(validModel))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -83,8 +110,9 @@ public class AuthControllerTests extends AbstractUserControllerTest {
 
     }
 
+
     @Test
-    public void BadRequestOnInsiffucientCredentials() throws Exception {
+    public void BadRequestOnInsufficientCredentials() throws Exception {
 
         mockMvc.perform(post("/Auth")
                 .content(mapToJson(insufficientDataModel))
