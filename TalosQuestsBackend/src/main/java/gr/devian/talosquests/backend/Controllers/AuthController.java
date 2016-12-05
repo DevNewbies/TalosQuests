@@ -28,16 +28,23 @@ public class AuthController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseModel<Session>> Authenticate(@RequestBody AuthRegisterModel userModel) {
 
-        if (!Strings.isNullOrEmpty(userModel.getUserName()) && !Strings.isNullOrEmpty(userModel.getPassWord())) {
+        if (
+                (!Strings.isNullOrEmpty(userModel.getUserName()) || !Strings.isNullOrEmpty(userModel.getEmail()))
+                        && !Strings.isNullOrEmpty(userModel.getPassWord())) {
             try {
-                User user = userService.getUserByUsername(userModel.getUserName());
+                User user = null;
+                if (!Strings.isNullOrEmpty(userModel.getUserName()))
+                    user = userService.getUserByUsername(userModel.getUserName());
+                else if (!Strings.isNullOrEmpty(userModel.getEmail()))
+                    user = userService.getUserByEmail(userModel.getEmail());
+
                 if (user == null)
                     return ResponseEntity
                             .status(HttpStatus.UNAUTHORIZED)
                             .body(ResponseModel.CreateFailModel("No such User", 401));
 
 
-                String saltedPass = userModel.getPassWord() + "_saltedPass:" + user.getSalt() + "_hashedByUsername:" + userModel.getUserName();
+                String saltedPass = userModel.getPassWord() + "_saltedPass:" + user.getSalt() + "_hashedByUsername:" + user.getUserName();
                 String hashedPass = SecurityTools.MD5(saltedPass);
 
                 if (user.getPassWord().equals(hashedPass)) {
