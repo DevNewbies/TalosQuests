@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/Auth")
-public class AuthController {
+public class AuthController extends BaseController {
 
     @Autowired
     private UserService userService;

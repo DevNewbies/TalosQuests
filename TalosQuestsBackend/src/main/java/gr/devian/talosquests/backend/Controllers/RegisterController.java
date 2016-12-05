@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/Register")
-public class RegisterController {
+public class RegisterController extends BaseController {
 
     @Autowired
     UserService userService;
@@ -27,6 +27,7 @@ public class RegisterController {
     public ResponseEntity<ResponseModel<User>> Register(@RequestBody AuthRegisterModel model) {
         if (!Strings.isNullOrEmpty(model.getUserName())) {
             User user = userService.getUserByUsername(model.getUserName());
+            
             if (user != null)
                 return ResponseEntity.status(HttpStatus.FOUND).body(ResponseModel.CreateFailModel("User already Exists", 302));
 

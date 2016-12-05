@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/Session")
-public class SessionController {
+public class SessionController extends BaseController {
 
     @Autowired
     UserService userService;

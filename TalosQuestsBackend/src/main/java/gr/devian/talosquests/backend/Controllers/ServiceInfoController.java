@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
-public class ServiceInfoController {
+public class ServiceInfoController extends BaseController {
 
     @Autowired(required = true)
     private HttpServletRequest request;
