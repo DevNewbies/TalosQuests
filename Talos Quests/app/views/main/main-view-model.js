@@ -2,8 +2,10 @@ var Observable = require("data/observable").Observable;
 
 function createViewModel() {
     var viewModel = new Observable();
-    var Options = ["Start Game", "My Avatar", "Archivements", "Settings", "Exit"];
-    viewModel.MainMenu = Options;
+
+    var MainMenu = ["Start Game", "My Avatar", "Archivements", "Settings", "Exit"];
+    viewModel.MainMenu = MainMenu;
+
     return viewModel;
 }
 
