@@ -20,6 +20,8 @@ import java.util.Date;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by Nikolas on 5/12/2016.
@@ -230,7 +232,70 @@ public class UserServiceTest extends AbstractTest {
 
     @Test
     public void testGetUserByUsenameWhenUsernameIsNull() {
-        User user = userService.getUserByEmail(null);
+        User user = userService.getUserByUsername(null);
         assertNull("Failure - Expected null", user);
     }
+
+    @Test
+    public void testGetUserByIdWhenIdIsNull() {
+        User user = userService.getUserById(null);
+        assertNull("Failure - Expected null", user);
+    }
+
+    @Test
+    public void testGetUserByIdWhenIdIsNegative() {
+        User user = userService.getUserById((long)-7);
+        assertNull("Failure - Expected null", user);
+    }
+
+    @Test
+    public void testCreateUserOnInsufficientUserData() {
+        AuthRegisterModel model = new AuthRegisterModel();
+        User user = userService.createUser(model);
+        assertNull("Failure - Expected null", user);
+    }
+
+    /*@Test
+    public void testRemoveUserWhenUserIsNull() {
+        userService.removeUser(null);
+        verify(userService,times(1)).removeUser(null);
+    }*/
+
+    @Test
+    public void testUpdateUserOnNullModel() {
+        AuthRegisterModel model = null;
+        User user = userService.updateUser(testUserWithSession,model);
+        assertNull("Failure - Expected null", user);
+    }
+
+    @Test
+    public void testUpdateUserImei() {
+        AuthRegisterModel model = new AuthRegisterModel();
+        model.setImei("test15");
+
+        User user = userService.updateUser(testUserWithSession,model);
+
+        assertEquals("Imei didn't changed",user.getDeviceIMEI(),"test15");
+    }
+
+    @Test
+    public void testUpdateUserEmail() {
+        AuthRegisterModel model = new AuthRegisterModel();
+        model.setEmail("test15");
+
+        User user = userService.updateUser(testUserWithSession,model);
+
+        assertEquals("Imei didn't changed",user.getEmail(),"test15");
+    }
+
+    @Test
+    public void testUpdateUserPassword() {
+        AuthRegisterModel model = new AuthRegisterModel();
+        model.setPassWord("test15");
+
+        User user = userService.updateUser(testUserWithSession,model);
+
+        assertEquals("Imei didn't changed",user.getPassWord(),"test15");
+    }
+
 }

@@ -39,6 +39,8 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
+        if (id == null)
+            return null;
         if (id < 0)
             return null;
 
@@ -97,9 +99,7 @@ public class UserService {
     }
 
     @CacheEvict(value="TalosQuests", allEntries = true)
-    public void evictCache() {
-
-    }
+    public void evictCache() { }
 
     public Session getSessionByUser(User user)  {
         if (user == null)
