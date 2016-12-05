@@ -1,6 +1,7 @@
 package gr.devian.talosquests.backend.Services;
 
 import gr.devian.talosquests.backend.AbstractTest;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Models.User;
@@ -39,13 +40,15 @@ public class UserServiceTest extends AbstractTest {
     private String userName;
     private String userNameWithSession;
     private String userNameWithoutSession;
+    private String token;
 
     private SecureRandom random = new SecureRandom();
 
     @Before
     public void setUp() {
-        userService.evictCache();
 
+        userService.wipe();
+        userService.evictCache();
 
         //Let userName = test_92jf923jf923jg923
         userName = "test_" + new BigInteger(130, random).toString(32);
@@ -77,7 +80,6 @@ public class UserServiceTest extends AbstractTest {
         // -> Password: test
         // -> Email   : test_92jf923jf923jg923_wo@test.gr
         // -> IMEI    : test
-
 
         testUserWithoutSession = userService.createUser(
                 new AuthRegisterModel(
@@ -182,4 +184,53 @@ public class UserServiceTest extends AbstractTest {
         assertNull("Failure - Expected null", session);
     }
 
+    @Test
+    public void testGetSessionByTokenWhenTokenIsNull() {
+        Session session = userService.getSessionByToken(null);
+
+        assertNull("Failure - Expected null", session);
+    }
+
+    @Test
+    public void testGetSessionByTokenWhenTokenIsNotValid() {
+        Session session = userService.getSessionByToken("testToken");
+        assertNull("Failure - Expected null", session);
+    }
+
+    @Test
+    public void testGetSessionByTokenWhenTokenIsValid() {
+        Session session = userService.getSessionByToken(testSession.getToken());
+        assertNotNull("Failure - Expected Not null", session);
+    }
+
+    @Test(expected = TalosQuestsNullSessionException.class)
+    public void testRemoveSessionWhenNullGiven() throws TalosQuestsNullSessionException {
+        userService.removeSession(null);
+    }
+
+    @Test
+    public void testGetUserByEmailWhenEmailIsValid() {
+        String email = testUserWithSession.getEmail();
+        User user = userService.getUserByEmail(email);
+        assertNotNull("Failure - User cannot be null", user);
+    }
+
+    @Test
+    public void testGetUserByEmailWhenEmailIsNotValid() {
+        String email = "asdagadh";
+        User user = userService.getUserByEmail(email);
+        assertNull("Failure - Expected null", user);
+    }
+
+    @Test
+    public void testGetUserByEmailWhenEmailIsNull() {
+        User user = userService.getUserByEmail(null);
+        assertNull("Failure - Expected null", user);
+    }
+
+    @Test
+    public void testGetUserByUsenameWhenUsernameIsNull() {
+        User user = userService.getUserByEmail(null);
+        assertNull("Failure - Expected null", user);
+    }
 }
