@@ -2,13 +2,13 @@ package gr.devian.talosquests.backend.Models;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gr.devian.talosquests.backend.LocationProvider.*;
+import gr.devian.talosquests.backend.LocationProvider.LatLng;
+import gr.devian.talosquests.backend.Utilities.DurationConverter;
+import gr.devian.talosquests.backend.Utilities.LatLngConverter;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -28,9 +28,11 @@ public class Quest {
 
     private Date started = null;
     private Date completed = null;
+    @Convert(converter = DurationConverter.class)
     private Duration duration = Duration.ofSeconds(0);
     private Boolean succeed = false;
     private Boolean active = false;
+    @Convert(converter = LatLngConverter.class)
     private LatLng location = null;
     @OneToOne
     private QuestModel quest;

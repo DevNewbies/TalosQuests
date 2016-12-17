@@ -2,6 +2,7 @@ package gr.devian.talosquests.backend.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gr.devian.talosquests.backend.LocationProvider.LatLng;
+import gr.devian.talosquests.backend.Utilities.LatLngConverter;
 import gr.devian.talosquests.backend.Utilities.SecurityTools;
 import org.springframework.stereotype.Component;
 
@@ -40,6 +41,7 @@ public class User {
     private Game activeGame;
     private String deviceIMEI;
 
+    @Convert(converter = LatLngConverter.class)
     private LatLng lastLocation;
 
     public LatLng getLastLocation() {
