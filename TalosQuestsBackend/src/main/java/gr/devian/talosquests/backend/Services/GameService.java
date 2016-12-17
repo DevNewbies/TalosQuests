@@ -144,5 +144,9 @@ public class GameService {
         return game.getIncompleteQuests().size() <= 0;
     }
 
+    public void wipe() {
+        gameRepository.deleteAllInBatch();
+    }
+
 
 }

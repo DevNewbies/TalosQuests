@@ -34,7 +34,7 @@ public class Quest {
     private Boolean active = false;
     @Convert(converter = LatLngConverter.class)
     private LatLng location = null;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private QuestModel quest;
 
     public LatLng getLocation() {

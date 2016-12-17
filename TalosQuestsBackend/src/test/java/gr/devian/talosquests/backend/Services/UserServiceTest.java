@@ -7,6 +7,8 @@ import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Models.User;
+import gr.devian.talosquests.backend.Repositories.QuestRepository;
+import gr.devian.talosquests.backend.Repositories.UserQuestRepository;
 import gr.devian.talosquests.backend.Repositories.UserRepository;
 import gr.devian.talosquests.backend.Utilities.SecurityTools;
 import org.junit.Before;
@@ -35,6 +37,15 @@ public class UserServiceTest extends AbstractTest {
     @Autowired
     UserService userService;
 
+    @Autowired
+    GameService gameService;
+
+    @Autowired
+    UserQuestRepository userQuestRepository;
+
+    @Autowired
+    QuestRepository questRepository;
+
 
     private User testUserWithSession;
     private Session testSession;
@@ -50,7 +61,14 @@ public class UserServiceTest extends AbstractTest {
     @Before
     public void setUp() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
 
-        userService.wipe();
+
+
+        //userQuestRepository.deleteAllInBatch();
+        //questRepository.deleteAllInBatch();
+
+        //gameService.wipe();
+
+        //userService.wipe();
         userService.evictCache();
 
         //Let userName = test_92jf923jf923jg923

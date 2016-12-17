@@ -37,7 +37,7 @@ public abstract class AbstractUserControllerTest extends AbstractControllerTest 
     public void setUp() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
         super.setUp();
 
-        userService.wipe();
+        //userService.wipe();
 
 
         registeredUserModel = new AuthRegisterModel("TestUser", "Test1*2^3%1#2@3!", "test@test.gr", "012345678912345");

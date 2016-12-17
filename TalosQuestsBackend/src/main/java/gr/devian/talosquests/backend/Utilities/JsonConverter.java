@@ -10,12 +10,14 @@ import java.io.IOException;
 /**
  * Created by Nikolas on 17/12/2016.
  */
+
 public abstract class JsonConverter<T> implements AttributeConverter<T,String> {
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
     private Class<T> clazz;
 
     public JsonConverter(Class<T> clazz) {
+
         this.clazz = clazz;
     }
     @Override

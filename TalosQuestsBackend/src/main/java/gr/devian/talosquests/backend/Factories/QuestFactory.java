@@ -30,9 +30,6 @@ public class QuestFactory {
 
     private LatLng userLocation;
 
-    public QuestFactory() {
-
-    }
 
     public void setLocation(LatLng loc) {
         userLocation = loc;

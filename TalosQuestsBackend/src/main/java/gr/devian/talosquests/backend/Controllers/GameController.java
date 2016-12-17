@@ -169,7 +169,7 @@ public class GameController extends BaseController {
         Boolean state = gameService.submitQuestAnswer(user.getActiveGame(), choice);
         gameService.finishQuest(user.getActiveGame(),state);
 
-        return Response.success(gameService.submitQuestAnswer(user.getActiveGame(), choice));
+        return Response.success(state);
 
     }
 

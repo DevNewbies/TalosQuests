@@ -124,6 +124,7 @@ public class LocationService {
     }
 
     public ArrayList<Quest> getQuestsInRadius(LatLng origin, ArrayList<Quest> availableQuests, int radiusInMeters) throws TalosQuestsLocationServiceUnavailableException {
+
         return getQuestDistances(origin, availableQuests)
                 .entrySet()
                 .stream()

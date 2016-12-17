@@ -26,19 +26,19 @@ public class Game {
     private LatLng currentUserLocation;
 
     @JsonIgnore
-    @OneToOne
+    @Transient
     private User user;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Quest activeQuest;
 
     private int experiencePoints;
 
     private boolean active;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Collection<Quest> completedQuests;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Collection<Quest> incompleteQuests;
 
 
