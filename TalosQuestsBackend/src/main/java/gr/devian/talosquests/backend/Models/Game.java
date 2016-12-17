@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -20,19 +21,17 @@ import java.util.*;
 
 @Component
 @Entity
+@Access(AccessType.FIELD)
 public class Game {
     @GeneratedValue
     @Id
     private long id;
 
-    @Transient
     @JsonIgnore
-    @Ignore
     private LatLng currentUserLocation;
 
-
-    @OneToOne
     @JsonIgnore
+    @OneToOne
     private User user;
 
     @OneToOne
@@ -42,14 +41,18 @@ public class Game {
 
     private boolean active;
 
-    private ArrayList<Quest> completedQuests;
-    private ArrayList<Quest> incompleteQuests;
+    @OneToMany
+    private Collection<Quest> completedQuests;
+    @OneToMany
+    private Collection<Quest> incompleteQuests;
 
 
     public Game() {
         currentUserLocation = null;
         user = null;
         activeQuest = null;
+        experiencePoints = 0;
+        active = false;
         completedQuests = new ArrayList<>();
         incompleteQuests = new ArrayList<>();
     }
@@ -67,11 +70,11 @@ public class Game {
         this.active = active;
     }
 
-    public ArrayList<Quest> getCompletedQuests() {
+    public Collection<Quest> getCompletedQuests() {
         return completedQuests;
     }
 
-    public ArrayList<Quest> getIncompleteQuests() {
+    public Collection<Quest> getIncompleteQuests() {
         return incompleteQuests;
     }
 

@@ -3,10 +3,9 @@ package gr.devian.talosquests.backend.Models;
 import gr.devian.talosquests.backend.LocationProvider.LatLng;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by Nikolas on 15/12/2016.
@@ -24,7 +23,10 @@ public class QuestModel {
 
     private LatLng location;
 
+
     private QuestChoice correctChoice;
+
+
     private ArrayList<QuestChoice> availableChoices;
 
     public LatLng getLocation() {
@@ -41,6 +43,11 @@ public class QuestModel {
 
     public QuestChoice getCorrectChoice() {
         return correctChoice;
+    }
+
+
+    public QuestModel() {
+        availableChoices = new ArrayList<>();
     }
 
     public ArrayList<QuestChoice> getAvailableChoices() {

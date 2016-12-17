@@ -31,7 +31,11 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler i
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<Object> handleOtherExceptions(final Exception ex,
                                                         final WebRequest req) {
+        logger.error(ex);
+        logger.error(ex.getCause());
+        ex.printStackTrace();
         return Response.fail(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
     @Override

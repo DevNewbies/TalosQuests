@@ -9,7 +9,13 @@ import com.google.maps.model.TravelMode;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationServiceUnavailableException;
 import gr.devian.talosquests.backend.LocationProvider.*;
 import gr.devian.talosquests.backend.Models.Quest;
+import gr.devian.talosquests.backend.Models.QuestChoice;
+import gr.devian.talosquests.backend.Models.QuestModel;
+import gr.devian.talosquests.backend.Repositories.QuestRepository;
 import gr.devian.talosquests.backend.Utilities.Tuple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,22 +30,49 @@ import java.util.stream.Collectors;
  */
 @Service
 public class LocationService {
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private void setRepo(QuestRepository repo) {
+        questRepository = repo;
+        QuestModel q = new QuestModel();
+        q.setLocation(new LatLng(41.0893866,23.5488266));
+        q.setContent("test");
+        q.setName("test");
+        QuestChoice c;
+        for (int i = 0; i <= 5; i++) {
+            c = new QuestChoice();
+            c.setContent("test");
+            q.getAvailableChoices().add(c);
+            q.setCorrectChoice(c);
+        }
+
+        questRepository.save(q);
+    }
+
+    QuestRepository questRepository;
 
     @Value("${googleapi.key}")
     private void setApiKey(String api) {
         apiKey = api;
         GeoAPIHandler = new GeoApiContext().setApiKey(apiKey);
+
     }
 
     private String apiKey;
 
     private GeoApiContext GeoAPIHandler;
 
+    public LocationService() {
+
+    }
+
     public LatLng getLatLng(String address) throws TalosQuestsLocationServiceUnavailableException {
         try {
             return new LatLng(GeocodingApi.geocode(GeoAPIHandler,
                     address).await()[0].geometry.location);
         } catch (Exception e) {
+            logger.info(e.getMessage());
             throw new TalosQuestsLocationServiceUnavailableException();
         }
     }
@@ -49,6 +82,7 @@ public class LocationService {
             return GeocodingApi.reverseGeocode(GeoAPIHandler,
                     LatLng.getLatLng(latlng)).await()[0].formattedAddress;
         } catch (Exception e) {
+            logger.info(e.getMessage());
             throw new TalosQuestsLocationServiceUnavailableException();
         }
     }
@@ -58,6 +92,7 @@ public class LocationService {
             DistanceMatrix dMatrix = DistanceMatrixApi.getDistanceMatrix(GeoAPIHandler, new String[]{origin.toString()}, new String[]{quest.getLocation().toString()}).mode(TravelMode.WALKING).await();
             return new Location(new Duration(dMatrix.rows[0].elements[0].duration), new Distance(dMatrix.rows[0].elements[0].distance), origin);
         } catch (Exception e) {
+            logger.info(e.getMessage());
             throw new TalosQuestsLocationServiceUnavailableException();
         }
     }
@@ -83,6 +118,7 @@ public class LocationService {
             return mapQuqestDirDur;
 
         } catch (Exception e) {
+            logger.info(e.getMessage());
             throw new TalosQuestsLocationServiceUnavailableException();
         }
     }

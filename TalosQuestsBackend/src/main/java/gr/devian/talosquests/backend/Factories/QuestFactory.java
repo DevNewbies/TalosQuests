@@ -8,6 +8,7 @@ import gr.devian.talosquests.backend.Repositories.QuestRepository;
 import gr.devian.talosquests.backend.Repositories.UserQuestRepository;
 import gr.devian.talosquests.backend.Services.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.Random;
 /**
  * Created by Nikolas on 15/12/2016.
  */
-
+@Service
 public class QuestFactory {
 
     @Autowired
@@ -29,9 +30,15 @@ public class QuestFactory {
 
     private LatLng userLocation;
 
-    public QuestFactory(LatLng loc) {
+    public QuestFactory() {
+
+    }
+
+    public void setLocation(LatLng loc) {
         userLocation = loc;
     }
+
+
 
     public ArrayList<Quest> fetchQuestsFromDatabase() {
         ArrayList<Quest> quests = new ArrayList<>();

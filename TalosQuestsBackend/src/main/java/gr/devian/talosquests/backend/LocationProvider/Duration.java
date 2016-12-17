@@ -5,7 +5,17 @@ import java.io.Serializable;
 /**
  * Created by Nikolas on 3/12/2016.
  */
-public class Duration extends com.google.maps.model.Duration implements Serializable {
+public class Duration  implements Serializable {
+    public long inSeconds;
+    public String humanReadable;
+
+    public Duration() {
+    }
+
+    public String toString() {
+        return this.humanReadable;
+    }
+
     public Duration(com.google.maps.model.Duration dur) {
         inSeconds = dur.inSeconds;
         humanReadable = dur.humanReadable;
