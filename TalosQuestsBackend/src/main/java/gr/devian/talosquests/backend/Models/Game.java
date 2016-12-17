@@ -1,10 +1,12 @@
 package gr.devian.talosquests.backend.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.LocationProvider.*;
-import gr.devian.talosquests.backend.Repositories.*;
 import gr.devian.talosquests.backend.Services.LocationService;
+import gr.devian.talosquests.backend.Services.UserService;
 import gr.devian.talosquests.backend.Utilities.Tuple;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Component;
@@ -22,27 +24,67 @@ public class Game {
     @GeneratedValue
     @Id
     private long id;
-    private LatLng currentUserLocation;
-    private Quest activeQuest;
-    private int experiencePoints;
-    private ArrayList<Quest> history;
-    private static ArrayList<Quest> Quests;
 
-
-    static {
-
-    }
-
-    @Autowired
     @Transient
-    private UserRepository userRepository;
+    @JsonIgnore
+    @Ignore
+    private LatLng currentUserLocation;
 
-    public ArrayList<Quest> getHistory() {
-        return history;
+
+    @OneToOne
+    @JsonIgnore
+    private User user;
+
+    @OneToOne
+    private Quest activeQuest;
+
+    private int experiencePoints;
+
+    private boolean active;
+
+    private ArrayList<Quest> completedQuests;
+    private ArrayList<Quest> incompleteQuests;
+
+
+    public Game() {
+        currentUserLocation = null;
+        user = null;
+        activeQuest = null;
+        completedQuests = new ArrayList<>();
+        incompleteQuests = new ArrayList<>();
     }
 
-    public static ArrayList<Quest> getQuests() {
-        return Quests;
+
+    public User getUser() {
+        return user;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public ArrayList<Quest> getCompletedQuests() {
+        return completedQuests;
+    }
+
+    public ArrayList<Quest> getIncompleteQuests() {
+        return incompleteQuests;
+    }
+
+    public LatLng getCurrentUserLocation() {
+        return currentUserLocation;
+    }
+
+    public void setCurrentUserLocation(LatLng currentUserLocation) {
+        this.currentUserLocation = currentUserLocation;
+    }
+
+    public void setIncompleteQuests(ArrayList<Quest> incompleteQuests) {
+        this.incompleteQuests = incompleteQuests;
     }
 
     public Quest getActiveQuest() {
@@ -57,55 +99,12 @@ public class Game {
         this.activeQuest = activeQuest;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public void setExperiencePoints(int experiencePoints) {
         this.experiencePoints = experiencePoints;
     }
 
-    public ArrayList<Quest> getAvailableQuests() {
-        ArrayList<Quest> availableQuests = new ArrayList<>();
-
-        for (Quest quest : Quests) {
-            boolean add = true;
-            for (Quest uquest : history) {
-                if (uquest.equals(uquest)) {
-                    add = false;
-                }
-            }
-            if (add)
-                availableQuests.add(quest);
-        }
-        return availableQuests;
-    }
-
-    public void startQuest() throws TalosQuestsLocationProviderServiceUnavailableException, TalosQuestsGameInProgressException {
-        if (activeQuest == null) {
-            ArrayList<Quest> availableQuests = getAvailableQuests();
-            if (availableQuests.size() > 0) {
-                try {
-                    Tuple<Quest,Location> closestQuestDistance = LocationService.getClosestQuestDistance(currentUserLocation, availableQuests);
-                    activeQuest = closestQuestDistance.left;
-
-                } catch (Exception e) {
-                    throw new TalosQuestsLocationProviderServiceUnavailableException();
-                }
-            } else {
-                gameFinalize();
-            }
-        } else {
-            throw new TalosQuestsGameInProgressException();
-        }
-    }
-
-    public void finishQuest(boolean succeed) throws TalosQuestsGameNotInProgressException {
-        if (activeQuest != null) {
-            activeQuest.finish(succeed);
-            activeQuest = null;
-        } else {
-            throw new TalosQuestsGameNotInProgressException();
-        }
-    }
-
-    public void gameFinalize() {
-
-    }
 }

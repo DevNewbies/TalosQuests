@@ -1,23 +1,21 @@
 package gr.devian.talosquests.backend.Services;
 
 import com.google.common.base.Strings;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsCredentialsNotMetRequirementsException;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsInsufficientUserData;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
-import gr.devian.talosquests.backend.Models.ResponseModel;
+import gr.devian.talosquests.backend.Utilities.Response;
 import gr.devian.talosquests.backend.Models.User;
 import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Repositories.UserRepository;
 import gr.devian.talosquests.backend.Repositories.SessionRepository;
-import gr.devian.talosquests.backend.Utilities.SecurityTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
@@ -34,6 +32,11 @@ public class UserService {
     SessionRepository sessionRepository;
 
 
+    public final String userNameValidationPattern = "^[a-zA-Z0-9_\\-]{4,32}$";
+    public final String passWordValidationPattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,32}$";
+    public final String emailValidationPattern = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
+    public final String imeiValidationPattern = "^\\d{15}$";
+
     public Collection<User> findAllUsers() {
         return userRepository.findAll();
     }
@@ -46,6 +49,7 @@ public class UserService {
 
         return userRepository.findOne(id);
     }
+
     public User getUserByUsername(String userName) {
         if (Strings.isNullOrEmpty(userName))
             return null;
@@ -60,13 +64,22 @@ public class UserService {
         return userRepository.findUserByEmail(email);
     }
 
-    public User createUser(AuthRegisterModel model) {
+    public User createUser(AuthRegisterModel model) throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
 
         if (Strings.isNullOrEmpty(model.getUserName())
                 || Strings.isNullOrEmpty(model.getEmail())
                 || Strings.isNullOrEmpty(model.getPassWord())
                 || Strings.isNullOrEmpty(model.getImei()))
-            return null;
+            throw new TalosQuestsInsufficientUserData();
+
+        if (!model.getEmail().matches(emailValidationPattern))
+            throw new TalosQuestsCredentialsNotMetRequirementsException("email",emailValidationPattern);
+        if (!model.getImei().matches(imeiValidationPattern))
+            throw new TalosQuestsCredentialsNotMetRequirementsException("imei",imeiValidationPattern);
+        if (!model.getPassWord().matches(passWordValidationPattern))
+            throw new TalosQuestsCredentialsNotMetRequirementsException("passWord",passWordValidationPattern);
+        if (!model.getUserName().matches(userNameValidationPattern))
+            throw new TalosQuestsCredentialsNotMetRequirementsException("userName",userNameValidationPattern);
 
         User user = new User(model.getUserName(), model.getPassWord(), model.getEmail(), model.getImei());
 
@@ -75,33 +88,46 @@ public class UserService {
         return user;
     }
 
-    public User updateUser(User user, AuthRegisterModel model) {
+    public User updateUser(User user, AuthRegisterModel model) throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
         if (model == null)
-            return null;
+            throw new TalosQuestsInsufficientUserData();
 
-        if (!Strings.isNullOrEmpty(model.getEmail()))
+        if (!Strings.isNullOrEmpty(model.getEmail())) {
+            if (!model.getEmail().matches(emailValidationPattern))
+                throw new TalosQuestsCredentialsNotMetRequirementsException("email",emailValidationPattern);
             user.setEmail(model.getEmail());
-        if (!Strings.isNullOrEmpty(model.getImei()))
+        }
+        if (!Strings.isNullOrEmpty(model.getImei())) {
+            if (!model.getImei().matches(imeiValidationPattern))
+                throw new TalosQuestsCredentialsNotMetRequirementsException("imei",imeiValidationPattern);
             user.setDeviceIMEI(model.getImei());
-        if (!Strings.isNullOrEmpty(model.getPassWord()))
+        }
+        if (!Strings.isNullOrEmpty(model.getPassWord())) {
+            if (!model.getPassWord().matches(passWordValidationPattern))
+                throw new TalosQuestsCredentialsNotMetRequirementsException("passWord",passWordValidationPattern);
             user.setPassWord(model.getPassWord());
+        }
 
         userRepository.save(user);
 
         return user;
     }
 
-    public void removeUser(User user) {
+    public User removeUser(User user) {
         if (user == null)
-            return;
+            return null;
+
         sessionRepository.deleteSessionByUser(user);
         userRepository.delete(user);
+
+        return user;
     }
 
-    @CacheEvict(value="TalosQuests", allEntries = true)
-    public void evictCache() { }
+    @CacheEvict(value = "TalosQuests", allEntries = true)
+    public void evictCache() {
+    }
 
-    public Session getSessionByUser(User user)  {
+    public Session getSessionByUser(User user) {
         if (user == null)
             return null;
 
@@ -129,7 +155,7 @@ public class UserService {
         if (session != null) {
             try {
                 removeSession(session);
-            } catch (Exception e){
+            } catch (Exception e) {
 
             }
         }
@@ -145,24 +171,19 @@ public class UserService {
         if (session.getExpireDate().before(new Date())) {
             try {
                 removeSession(session);
-            } catch (Exception e){
+            } catch (Exception e) {
 
             }
             return null;
         } else {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(new Date());
-            cal.add(Calendar.DAY_OF_WEEK, 7);
-            session.setExpireDate(cal.getTime());
+            session.updateExpirationDate();
             sessionRepository.save(session);
             return session;
         }
     }
+
     public void expireSession(Session session) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.DAY_OF_WEEK, -7);
-        session.setExpireDate(cal.getTime());
+        session.expire();
         sessionRepository.save(session);
     }
 

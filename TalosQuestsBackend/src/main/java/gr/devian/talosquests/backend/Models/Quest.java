@@ -1,8 +1,14 @@
 package gr.devian.talosquests.backend.Models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gr.devian.talosquests.backend.LocationProvider.*;
+import org.springframework.stereotype.Component;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -12,19 +18,25 @@ import java.util.Date;
  * Created by Nikolas on 2/12/2016.
  */
 
-public class Quest implements Serializable {
+@Entity
+@Component
+public class Quest {
+    @GeneratedValue
+    @Id
+    private long id;
 
-    private String name;
-    private QuestChoice choice;
-    private ArrayList<QuestChoice> availableChoices;
-    private String content;
-    private Date started;
-    private Date completed;
-    private Duration duration;
-    private Boolean succeed;
-    private Boolean active;
-    private LatLng location;
-    private Distance distance;
+    @JsonIgnore
+    @OneToOne
+    private Game game = null;
+
+    private Date started = null;
+    private Date completed = null;
+    private Duration duration = Duration.ofSeconds(0);
+    private Boolean succeed = false;
+    private Boolean active = false;
+    private LatLng location = null;
+    @OneToOne
+    private QuestModel quest;
 
     public LatLng getLocation() {
         return location;
@@ -34,53 +46,46 @@ public class Quest implements Serializable {
         this.location = location;
     }
 
-    public Distance getDistance() {
-        return distance;
+    public Quest() {
+
     }
 
-    public void setDistance(Distance distance) {
-        this.distance = distance;
+    public Game getGame() {
+        return game;
     }
 
-    public Quest(Location location) {
-        started = new Date();
-        active = true;
-        succeed = false;
-        duration = Duration.ofSeconds(0);
-        completed = null;
-    }
-    public String getName() {
-        return name;
+    public void setGame(Game game) {
+        this.game = game;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void start() {
+        this.started = new Date();
+        this.active = true;
     }
 
-    public QuestChoice getChoice() {
-        return choice;
+    public void complete(boolean state) {
+        this.completed = new Date();
+        this.duration = Duration.between(started.toInstant(),completed.toInstant());
+        succeed = state;
+        active = false;
     }
 
-    public void setChoice(QuestChoice choice) {
-        this.choice = choice;
+
+    public void setSucceed(Boolean succeed) {
+        this.succeed = succeed;
     }
 
-    public ArrayList<QuestChoice> getAvailableChoices() {
-        return availableChoices;
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
-    public void setAvailableChoices(ArrayList<QuestChoice> availableChoices) {
-        this.availableChoices = availableChoices;
+    public QuestModel getQuest() {
+        return quest;
     }
 
-    public String getContent() {
-        return content;
+    public void setQuest(QuestModel quest) {
+        this.quest = quest;
     }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
 
     public Date getStarted() {
         return started;
@@ -103,9 +108,4 @@ public class Quest implements Serializable {
         return active;
     }
 
-
-    public void finish(Boolean succeed) {
-        this.succeed = succeed;
-        completed = new Date();
-    }
 }

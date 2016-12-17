@@ -1,9 +1,5 @@
 package gr.devian.talosquests.backend.Utilities;
 
-import gr.devian.talosquests.backend.Models.ResponseModel;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;

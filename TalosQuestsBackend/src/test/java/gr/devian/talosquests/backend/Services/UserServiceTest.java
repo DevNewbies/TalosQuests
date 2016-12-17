@@ -1,6 +1,8 @@
 package gr.devian.talosquests.backend.Services;
 
 import gr.devian.talosquests.backend.AbstractTest;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsCredentialsNotMetRequirementsException;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsInsufficientUserData;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import gr.devian.talosquests.backend.Models.Session;
@@ -34,7 +36,6 @@ public class UserServiceTest extends AbstractTest {
     UserService userService;
 
 
-
     private User testUserWithSession;
     private Session testSession;
     private User testUserWithoutSession;
@@ -47,16 +48,16 @@ public class UserServiceTest extends AbstractTest {
     private SecureRandom random = new SecureRandom();
 
     @Before
-    public void setUp() {
+    public void setUp() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
 
         userService.wipe();
         userService.evictCache();
 
         //Let userName = test_92jf923jf923jg923
-        userName = "test_" + new BigInteger(130, random).toString(32);
+        userName = "TestUser";
 
         //Let userNameWithSession = test_92jf923jf923jg923_withSession
-        userNameWithSession = userName + "_withSession";
+        userNameWithSession = userName + "withSession";
 
         // AuthRegisterModel
         // -> Username: test_92jf923jf923jg923_withSession
@@ -65,17 +66,16 @@ public class UserServiceTest extends AbstractTest {
         // -> IMEI    : test
 
 
-
         testUserWithSession = userService.createUser(
                 new AuthRegisterModel(
                         userNameWithSession,
-                        "test",
+                        "Test123!!",
                         userName + "_wi@test.gr",
-                        "test"));
+                        "012345678912345"));
 
 
         //Let userNameWithSession = test_92jf923jf923jg923_withoutSession
-        userNameWithoutSession = userName + "_withoutSession";
+        userNameWithoutSession = userName + "withoutSession";
 
         // AuthRegisterModel
         // -> Username: test_92jf923jf923jg923_withoutSesison
@@ -85,10 +85,10 @@ public class UserServiceTest extends AbstractTest {
 
         testUserWithoutSession = userService.createUser(
                 new AuthRegisterModel(
-                        userName + "_withoutSession",
-                        "test",
+                        userNameWithoutSession,
+                        "Test123!!",
                         userName + "_wo@test.gr",
-                        "test"));
+                        "012345678912345"));
 
 
         testSession = userService.createSession(testUserWithSession);
@@ -111,7 +111,7 @@ public class UserServiceTest extends AbstractTest {
         userService.wipe();
         Collection<User> list = userService.findAllUsers();
 
-        assertTrue("Failure - Expected list to be empty",list.isEmpty());
+        assertTrue("Failure - Expected list to be empty", list.isEmpty());
     }
 
 
@@ -125,7 +125,6 @@ public class UserServiceTest extends AbstractTest {
 
         assertNotNull("Failure - ID cannot be null", user.getId());
     }
-
 
 
     @Test
@@ -174,7 +173,7 @@ public class UserServiceTest extends AbstractTest {
         Session session = userService.getSessionByUser(testUserWithSession);
         assertNotNull("Failure - Expected not null", session);
 
-        assertEquals("Failure - Session Ids not Equals", session.getSessionId(),testSession.getSessionId());
+        assertEquals("Failure - Session Ids not Equals", session.getSessionId(), testSession.getSessionId());
 
     }
 
@@ -183,7 +182,7 @@ public class UserServiceTest extends AbstractTest {
         userService.expireSession(testSession);
         Session session = userService.getSessionByUser(testUserWithSession);
 
-        assertNull("Failure - Expected null", session);
+        assertNull(session);
     }
 
     @Test
@@ -244,15 +243,80 @@ public class UserServiceTest extends AbstractTest {
 
     @Test
     public void testGetUserByIdWhenIdIsNegative() {
-        User user = userService.getUserById((long)-7);
+        User user = userService.getUserById((long) -7);
         assertNull("Failure - Expected null", user);
     }
 
-    @Test
-    public void testCreateUserOnInsufficientUserData() {
+    @Test(expected = TalosQuestsInsufficientUserData.class)
+    public void testCreateUserOnInsufficientUserData() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
         AuthRegisterModel model = new AuthRegisterModel();
+        userService.createUser(model);
+    }
+
+    @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
+    public void testCreateUserOnCredentialNotMetRequirementsImei() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+        AuthRegisterModel model = new AuthRegisterModel();
+        model.setUserName("TestTestTest");
+        model.setImei("test15");
+        model.setPassWord("Asd123!!");
+        model.setEmail("test@test.gr");
+
         User user = userService.createUser(model);
-        assertNull("Failure - Expected null", user);
+
+
+    }
+
+    @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
+    public void testCreateUserOnCredentialNotMetRequirementsEmail() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+        AuthRegisterModel model = new AuthRegisterModel();
+        model.setUserName("TestTestTest");
+        model.setImei("012345678912345");
+        model.setPassWord("Asd123!!");
+        model.setEmail("test");
+
+        User user = userService.createUser(model);
+
+
+    }
+
+    @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
+    public void testCreateUserOnCredentialNotMetRequirementsPassword() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+        AuthRegisterModel model = new AuthRegisterModel();
+        model.setUserName("TestTestTest");
+        model.setImei("012345678912345");
+        model.setPassWord("asdsda");
+        model.setEmail("test@test.gr");
+
+        User user = userService.createUser(model);
+
+
+    }
+
+    @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
+    public void testCreateUserOnCredentialNotMetRequirementsUsername() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+        AuthRegisterModel model = new AuthRegisterModel();
+        model.setUserName("asd$ADSga");
+        model.setImei("012345678912345");
+        model.setPassWord("Asd123!!");
+        model.setEmail("test@test.gr");
+
+        User user = userService.createUser(model);
+
+
+
+    }
+
+    public void testCreateUserOnCorretUserDataShouldCreate() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+        AuthRegisterModel model = new AuthRegisterModel();
+        model.setUserName("TestTestTest");
+        model.setImei("012345678912345");
+        model.setPassWord("Asd123!!");
+        model.setEmail("test@test.gr");
+
+        User user = userService.createUser(model);
+
+        assertNotNull(user);
+
     }
 
     /*@Test
@@ -261,41 +325,50 @@ public class UserServiceTest extends AbstractTest {
         verify(userService,times(1)).removeUser(null);
     }*/
 
-    @Test
-    public void testUpdateUserOnNullModel() {
-        AuthRegisterModel model = null;
-        User user = userService.updateUser(testUserWithSession,model);
-        assertNull("Failure - Expected null", user);
+    @Test(expected = TalosQuestsInsufficientUserData.class)
+    public void testUpdateUserOnNullModel() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+        userService.updateUser(testUserWithSession, null);
     }
 
-    @Test
-    public void testUpdateUserImei() {
+    @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
+    public void testUpdateUserOnCredentialNotMetRequirementsImei() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
         AuthRegisterModel model = new AuthRegisterModel();
         model.setImei("test15");
 
-        User user = userService.updateUser(testUserWithSession,model);
+        userService.updateUser(testUserWithSession, model);
 
-        assertEquals("Imei didn't changed",user.getDeviceIMEI(),"test15");
+    }
+
+    @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
+    public void testUpdateUserOnCredentialNotMetRequirementsEmail() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+        AuthRegisterModel model = new AuthRegisterModel();
+        model.setEmail("test");
+
+        userService.updateUser(testUserWithSession, model);
+
+    }
+
+    @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
+    public void testUpdateUserOnCredentialNotMetRequirementsPassword() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+        AuthRegisterModel model = new AuthRegisterModel();
+        model.setPassWord("123");
+
+        userService.updateUser(testUserWithSession, model);
+
     }
 
     @Test
-    public void testUpdateUserEmail() {
+    public void testUpdateUserShouldPass() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
         AuthRegisterModel model = new AuthRegisterModel();
-        model.setEmail("test15");
+        model.setPassWord("Test123!123");
+        model.setImei("012345678912345");
+        model.setEmail("test@test.gr");
 
-        User user = userService.updateUser(testUserWithSession,model);
+        User user = userService.updateUser(testUserWithSession, model);
 
-        assertEquals("Imei didn't changed",user.getEmail(),"test15");
+        assertNotNull(user);
+
     }
 
-    @Test
-    public void testUpdateUserPassword() {
-        AuthRegisterModel model = new AuthRegisterModel();
-        model.setPassWord("test15");
-
-        User user = userService.updateUser(testUserWithSession,model);
-
-        assertEquals("Imei didn't changed",user.getPassWord(),"test15");
-    }
 
 }

@@ -1,6 +1,7 @@
 package gr.devian.talosquests.backend.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gr.devian.talosquests.backend.LocationProvider.LatLng;
 import gr.devian.talosquests.backend.Utilities.SecurityTools;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ public class User {
     @Column(name = "id", updatable=false, nullable=false)
     private Long id;
 
-    @JsonIgnore
+
     private ArrayList<Game> games;
 
     @Column(unique=true)
@@ -36,12 +37,28 @@ public class User {
     private Game activeGame;
     private String deviceIMEI;
 
+    private LatLng lastLocation;
+
+    public LatLng getLastLocation() {
+        return lastLocation;
+    }
+
+    public void setLastLocation(LatLng lastLocation) {
+        this.lastLocation = lastLocation;
+    }
 
     public Long getId() {
         return id;
     }
 
 
+    public void addGame(Game g) {
+        games.add(g);
+    }
+    public void removeGame(Game g) {
+        if (games.contains(g))
+            games.remove(g);
+    }
     public ArrayList<Game> getGames() {
         return games;
     }
@@ -55,7 +72,7 @@ public class User {
     }
 
     public void setPassWord(String passWord) {
-        this.passWord = SecurityTools.MD5(passWord + "_saltedPass:" + salt + "_hashedByUsername:" + userName);
+        this.passWord = SecurityTools.MD5(passWord + "_saltedPass:" + getSalt() + "_hashedByUsername:" + getUserName());
     }
 
     public FacebookAccount getFaceBook() {
@@ -95,13 +112,16 @@ public class User {
     }
 
     public User() {
-
+        games = new ArrayList<>();
     }
-
+    public String hashStr(String str) {
+        return SecurityTools.MD5(str + "_saltedPass:" + salt + "_hashedByUsername:" + userName);
+    }
     public User(String userName, String passWord, String email, String deviceIMEI) {
+        games = new ArrayList<>();
         salt = SecurityTools.GenerateRandomToken();
         this.userName = userName;
-        this.passWord = SecurityTools.MD5(passWord + "_saltedPass:" + salt + "_hashedByUsername:" + userName);
+        this.passWord = hashStr(passWord);
         this.email = email;
         this.deviceIMEI = deviceIMEI;
     }

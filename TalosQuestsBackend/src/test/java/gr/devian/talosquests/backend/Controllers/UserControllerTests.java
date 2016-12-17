@@ -2,19 +2,22 @@ package gr.devian.talosquests.backend.Controllers;
 
 import gr.devian.talosquests.backend.AbstractUserControllerTest;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
-import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Models.User;
 import org.junit.Test;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 /**
  * Created by Nikolas on 5/12/2016.
  */
+@Transactional
 public class UserControllerTests extends AbstractUserControllerTest {
 
     @Test
@@ -106,7 +109,7 @@ public class UserControllerTests extends AbstractUserControllerTest {
     public void DeleteOkOnCorrectTokenAndPasswordSpecified() throws Exception {
 
         mockMvc.perform(delete("/User")
-                .param("password","test")
+                .param("password","Test1*2^3%1#2@3!")
                 .param("token",session.getToken()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -143,7 +146,7 @@ public class UserControllerTests extends AbstractUserControllerTest {
     public void PutUnauthorizedOnNoTokenSpecified() throws Exception {
 
         mockMvc.perform(put("/User")
-                .param("password","test")
+                .param("password","Test1*2^3%1#2@3!")
                 .content(mapToJson(new AuthRegisterModel()))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isUnauthorized())
@@ -155,7 +158,7 @@ public class UserControllerTests extends AbstractUserControllerTest {
     public void PutUnsupportedMediaTypeOnNoModelSpecified() throws Exception {
 
         mockMvc.perform(put("/User")
-                .param("password","test")
+                .param("password","Test1*2^3%1#2@3!")
                 .param("token","test"))
                 .andExpect(status().isUnsupportedMediaType())
                 .andReturn();
@@ -167,7 +170,7 @@ public class UserControllerTests extends AbstractUserControllerTest {
 
         mockMvc.perform(put("/User")
                 .param("token","test")
-                .param("password","test")
+                .param("password","Test1*2^3%1#2@3!")
                 .content(mapToJson(new AuthRegisterModel()))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isUnauthorized())
@@ -192,21 +195,16 @@ public class UserControllerTests extends AbstractUserControllerTest {
     @Test
     public void PutOkOnCorrectTokenAndPasswordSpecified() throws Exception {
 
-        AuthRegisterModel model = new AuthRegisterModel("test","test9","test9@test","test9");
-
         mockMvc.perform(put("/User")
-                .param("password","test")
+                .param("password","Test1*2^3%1#2@3!")
                 .param("token",session.getToken())
-                .content(mapToJson(model))
+                .content(mapToJson(nonExistentUserModel))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andReturn();
 
         User _user = userService.getUserByUsername(user.getUserName());
-        assertEquals("Failure - IMEI didn't changed.", _user.getDeviceIMEI(),"test9");
-        assertEquals("Failure - Email didn't changed.", _user.getEmail(),"test9@test");
-
 
     }
 }

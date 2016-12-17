@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.devian.talosquests.backend.Controllers.BaseController;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsCredentialsNotMetRequirementsException;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsInsufficientUserData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -26,7 +28,7 @@ public abstract class AbstractControllerTest extends AbstractTest {
      * instance. Call this method from the concrete JUnit test class in the
      * <code>@Before</code> setup method.
      */
-    protected void setUp() {
+    protected void setUp() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
