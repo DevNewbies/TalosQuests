@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by Nikolas on 3/12/2016.
@@ -21,7 +22,8 @@ public class User {
     private Long id;
 
 
-    private ArrayList<Game> games;
+    @OneToMany
+    private Collection<Game> games;
 
     @Column(unique=true)
     private String userName;
@@ -32,6 +34,7 @@ public class User {
     private String email;
     @JsonIgnore
     private String salt;
+
     @OneToOne
     @JsonIgnore
     private Game activeGame;
@@ -59,7 +62,7 @@ public class User {
         if (games.contains(g))
             games.remove(g);
     }
-    public ArrayList<Game> getGames() {
+    public Collection<Game> getGames() {
         return games;
     }
 

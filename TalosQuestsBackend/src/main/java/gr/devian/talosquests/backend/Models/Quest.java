@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gr.devian.talosquests.backend.LocationProvider.*;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -26,7 +23,7 @@ public class Quest {
     private long id;
 
     @JsonIgnore
-    @OneToOne
+    @Transient
     private Game game = null;
 
     private Date started = null;

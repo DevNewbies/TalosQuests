@@ -8,6 +8,7 @@ import gr.devian.talosquests.backend.Models.Quest;
 import gr.devian.talosquests.backend.Models.QuestChoice;
 import gr.devian.talosquests.backend.Models.User;
 import gr.devian.talosquests.backend.Repositories.GameRepository;
+import gr.devian.talosquests.backend.Repositories.UserQuestRepository;
 import gr.devian.talosquests.backend.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,11 +29,26 @@ public class GameService {
     @Autowired
     GameRepository gameRepository;
 
+    @Autowired
+    UserQuestRepository userQuestRepository;
+
+
+    @Autowired
+    GameFactory gameFactory;
+
     public Game create(User user) throws TalosQuestsLocationServiceUnavailableException {
-        Game game = GameFactory.build(user);
-        user.addGame(game);
+        Game game = gameFactory.build(user);
+
+
+
+
+        for (Quest quest : game.getIncompleteQuests()) {
+            userQuestRepository.save(quest);
+        }
 
         gameRepository.save(game);
+
+        user.addGame(game);
         userRepository.save(user);
 
         return game;
@@ -109,7 +125,7 @@ public class GameService {
     public Quest getNextQuest(Game game) {
         Quest c = null;
         if (game.getIncompleteQuests().size() > 0) {
-            c = game.getIncompleteQuests().get(0);
+            c = ((Quest[])game.getIncompleteQuests().toArray())[0];
             c.setGame(game);
             c.start();
             game.setActiveQuest(c);
