@@ -1,9 +1,9 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo">
   <StackLayout>
-    <ListView items="{{ MainMenu }}" itemTap="MainMenuTap">
+    <ListView id="MenuItems" items="{{ MenuItems }}" itemTap="MainMenuTap">
 	    <ListView.itemTemplate>
 	      <StackLayout>
-	        <Label class="MainMenu" text="{{ $value }}" />
+	        <Label class="MenuItems" text="{{ $value }}" />
 	      </StackLayout>
 	    </ListView.itemTemplate>
   </ListView>
