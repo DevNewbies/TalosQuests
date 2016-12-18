@@ -5,4 +5,4 @@ branches:
   only:
   - master
 before_install: cd TalosQuestsBackend
-script: mvn clean verify
+script: mvn clean verify coveralls:report
