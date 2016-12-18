@@ -4,6 +4,7 @@ import gr.devian.talosquests.backend.AbstractServiceTest;
 import gr.devian.talosquests.backend.AbstractTest;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsCredentialsNotMetRequirementsException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsInsufficientUserData;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullArgumentException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import gr.devian.talosquests.backend.Models.Session;
@@ -48,7 +49,7 @@ public class UserServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testFindAllEmpty() {
+    public void testFindAllEmpty() throws TalosQuestsNullArgumentException {
         userService.wipe();
         Collection<User> list = userService.findAllUsers();
 

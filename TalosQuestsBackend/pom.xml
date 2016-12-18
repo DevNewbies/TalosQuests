@@ -70,7 +70,21 @@
         </dependency>
 
     </dependencies>
-
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <outputDirectory>${basedir}/target</outputDirectory>
+                    <check>true</check>
+                    <format>xml</format>
+                    <aggregate>true</aggregate>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
     <build>
         <plugins>
             <plugin>
@@ -78,7 +92,7 @@
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>4.3.0</version>
                 <configuration>
-                    <repoToken>y8EfQrxRoFWNiFxFI8JUliPLSXmJo9TTK</repoToken>
+                    <serviceName>travis-ci</serviceName>
                 </configuration>
             </plugin>
             <plugin>
