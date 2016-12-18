@@ -94,11 +94,6 @@
                 <configuration>
                     <serviceName>travis-ci</serviceName>
                 </configuration>
-                <coberturaReports>
-                    <coberturaReport>
-                        ${basedir}/target/coverage.xml
-                    </coberturaReport>
-                </coberturaReports>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

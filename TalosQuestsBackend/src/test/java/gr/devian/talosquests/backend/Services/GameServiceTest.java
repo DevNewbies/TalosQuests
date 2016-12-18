@@ -8,6 +8,7 @@ import gr.devian.talosquests.backend.Models.Quest;
 import gr.devian.talosquests.backend.Models.QuestChoice;
 import gr.devian.talosquests.backend.Models.QuestModel;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import java.util.Date;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -29,45 +31,18 @@ import static org.mockito.Mockito.verify;
 @Transactional
 public class GameServiceTest extends AbstractServiceTest {
 
-    public QuestModel generateQuest(LatLng location) {
-        QuestModel q = new QuestModel();
-        q.setLocation(location);
-        q.setContent(new BigInteger(130, random).toString(50));
-        q.setName(new BigInteger(130, random).toString(5));
-        QuestChoice c;
-        for (int i = 0; i <= 5; i++) {
-            c = new QuestChoice();
-            c.setContent(new BigInteger(130, random).toString(10));
-            q.getAvailableChoices().add(c);
-            q.setCorrectChoice(c);
-        }
-        return q;
-    }
-
-    @Before
-    @Override
-    public void setUp() throws TalosQuestsException {
-        super.setUp();
-
-        QuestModel model = generateQuest(new LatLng(41.089794, 23.551346));
-        questRepository.save(model);
-        model = generateQuest(new LatLng(41.091177, 23.551174));
-        questRepository.save(model);
-        model = generateQuest(new LatLng(40.633650, 22.948569));
-        questRepository.save(model);
-
-        testUserWithSession.setLastLocation(new LatLng(41.089798, 23.551346));
-
-        game = gameService.create(testUserWithSession);
-
-    }
 
     @Test
     public void testCreateGameOnCorrectLocation() throws TalosQuestsException {
 
-        assertEquals(game.getIncompleteQuests().size(), 2);
-        assertNotNull(game);
-
+        try {
+            testUserWithoutSession.setLastLocation(new LatLng(41.089798, 23.551346));
+            game = gameService.create(testUserWithoutSession);
+            assertEquals(game.getIncompleteQuests().size(), 2);
+            assertNotNull(game);
+        } catch (TalosQuestsLocationServiceUnavailableException e) {
+            assumeTrue(true);
+        }
     }
 
     @Test

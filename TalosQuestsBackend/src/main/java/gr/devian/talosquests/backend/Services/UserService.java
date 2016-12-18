@@ -3,8 +3,11 @@ package gr.devian.talosquests.backend.Services;
 import com.google.common.base.Strings;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsCredentialsNotMetRequirementsException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsInsufficientUserData;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullArgumentException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
+import gr.devian.talosquests.backend.Models.Game;
+import gr.devian.talosquests.backend.Repositories.GameRepository;
 import gr.devian.talosquests.backend.Utilities.Response;
 import gr.devian.talosquests.backend.Models.User;
 import gr.devian.talosquests.backend.Models.Session;
@@ -16,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
@@ -27,6 +31,12 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    GameRepository gameRepository;
+
+    @Autowired
+    GameService gameService;
 
     @Autowired
     SessionRepository sessionRepository;
@@ -194,8 +204,18 @@ public class UserService {
         sessionRepository.delete(session);
     }
 
-    public void wipe() {
+    public void wipe() throws TalosQuestsNullArgumentException {
         sessionRepository.deleteAllInBatch();
-        userRepository.deleteAllInBatch();
+
+        for (User user : userRepository.findAll()) {
+            ArrayList<Game> games = new ArrayList<Game>(user.getGames());
+            for (Game game : games) {
+                gameService.delete(game);
+            }
+            user.getGames().clear();
+            user.setActiveGame(null);
+            userRepository.save(user);
+            userRepository.delete(user);
+        }
     }
 }
