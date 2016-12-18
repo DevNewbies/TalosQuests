@@ -1,7 +1,6 @@
 package gr.devian.talosquests.backend.Controllers;
 
-import com.fasterxml.jackson.databind.deser.Deserializers;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationServiceUnavailableException;
+import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.LocationProvider.LatLng;
 import gr.devian.talosquests.backend.Models.Game;
 import gr.devian.talosquests.backend.Models.QuestChoice;
@@ -40,7 +39,7 @@ public class GameController extends BaseController {
     }
 
     @RequestMapping(value = "/Create", method = RequestMethod.POST)
-    public ResponseEntity<Object> createGame(@RequestParam(value = "token", required = true) String token, @RequestBody(required = true) LatLng model) {
+    public ResponseEntity<Object> createGame(@RequestParam(value = "token", required = true) String token, @RequestBody(required = true) LatLng model) throws TalosQuestsNullArgumentException {
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
@@ -51,7 +50,11 @@ public class GameController extends BaseController {
             Game game = gameService.create(user);
             return Response.success(game);
         } catch (TalosQuestsLocationServiceUnavailableException e) {
-            return Response.fail("Location Service is unavailable. Game cannot be created", 503);
+            return Response.fail("Location Service is unavailable. Game cannot be created", HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (TalosQuestsLocationNotProvidedException e) {
+            return Response.fail("Location Not Provided. Game cannot be created", HttpStatus.NOT_FOUND);
+        } catch (TalosQuestsException e) {
+            return Response.fail("An unknown error occured on game creation.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -70,7 +73,7 @@ public class GameController extends BaseController {
     }
 
     @RequestMapping(value = "/Continue/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Object> continueGame(@RequestParam(value = "token", required = true) String token, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> continueGame(@RequestParam(value = "token", required = true) String token, @PathVariable("id") Long id) throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException {
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
@@ -90,7 +93,7 @@ public class GameController extends BaseController {
     }
 
     @RequestMapping(value = "/Delete/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Object> deleteGame(@RequestParam(value = "token", required = true) String token, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> deleteGame(@RequestParam(value = "token", required = true) String token, @PathVariable("id") Long id) throws TalosQuestsNullArgumentException {
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
@@ -136,12 +139,12 @@ public class GameController extends BaseController {
         if (user.getActiveGame() == null)
             return Response.fail("User doesn't have any active game.", 404);
 
-        return Response.success(gameService.getQuest(user.getActiveGame()));
+        return Response.success(gameService.getActiveQuest(user.getActiveGame()));
 
     }
 
     @RequestMapping(value = "/Active/GetNextQuest", method = RequestMethod.GET)
-    public ResponseEntity<Object> getActiveGameNextQuest(@RequestParam(value = "token", required = true) String token) {
+    public ResponseEntity<Object> getActiveGameNextQuest(@RequestParam(value = "token", required = true) String token) throws TalosQuestsNullArgumentException {
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
@@ -156,7 +159,7 @@ public class GameController extends BaseController {
     }
 
     @RequestMapping(value = "/Active/SubmitAnswer", method = RequestMethod.POST)
-    public ResponseEntity<Object> submitAnswer(@RequestParam(value = "token", required = true) String token, @RequestBody(required = true) QuestChoice choice) {
+    public ResponseEntity<Object> submitAnswer(@RequestParam(value = "token", required = true) String token, @RequestBody(required = true) QuestChoice choice) throws TalosQuestsNullArgumentException {
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);

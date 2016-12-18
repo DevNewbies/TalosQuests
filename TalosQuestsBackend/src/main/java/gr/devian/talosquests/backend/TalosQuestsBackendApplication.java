@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class TalosQuestsBackendApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(TalosQuestsBackendApplication.class, args);
 	}
 

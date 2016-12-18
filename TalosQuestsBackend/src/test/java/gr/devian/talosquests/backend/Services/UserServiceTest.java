@@ -1,5 +1,6 @@
 package gr.devian.talosquests.backend.Services;
 
+import gr.devian.talosquests.backend.AbstractServiceTest;
 import gr.devian.talosquests.backend.AbstractTest;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsCredentialsNotMetRequirementsException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsInsufficientUserData;
@@ -32,86 +33,8 @@ import static org.mockito.Mockito.verify;
  */
 
 @Transactional
-public class UserServiceTest extends AbstractTest {
+public class UserServiceTest extends AbstractServiceTest {
 
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    GameService gameService;
-
-    @Autowired
-    UserQuestRepository userQuestRepository;
-
-    @Autowired
-    QuestRepository questRepository;
-
-
-    private User testUserWithSession;
-    private Session testSession;
-    private User testUserWithoutSession;
-
-    private String userName;
-    private String userNameWithSession;
-    private String userNameWithoutSession;
-    private String token;
-
-    private SecureRandom random = new SecureRandom();
-
-    @Before
-    public void setUp() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
-
-
-
-        //userQuestRepository.deleteAllInBatch();
-        //questRepository.deleteAllInBatch();
-
-        //gameService.wipe();
-
-        //userService.wipe();
-        userService.evictCache();
-
-        //Let userName = test_92jf923jf923jg923
-        userName = "TestUser";
-
-        //Let userNameWithSession = test_92jf923jf923jg923_withSession
-        userNameWithSession = userName + "withSession";
-
-        // AuthRegisterModel
-        // -> Username: test_92jf923jf923jg923_withSession
-        // -> Password: test
-        // -> Email   : test_92jf923jf923jg923_wi@test.gr
-        // -> IMEI    : test
-
-
-        testUserWithSession = userService.createUser(
-                new AuthRegisterModel(
-                        userNameWithSession,
-                        "Test123!!",
-                        userName + "_wi@test.gr",
-                        "012345678912345"));
-
-
-        //Let userNameWithSession = test_92jf923jf923jg923_withoutSession
-        userNameWithoutSession = userName + "withoutSession";
-
-        // AuthRegisterModel
-        // -> Username: test_92jf923jf923jg923_withoutSesison
-        // -> Password: test
-        // -> Email   : test_92jf923jf923jg923_wo@test.gr
-        // -> IMEI    : test
-
-        testUserWithoutSession = userService.createUser(
-                new AuthRegisterModel(
-                        userNameWithoutSession,
-                        "Test123!!",
-                        userName + "_wo@test.gr",
-                        "012345678912345"));
-
-
-        testSession = userService.createSession(testUserWithSession);
-
-    }
 
     @Test
     public void testFindAllNotNull() {

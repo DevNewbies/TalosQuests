@@ -26,7 +26,7 @@ public class Game {
     private LatLng currentUserLocation;
 
     @JsonIgnore
-    @Transient
+    @OneToOne
     private User user;
 
     @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
