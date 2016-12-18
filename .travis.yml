@@ -5,6 +5,6 @@ branches:
   only:
   - master
 before_install: cd TalosQuestsBackend
-script: mvn clean verify
+script: mvn clean verify -DskipTests
 after_success:
-  - mvn -q clean cobertura:cobertura coveralls:report | egrep -v "(^\[DEBUG\])"
+  - mvn -q clean cobertura:cobertura coveralls:report | egrep -v "(^\[INFO\]|^Hibernate:|^\[DEBUG\])"
