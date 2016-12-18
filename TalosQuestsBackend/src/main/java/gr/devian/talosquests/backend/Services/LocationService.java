@@ -35,19 +35,6 @@ public class LocationService {
     @Autowired
     private void setRepo(QuestRepository repo) {
         questRepository = repo;
-        QuestModel q = new QuestModel();
-        q.setLocation(new LatLng(41.0893866,23.5488266));
-        q.setContent("test");
-        q.setName("test");
-        QuestChoice c;
-        for (int i = 0; i <= 5; i++) {
-            c = new QuestChoice();
-            c.setContent("test");
-            q.getAvailableChoices().add(c);
-            q.setCorrectChoice(c);
-        }
-
-        questRepository.save(q);
     }
 
     QuestRepository questRepository;
@@ -124,6 +111,7 @@ public class LocationService {
     }
 
     public ArrayList<Quest> getQuestsInRadius(LatLng origin, ArrayList<Quest> availableQuests, int radiusInMeters) throws TalosQuestsLocationServiceUnavailableException {
+
         return getQuestDistances(origin, availableQuests)
                 .entrySet()
                 .stream()

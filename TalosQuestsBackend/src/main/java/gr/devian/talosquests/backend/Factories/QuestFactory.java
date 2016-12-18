@@ -30,9 +30,6 @@ public class QuestFactory {
 
     private LatLng userLocation;
 
-    public QuestFactory() {
-
-    }
 
     public void setLocation(LatLng loc) {
         userLocation = loc;
@@ -53,15 +50,6 @@ public class QuestFactory {
     }
 
     public ArrayList<Quest> getQuestsInArea() throws TalosQuestsLocationServiceUnavailableException {
-        ArrayList<Quest> quests = new ArrayList<>();
-
-        ArrayList<Quest> avail = locationService.getQuestsInRadius(userLocation, fetchQuestsFromDatabase(), 10000);
-
-        Quest q = avail.get(randomGenerator.nextInt(avail.size()));
-        if (!quests.contains(q)) {
-            quests.add(q);
-        }
-
-        return quests;
+         return locationService.getQuestsInRadius(userLocation, fetchQuestsFromDatabase(), 10000);
     }
 }

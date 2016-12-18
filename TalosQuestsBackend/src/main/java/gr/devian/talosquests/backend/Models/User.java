@@ -2,6 +2,8 @@ package gr.devian.talosquests.backend.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gr.devian.talosquests.backend.LocationProvider.LatLng;
+import gr.devian.talosquests.backend.Utilities.JsonConverter;
+import gr.devian.talosquests.backend.Utilities.LatLngConverter;
 import gr.devian.talosquests.backend.Utilities.SecurityTools;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +24,7 @@ public class User {
     private Long id;
 
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Collection<Game> games;
 
     @Column(unique=true)
@@ -35,11 +37,12 @@ public class User {
     @JsonIgnore
     private String salt;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private Game activeGame;
     private String deviceIMEI;
 
+    @Convert(converter = LatLngConverter.class)
     private LatLng lastLocation;
 
     public LatLng getLastLocation() {
@@ -127,5 +130,14 @@ public class User {
         this.passWord = hashStr(passWord);
         this.email = email;
         this.deviceIMEI = deviceIMEI;
+    }
+
+
+
+    public void something() {
+
+        JsonConverter<User> converter;
+
+
     }
 }

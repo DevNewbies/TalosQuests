@@ -10,6 +10,7 @@ import java.security.SecureRandom;
  */
 public class SecurityTools {
     private static final SecureRandom random = new SecureRandom();
+
     public static String MD5(String value) {
         try {
             java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");

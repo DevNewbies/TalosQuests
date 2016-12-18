@@ -1,19 +1,13 @@
 package gr.devian.talosquests.backend.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gr.devian.talosquests.backend.Exceptions.*;
-import gr.devian.talosquests.backend.LocationProvider.*;
-import gr.devian.talosquests.backend.Services.LocationService;
-import gr.devian.talosquests.backend.Services.UserService;
-import gr.devian.talosquests.backend.Utilities.Tuple;
-import jdk.nashorn.internal.ir.annotations.Ignore;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import gr.devian.talosquests.backend.LocationProvider.LatLng;
+import gr.devian.talosquests.backend.Utilities.LatLngConverter;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by Nikolas on 2/12/2016.
@@ -28,22 +22,23 @@ public class Game {
     private long id;
 
     @JsonIgnore
+    @Convert(converter = LatLngConverter.class)
     private LatLng currentUserLocation;
 
     @JsonIgnore
     @OneToOne
     private User user;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Quest activeQuest;
 
     private int experiencePoints;
 
     private boolean active;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Collection<Quest> completedQuests;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Collection<Quest> incompleteQuests;
 
 
@@ -57,6 +52,9 @@ public class Game {
         incompleteQuests = new ArrayList<>();
     }
 
+    public long getId() {
+        return id;
+    }
 
     public User getUser() {
         return user;
