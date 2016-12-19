@@ -11,6 +11,7 @@ after_success:
   | egrep -v "(^Hibernate:|^\[DEBUG\])"
 - cd ..
 - zip TalosQuests-Release-$TRAVIS_BUILD_NUMBER
+- mvn -q clean cobertura:cobertura coveralls:report -Dcobertura.report.format=xml | egrep -v "(^Hibernate:|^\[DEBUG\])"
 deploy:
   provider: releases
   user: "ProIcons"
@@ -20,3 +21,4 @@ deploy:
   skip_cleanup: true
     on:
       tags: true
+
