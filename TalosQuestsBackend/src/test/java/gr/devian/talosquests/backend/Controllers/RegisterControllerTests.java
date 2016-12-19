@@ -1,6 +1,7 @@
 package gr.devian.talosquests.backend.Controllers;
 
-import gr.devian.talosquests.backend.AbstractUserControllerTest;
+import gr.devian.talosquests.backend.AbstractControllerTest;
+import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by Nikolas on 5/12/2016.
  */
 @Transactional
-public class RegisterControllerTests extends AbstractUserControllerTest {
+public class RegisterControllerTests extends AbstractControllerTest {
 
     @Test
     public void BadRequestOnEmptyJsonPost() throws Exception {
@@ -35,7 +36,7 @@ public class RegisterControllerTests extends AbstractUserControllerTest {
     @Test
     public void BadRequestOnInsufficientUserData() throws Exception {
         mockMvc.perform(post("/Register")
-                .content(mapToJson(insufficientDataModel))
+                .content(mapToJson(new AuthRegisterModel()))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -45,7 +46,7 @@ public class RegisterControllerTests extends AbstractUserControllerTest {
     @Test
     public void SuccessOnWhenUserNotExists() throws Exception {
         mockMvc.perform(post("/Register")
-                .content(mapToJson(nonExistentUserModel))
+                .content(mapToJson(testAuthRegisterModelNotCreated))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -58,7 +59,7 @@ public class RegisterControllerTests extends AbstractUserControllerTest {
     @Test
     public void UserFoundWhenUserExists() throws Exception {
         mockMvc.perform(post("/Register")
-                .content(mapToJson(registeredUserModel))
+                .content(mapToJson(testAuthRegisterModelCreatedWithSession))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -68,7 +69,7 @@ public class RegisterControllerTests extends AbstractUserControllerTest {
     @Test
     public void BadRequestWhenUsernameNotMetRequirements() throws Exception {
         mockMvc.perform(post("/Register")
-                .content(mapToJson(usernameNotMatchesRequirementsModel))
+                .content(mapToJson(testAuthRegisterModelNotMatchingUsernameRequiredment))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -78,7 +79,7 @@ public class RegisterControllerTests extends AbstractUserControllerTest {
     @Test
     public void BadRequestWhenPasswordNotMetRequirements() throws Exception {
         mockMvc.perform(post("/Register")
-                .content(mapToJson(passwordNotMatchesRequirementsModel))
+                .content(mapToJson(testAuthRegisterModelNotMatchingPasswordRequiredment))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -88,7 +89,7 @@ public class RegisterControllerTests extends AbstractUserControllerTest {
     @Test
     public void BadRequestWhenEmailNotMetRequirements() throws Exception {
         mockMvc.perform(post("/Register")
-                .content(mapToJson(emailNotMatchesRequirementsModel))
+                .content(mapToJson(testAuthRegisterModelNotMatchingEmailRequiredment))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -98,7 +99,7 @@ public class RegisterControllerTests extends AbstractUserControllerTest {
     @Test
     public void BadRequestWhenImeiNotMetRequirements() throws Exception {
         mockMvc.perform(post("/Register")
-                .content(mapToJson(imeiNotMatchesRequirementsModel))
+                .content(mapToJson(testAuthRegisterModelNotMatchingImeiRequiredment))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

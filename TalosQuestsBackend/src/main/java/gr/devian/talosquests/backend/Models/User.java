@@ -31,7 +31,7 @@ public class User {
     private String userName;
     @JsonIgnore
     private String passWord;
-    private FacebookAccount faceBook;
+
     @Column(unique=true)
     private String email;
     @JsonIgnore
@@ -81,13 +81,6 @@ public class User {
         this.passWord = SecurityTools.MD5(passWord + "_saltedPass:" + getSalt() + "_hashedByUsername:" + getUserName());
     }
 
-    public FacebookAccount getFaceBook() {
-        return faceBook;
-    }
-
-    public void setFaceBook(FacebookAccount faceBook) {
-        this.faceBook = faceBook;
-    }
 
     public String getEmail() {
         return email;
@@ -130,14 +123,5 @@ public class User {
         this.passWord = hashStr(passWord);
         this.email = email;
         this.deviceIMEI = deviceIMEI;
-    }
-
-
-
-    public void something() {
-
-        JsonConverter<User> converter;
-
-
     }
 }

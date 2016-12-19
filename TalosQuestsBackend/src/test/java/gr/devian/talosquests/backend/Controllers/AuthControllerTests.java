@@ -1,6 +1,7 @@
 package gr.devian.talosquests.backend.Controllers;
 
-import gr.devian.talosquests.backend.AbstractUserControllerTest;
+import gr.devian.talosquests.backend.AbstractControllerTest;
+import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,19 +16,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by Nikolas on 4/12/2016.
  */
 @Transactional
-public class AuthControllerTests extends AbstractUserControllerTest {
+public class AuthControllerTests extends AbstractControllerTest {
 
 
     @Test
     public void BadRequestOnEmptyJsonPost() throws Exception {
-
         mockMvc.perform(post("/Auth")
                 .content("{}")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andReturn();
-
     }
 
     @Test
@@ -42,7 +41,7 @@ public class AuthControllerTests extends AbstractUserControllerTest {
     public void UnauthorizedOnNonExistentUser() throws Exception {
 
         mockMvc.perform(post("/Auth")
-                .content(mapToJson(nonExistentUserModel))
+                .content(mapToJson(testAuthRegisterModelNotCreated))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
@@ -53,9 +52,9 @@ public class AuthControllerTests extends AbstractUserControllerTest {
     @Test
     public void UnauthorizedOnWrongCredentials() throws Exception {
 
-        registeredUserModel.setPassWord("bla");
+        testAuthRegisterModelCreatedWithSession.setPassWord("bla");
         mockMvc.perform(post("/Auth")
-                .content(mapToJson(registeredUserModel))
+                .content(mapToJson(testAuthRegisterModelCreatedWithSession))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
@@ -66,37 +65,36 @@ public class AuthControllerTests extends AbstractUserControllerTest {
 
     @Test
     public void AuthorizedOnCorrectCredentialsWithUsernamePassword() throws Exception {
-        registeredUserModel.setEmail("");
-        registeredUserModel.setImei("");
+        testAuthRegisterModelCreatedWithSession.setEmail("");
         mockMvc.perform(post("/Auth")
-                .content(mapToJson(registeredUserModel))
+                .content(mapToJson(testAuthRegisterModelCreatedWithSession))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.state",is(200)))
+                .andExpect(jsonPath("$.response.token",is(testSession.getToken())))
                 .andReturn();
 
     }
     @Test
     public void AuthorizedOnCorrectCredentialsWithEmailPassword() throws Exception {
-        registeredUserModel.setUserName("");
-        registeredUserModel.setImei("");
+        testAuthRegisterModelCreatedWithSession.setUserName("");
         mockMvc.perform(post("/Auth")
-                .content(mapToJson(registeredUserModel))
+                .content(mapToJson(testAuthRegisterModelCreatedWithSession))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.state",is(200)))
+                .andExpect(jsonPath("$.response.token",is(testSession.getToken())))
                 .andReturn();
 
     }
-
 
     @Test
     public void BadRequestOnInsufficientCredentials() throws Exception {
 
         mockMvc.perform(post("/Auth")
-                .content(mapToJson(insufficientDataModel))
+                .content(mapToJson(new AuthRegisterModel()))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -104,6 +102,5 @@ public class AuthControllerTests extends AbstractUserControllerTest {
                 .andReturn();
 
     }
-
 
 }

@@ -79,7 +79,7 @@ public class UserServiceTest extends AbstractServiceTest {
 
     @Test
     public void testFindByUsernameWhenExists() {
-        User user = userService.getUserByUsername(userNameWithSession);
+        User user = userService.getUserByUsername(userNamePassing + "_withSession");
 
         assertNotNull("Failure - Expected not null", user);
 
@@ -98,20 +98,20 @@ public class UserServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testGetSessionByUserWhenUserIsNull() {
+    public void testGetSessionByUserWhenUserIsNull() throws TalosQuestsNullSessionException {
         Session session = userService.getSessionByUser(null);
 
         assertNull("Failure - Expected null", session);
     }
 
     @Test
-    public void testGetSessionByUserWhenUserDoesntHaveSession() {
+    public void testGetSessionByUserWhenUserDoesntHaveSession() throws TalosQuestsNullSessionException {
         Session session = userService.getSessionByUser(testUserWithoutSession);
         assertNull("Failure - Expected null", session);
     }
 
     @Test
-    public void testGetSessionByUserWhenUserHasSession() {
+    public void testGetSessionByUserWhenUserHasSession() throws TalosQuestsNullSessionException {
         Session session = userService.getSessionByUser(testUserWithSession);
         assertNotNull("Failure - Expected not null", session);
 
@@ -120,7 +120,7 @@ public class UserServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testGetSessionByUserWhenExpired() {
+    public void testGetSessionByUserWhenExpired() throws TalosQuestsNullSessionException {
         userService.expireSession(testSession);
         Session session = userService.getSessionByUser(testUserWithSession);
 
@@ -128,20 +128,21 @@ public class UserServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testGetSessionByTokenWhenTokenIsNull() {
+    public void testGetSessionByTokenWhenTokenIsNull() throws TalosQuestsNullSessionException {
+
         Session session = userService.getSessionByToken(null);
 
         assertNull("Failure - Expected null", session);
     }
 
     @Test
-    public void testGetSessionByTokenWhenTokenIsNotValid() {
+    public void testGetSessionByTokenWhenTokenIsNotValid() throws TalosQuestsNullSessionException {
         Session session = userService.getSessionByToken("testToken");
         assertNull("Failure - Expected null", session);
     }
 
     @Test
-    public void testGetSessionByTokenWhenTokenIsValid() {
+    public void testGetSessionByTokenWhenTokenIsValid() throws TalosQuestsNullSessionException {
         Session session = userService.getSessionByToken(testSession.getToken());
         assertNotNull("Failure - Expected Not null", session);
     }
@@ -245,7 +246,6 @@ public class UserServiceTest extends AbstractServiceTest {
         User user = userService.createUser(model);
 
 
-
     }
 
     public void testCreateUserOnCorretUserDataShouldCreate() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
@@ -312,5 +312,25 @@ public class UserServiceTest extends AbstractServiceTest {
 
     }
 
+    @Test
+    public void testCheckSessionStateOnNullSession() {
+        try {
+            userService.checkSessionState(null);
+            fail();
+        } catch (TalosQuestsNullSessionException e) {
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testCheckSessionStateOnExpiredSession() throws TalosQuestsNullSessionException {
+        testSession.expire();
+        assertNull(userService.checkSessionState(testSession));
+    }
+
+    @Test
+    public void testCheckSessionStateOnValidSession() throws TalosQuestsNullSessionException {
+        assertNotNull(userService.checkSessionState(testSession));
+    }
 
 }

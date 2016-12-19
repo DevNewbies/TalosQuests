@@ -62,15 +62,33 @@ public class GameService {
         if (game == null)
             throw new TalosQuestsNullArgumentException("Game");
 
-        User user = game.getUser();
+        for (Quest quest : game.getIncompleteQuests()) {
+            quest.setGame(null);
+            quest.setQuest(null);
+            userQuestRepository.save(quest);
+        }
+        for (Quest quest : game.getCompletedQuests()) {
+            quest.setGame(null);
+            quest.setQuest(null);
+            userQuestRepository.save(quest);
+        }
 
+        game.getIncompleteQuests().clear();
+        game.getCompletedQuests().clear();
+        game.setActiveQuest(null);
+
+        User user = game.getUser();
         user.removeGame(game);
+
         if (user.getActiveGame() != null)
             if (user.getActiveGame().equals(game))
                 user.setActiveGame(null);
+        game.setUser(null);
 
         userRepository.save(user);
+
         gameRepository.delete(game);
+
     }
 
     public void setActiveGame(User user, Game game) throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException {
