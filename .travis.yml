@@ -7,12 +7,14 @@ branches:
 before_install: cd TalosQuestsBackend
 script: mvn clean verify -DskipTests
 after_success:
-- cd ..
-- zip -r TalosQuests-Release-$TRAVIS_BUILD_NUMBER .
+- mvn -q clean cobertura:cobertura coveralls:report -Dcobertura.report.format=xml | egrep -v "(^Hibernate:|^\[DEBUG\])"
+- zip -r TalosQuestsBackend-Release-$TRAVIS_BUILD_NUMBER .
 deploy:
   provider: releases
   api_key:
     secure: B4qc2b3zGy8qnS7jxvhTMMM8IdHcq0VgaSWlX80xHfYO0oOZ/4bhILU8bBNphu65+qISC0LfJDeHRPi1bRjJXdH3ZWFcOOZd5wbeP8ky2RZDEqpwLSZRopLC7H1Z3GAsENP/mqwnnOxx982GP2dQF7c8sac+pOFelFUSSiWjKMV7BnZYE1Xme/tqaOpBEuxt9JQAASulbK4OszW/W0fAeQ8wvaJxvKfy7XVCpdHSIRSjL91xYTw/tN6N9I411gi95b0aaPYIgOYV3gSUZla3x/81VJ/+4cXAGTVxgQBjUkjkV82YxamB0mOz5IiFRjhBz+jYPehXFMajvrPngEmipn3E7waN1RAvIyF8TRpRoW6HgsLgDK3Yvs36BPh9TQMGpKWkhete3QUpGLNI+d31IVYALdMyhSK4xw9o/Tcz6RyBd/McKC0hBlDMkV6V+Zcn5CyS14XAS8t4r0YkXRi7XqZQXE0M7rQYLmzufB6LhHsAmScdyran9bV7zUPW4t5CPqWRFd7ijJb4YISHJ1ArU+/8Ma4S9IDodZ7qI0pruxJVV30acsyG62bsCbWxfqnoPJWfFEuGH5pIY4bAN8vC2D4/vWs3dlP8SJMQPvZwnKDya66PRG7FF+k5qEbPKKvKDb1IiUHSvFTMQ6y4LqmSY1ruUwLDNJshj2fzTF0KxG4=
   file: TalosQuests-Release-$TRAVIS_BUILD_NUMBER.zip
+  skip_cleanup: true
   on:
     repo: DevNewbies/TalosQuests
+    tags: true
