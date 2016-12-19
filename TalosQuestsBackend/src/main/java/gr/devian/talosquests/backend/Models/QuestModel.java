@@ -29,6 +29,7 @@ public class QuestModel {
     @Convert(converter = QuestChoiceConverter.class)
     private QuestChoice correctChoice;
 
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = QuestChoiceCollectionConverter.class)
     private ArrayList<QuestChoice> availableChoices;
 
