@@ -59,14 +59,16 @@ public class Quest {
 
     public void start() {
         this.started = new Date();
-        this.active = true;
+        setActive(true);
     }
 
     public void complete(boolean state) {
-        this.completed = new Date();
-        this.duration = Duration.between(started.toInstant(),completed.toInstant());
-        succeed = state;
-        active = false;
+        if (getStarted() != null) {
+            this.completed = new Date();
+            this.duration = Duration.between(started.toInstant(), completed.toInstant());
+            setSucceed(state);
+            setActive(false);
+        }
     }
 
 

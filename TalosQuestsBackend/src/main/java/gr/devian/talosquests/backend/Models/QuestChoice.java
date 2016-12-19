@@ -37,7 +37,7 @@ public class QuestChoice implements Serializable {
     public boolean equals(Object c) {
         try {
             QuestChoice obj = (QuestChoice) c;
-            return obj.content.equals(content);
+            return obj.getContent().equals(content);
         } catch (Exception e) {
             return false;
         }
