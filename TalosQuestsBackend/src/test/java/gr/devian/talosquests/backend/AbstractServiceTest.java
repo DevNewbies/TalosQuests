@@ -93,9 +93,9 @@ public abstract class AbstractServiceTest extends AbstractTest {
         //userQuestRepository.deleteAllInBatch();
         //questRepository.deleteAllInBatch();
 
-        //gameService.wipe();
+        gameService.wipe();
 
-        //userService.wipe();
+        userService.wipe();
         userService.evictCache();
 
         //Let userName = test_92jf923jf923jg923
@@ -165,7 +165,6 @@ public abstract class AbstractServiceTest extends AbstractTest {
         }
 
         ArrayList<Quest> quests2 = new ArrayList<>();
-
 
         quests2.add(quests.get(0));
         quests2.add(quests.get(1));
