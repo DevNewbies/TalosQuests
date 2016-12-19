@@ -83,13 +83,13 @@ public class UserService {
             throw new TalosQuestsInsufficientUserData();
 
         if (!model.getEmail().matches(emailValidationPattern))
-            throw new TalosQuestsCredentialsNotMetRequirementsException("email",emailValidationPattern);
+            throw new TalosQuestsCredentialsNotMetRequirementsException("email", emailValidationPattern);
         if (!model.getImei().matches(imeiValidationPattern))
-            throw new TalosQuestsCredentialsNotMetRequirementsException("imei",imeiValidationPattern);
+            throw new TalosQuestsCredentialsNotMetRequirementsException("imei", imeiValidationPattern);
         if (!model.getPassWord().matches(passWordValidationPattern))
-            throw new TalosQuestsCredentialsNotMetRequirementsException("passWord",passWordValidationPattern);
+            throw new TalosQuestsCredentialsNotMetRequirementsException("passWord", passWordValidationPattern);
         if (!model.getUserName().matches(userNameValidationPattern))
-            throw new TalosQuestsCredentialsNotMetRequirementsException("userName",userNameValidationPattern);
+            throw new TalosQuestsCredentialsNotMetRequirementsException("userName", userNameValidationPattern);
 
         User user = new User(model.getUserName(), model.getPassWord(), model.getEmail(), model.getImei());
 
@@ -104,17 +104,17 @@ public class UserService {
 
         if (!Strings.isNullOrEmpty(model.getEmail())) {
             if (!model.getEmail().matches(emailValidationPattern))
-                throw new TalosQuestsCredentialsNotMetRequirementsException("email",emailValidationPattern);
+                throw new TalosQuestsCredentialsNotMetRequirementsException("email", emailValidationPattern);
             user.setEmail(model.getEmail());
         }
         if (!Strings.isNullOrEmpty(model.getImei())) {
             if (!model.getImei().matches(imeiValidationPattern))
-                throw new TalosQuestsCredentialsNotMetRequirementsException("imei",imeiValidationPattern);
+                throw new TalosQuestsCredentialsNotMetRequirementsException("imei", imeiValidationPattern);
             user.setDeviceIMEI(model.getImei());
         }
         if (!Strings.isNullOrEmpty(model.getPassWord())) {
             if (!model.getPassWord().matches(passWordValidationPattern))
-                throw new TalosQuestsCredentialsNotMetRequirementsException("passWord",passWordValidationPattern);
+                throw new TalosQuestsCredentialsNotMetRequirementsException("passWord", passWordValidationPattern);
             user.setPassWord(model.getPassWord());
         }
 
@@ -123,21 +123,27 @@ public class UserService {
         return user;
     }
 
-    public User removeUser(User user) {
+    public User removeUser(User user) throws TalosQuestsNullArgumentException, TalosQuestsNullSessionException {
         if (user == null)
-            return null;
+            throw new TalosQuestsNullArgumentException("user");
 
-        sessionRepository.deleteSessionByUser(user);
+        if (getSessionByUser(user) != null) {
+            sessionRepository.deleteSessionByUser(user);
+        }
+
+        ArrayList<Game> games = new ArrayList<Game>(user.getGames());
+        for (Game game : games) {
+            gameService.delete(game);
+        }
+        user.getGames().clear();
+        user.setActiveGame(null);
+        userRepository.save(user);
         userRepository.delete(user);
 
         return user;
     }
 
-    @CacheEvict(value = "TalosQuests", allEntries = true)
-    public void evictCache() {
-    }
-
-    public Session getSessionByUser(User user) {
+    public Session getSessionByUser(User user) throws TalosQuestsNullSessionException {
         if (user == null)
             return null;
 
@@ -149,7 +155,7 @@ public class UserService {
         return checkSessionState(session);
     }
 
-    public Session getSessionByToken(String token) {
+    public Session getSessionByToken(String token) throws TalosQuestsNullSessionException {
         Session session = sessionRepository.findSessionByToken(token);
 
         if (session == null)
@@ -159,37 +165,29 @@ public class UserService {
 
     }
 
-    public Session createSession(User user) {
+    public Session createSession(User user) throws TalosQuestsNullSessionException {
         Session session = getSessionByUser(user);
 
-        if (session != null) {
-            try {
-                removeSession(session);
-            } catch (Exception e) {
-
-            }
-        }
+        if (session != null)
+            removeSession(session);
 
         session = new Session(user);
         sessionRepository.save(session);
         return session;
     }
 
-    private Session checkSessionState(Session session) {
+    public Session checkSessionState(Session session) throws TalosQuestsNullSessionException {
         if (session == null)
-            return null;
-        if (session.getExpireDate().before(new Date())) {
-            try {
-                removeSession(session);
-            } catch (Exception e) {
+            throw new TalosQuestsNullSessionException();
 
-            }
+        if (session.getExpireDate().before(new Date())) {
+            removeSession(session);
             return null;
-        } else {
-            session.updateExpirationDate();
-            sessionRepository.save(session);
-            return session;
         }
+        session.updateExpirationDate();
+        sessionRepository.save(session);
+        return session;
+
     }
 
     public void expireSession(Session session) {
@@ -206,16 +204,7 @@ public class UserService {
 
     public void wipe() throws TalosQuestsNullArgumentException {
         sessionRepository.deleteAllInBatch();
-
-        for (User user : userRepository.findAll()) {
-            ArrayList<Game> games = new ArrayList<Game>(user.getGames());
-            for (Game game : games) {
-                gameService.delete(game);
-            }
-            user.getGames().clear();
-            user.setActiveGame(null);
-            userRepository.save(user);
-            userRepository.delete(user);
-        }
+        gameService.wipe();
+        userRepository.deleteAllInBatch();
     }
 }

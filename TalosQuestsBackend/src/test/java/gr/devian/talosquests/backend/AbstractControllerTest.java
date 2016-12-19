@@ -29,7 +29,8 @@ public abstract class AbstractControllerTest extends AbstractTest {
      * instance. Call this method from the concrete JUnit test class in the
      * <code>@Before</code> setup method.
      */
-    protected void setUp() throws TalosQuestsException {
+    public void setUp() throws TalosQuestsException, JsonProcessingException {
+        super.setUp();
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 

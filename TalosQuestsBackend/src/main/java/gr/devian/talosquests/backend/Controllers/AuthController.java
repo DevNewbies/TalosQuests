@@ -1,6 +1,7 @@
 package gr.devian.talosquests.backend.Controllers;
 
 import com.google.common.base.Strings;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
 import gr.devian.talosquests.backend.Services.UserService;
 import gr.devian.talosquests.backend.Utilities.Response;
 import gr.devian.talosquests.backend.Models.Session;
@@ -23,7 +24,7 @@ public class AuthController extends BaseController {
     private UserService userService;
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> Authenticate(@RequestBody AuthRegisterModel userModel) {
+    public ResponseEntity<Object> Authenticate(@RequestBody AuthRegisterModel userModel) throws TalosQuestsNullSessionException {
 
         if ((Strings.isNullOrEmpty(userModel.getUserName()) && Strings.isNullOrEmpty(userModel.getEmail())) || Strings.isNullOrEmpty(userModel.getPassWord()))
             return Response.fail("Insufficient Credentials", HttpStatus.BAD_REQUEST);

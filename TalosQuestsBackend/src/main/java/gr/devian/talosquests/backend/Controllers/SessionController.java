@@ -1,5 +1,6 @@
 package gr.devian.talosquests.backend.Controllers;
 
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
 import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Utilities.Response;
 import gr.devian.talosquests.backend.Services.UserService;
@@ -22,7 +23,7 @@ public class SessionController extends BaseController {
     UserService userService;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<Object> GetSession(@RequestParam(value = "token", required = true) String token) {
+    public ResponseEntity<Object> GetSession(@RequestParam(value = "token", required = true) String token) throws TalosQuestsNullSessionException {
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
