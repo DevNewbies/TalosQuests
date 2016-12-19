@@ -7,9 +7,6 @@ branches:
 before_install: cd TalosQuestsBackend
 script: mvn clean verify -DskipTests
 after_success:
-- export GIT_TAG=build-$TRAVIS_BRANCH-$(date -u "+%Y-%m-%d-%H-%M-%S")-$TRAVIS_BUILD_NUMBER
-- git tag $GIT_TAG -a -m "Generated tag from TravisCI build $TRAVIS_BUILD_NUMBER"
-- git push origin $GIT_TAG
 - zip -r TalosQuestsBackend-Release-$TRAVIS_BUILD_NUMBER .
 deploy:
   provider: releases
@@ -19,4 +16,3 @@ deploy:
   skip_cleanup: true
   on:
     repo: DevNewbies/TalosQuests
-    tags: true
