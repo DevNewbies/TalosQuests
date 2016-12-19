@@ -60,7 +60,7 @@ function RunTrigger(IndexOf) {
 exports.RunTrigger = RunTrigger;
 
 function StartGameProcess() {
-	 topmost.navigate("views/map/map");
+	 topmost.navigate("views/maps/maps");
 }
 
 function MyAvatarProcess() {
