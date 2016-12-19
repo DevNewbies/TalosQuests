@@ -74,7 +74,4 @@ public class QuestModel {
         this.correctChoice = correctChoice;
     }
 
-    public void setAvailableChoices(ArrayList<QuestChoice> availableChoices) {
-        this.availableChoices = availableChoices;
-    }
 }
