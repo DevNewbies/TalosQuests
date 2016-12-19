@@ -204,7 +204,15 @@ public class UserService {
 
     public void wipe() throws TalosQuestsNullArgumentException {
         sessionRepository.deleteAllInBatch();
-        gameService.wipe();
-        userRepository.deleteAllInBatch();
+        for (User user : userRepository.findAll()) {
+            ArrayList<Game> games = new ArrayList<Game>(user.getGames());
+            for (Game game : games) {
+                gameService.delete(game);
+            }
+            user.getGames().clear();
+            user.setActiveGame(null);
+            userRepository.save(user);
+            userRepository.delete(user);
+        }
     }
 }
