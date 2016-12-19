@@ -10,6 +10,8 @@
     }
   },
   "dependencies": {
+    "nativescript-geolocation": "0.0.17",
+    "nativescript-google-maps-sdk": "^1.4.2",
     "tns-core-modules": "2.4.0"
   },
   "devDependencies": {

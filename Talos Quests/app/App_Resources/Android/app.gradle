@@ -5,12 +5,17 @@
 //	compile 'com.android.support:recyclerview-v7:+'
 //}
 
-android {  
-  defaultConfig {  
+android {
+  defaultConfig {
     generatedDensities = []
-    applicationId = "org.nativescript.TalosQuests"  
-  }  
-  aaptOptions {  
-    additionalParameters "--no-version-vectors"  
-  }  
-} 
+    applicationId = "org.nativescript.TalosQuests"
+  }
+  aaptOptions {
+    additionalParameters "--no-version-vectors"
+  }
+}
+
+project.ext {
+    // Uncomment below to change Google Play Services Version
+    //googlePlayServicesVersion = "+"
+}
