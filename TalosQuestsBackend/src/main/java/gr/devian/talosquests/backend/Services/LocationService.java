@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 public class LocationService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    public static Boolean enableService = true;
+
     @Autowired
     private void setRepo(QuestRepository repo) {
         questRepository = repo;
@@ -55,6 +57,8 @@ public class LocationService {
     }
 
     public LatLng getLatLng(String address) throws TalosQuestsLocationServiceUnavailableException {
+        if (!enableService)
+            throw new TalosQuestsLocationServiceUnavailableException();
         try {
             return new LatLng(GeocodingApi.geocode(GeoAPIHandler,
                     address).await()[0].geometry.location);
@@ -65,6 +69,8 @@ public class LocationService {
     }
 
     public String getAddress(LatLng latlng) throws TalosQuestsLocationServiceUnavailableException {
+        if (!enableService)
+            throw new TalosQuestsLocationServiceUnavailableException();
         try {
             return GeocodingApi.reverseGeocode(GeoAPIHandler,
                     LatLng.getLatLng(latlng)).await()[0].formattedAddress;
@@ -75,6 +81,8 @@ public class LocationService {
     }
 
     public Location getQuestDistance(LatLng origin, Quest quest) throws TalosQuestsLocationServiceUnavailableException {
+        if (!enableService)
+            throw new TalosQuestsLocationServiceUnavailableException();
         try {
             DistanceMatrix dMatrix = DistanceMatrixApi.getDistanceMatrix(GeoAPIHandler, new String[]{origin.toString()}, new String[]{quest.getLocation().toString()}).mode(TravelMode.WALKING).await();
             return new Location(new Duration(dMatrix.rows[0].elements[0].duration), new Distance(dMatrix.rows[0].elements[0].distance), origin);
@@ -85,6 +93,8 @@ public class LocationService {
     }
 
     public HashMap<Quest, Location> getQuestDistances(LatLng origin, List<Quest> quests) throws TalosQuestsLocationServiceUnavailableException {
+        if (!enableService)
+            throw new TalosQuestsLocationServiceUnavailableException();
         try {
             HashMap<Quest, Location> mapQuqestDirDur = new HashMap<>();
             String[] destinationsStr = new String[quests.size()];

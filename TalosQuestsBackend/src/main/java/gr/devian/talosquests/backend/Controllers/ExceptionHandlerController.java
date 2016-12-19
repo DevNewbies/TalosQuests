@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -40,6 +41,11 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler i
 
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        return Response.fail("Bad Request", HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         return Response.fail("Bad Request", HttpStatus.BAD_REQUEST);
     }
 
@@ -78,20 +84,6 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler i
 
         }
     }
-    /*@Override
-    public ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        String var = ex.getVariableName();
-
-        if (var.equals("token")) {
-            System.out.println("Token");
-            return new ResponseEntity<Object>(Response.fail("You need to provide a Token to access this private resource.", 401), HttpStatus.UNAUTHORIZED);
-
-        } else {
-            System.out.println(var);
-            return new ResponseEntity<Object>(Response.fail("Missing " + var + " Parameter.", 401), HttpStatus.BAD_REQUEST);
-
-        }
-    }*/
 
     @RequestMapping(value = "/error")
     public ResponseEntity<Object> error() {

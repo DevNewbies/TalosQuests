@@ -39,7 +39,7 @@ public class GameController extends BaseController {
     }
 
     @RequestMapping(value = "/Create", method = RequestMethod.POST)
-    public ResponseEntity<Object> createGame(@RequestParam(value = "token", required = true) String token, @RequestBody(required = true) LatLng model) throws TalosQuestsNullArgumentException {
+    public ResponseEntity<Object> createGame(@RequestParam(value = "token", required = true) String token, @RequestBody(required = true) LatLng model) throws TalosQuestsException {
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
@@ -53,8 +53,6 @@ public class GameController extends BaseController {
             return Response.fail("Location Service is unavailable. Game cannot be created", HttpStatus.SERVICE_UNAVAILABLE);
         } catch (TalosQuestsLocationNotProvidedException e) {
             return Response.fail("Location Not Provided. Game cannot be created", HttpStatus.NOT_FOUND);
-        } catch (TalosQuestsException e) {
-            return Response.fail("An unknown error occured on game creation.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -67,8 +65,7 @@ public class GameController extends BaseController {
         User user = session.getUser();
         if (user.getActiveGame() != null)
             return Response.success(user.getActiveGame());
-        else
-            return Response.fail("There is no active game for the User. You should specify which game you want to continue", 404);
+        return Response.fail("There is no active game for the User. You should specify which game you want to continue", 404);
 
     }
 
@@ -139,6 +136,9 @@ public class GameController extends BaseController {
         if (user.getActiveGame() == null)
             return Response.fail("User doesn't have any active game.", 404);
 
+        if (user.getActiveGame().getActiveQuest() == null)
+            return Response.fail("User doesn't have any active quest.", 404);
+
         return Response.success(gameService.getActiveQuest(user.getActiveGame()));
 
     }
@@ -169,8 +169,11 @@ public class GameController extends BaseController {
         if (user.getActiveGame() == null)
             return Response.fail("User doesn't have any active game.", 404);
 
+        if (user.getActiveGame().getActiveQuest() == null)
+            return Response.fail("User doesn't have any active quest.", 404);
+
         Boolean state = gameService.submitQuestAnswer(user.getActiveGame(), choice);
-        gameService.finishQuest(user.getActiveGame(),state);
+        gameService.finishQuest(user.getActiveGame(), state);
 
         return Response.success(state);
 
