@@ -7,11 +7,9 @@ branches:
 before_install: cd TalosQuestsBackend
 script: mvn clean verify -DskipTests
 after_success:
-- mvn -q clean cobertura:cobertura coveralls:report -Dcobertura.report.format=xml
-  | egrep -v "(^Hibernate:|^\[DEBUG\])"
+- mvn -q clean cobertura:cobertura coveralls:report -Dcobertura.report.format=xml | egrep -v "(^Hibernate:|^\[DEBUG\])"
 - cd ..
 - zip TalosQuests-Release-$TRAVIS_BUILD_NUMBER
-- mvn -q clean cobertura:cobertura coveralls:report -Dcobertura.report.format=xml | egrep -v "(^Hibernate:|^\[DEBUG\])"
 deploy:
   provider: releases
   user: "ProIcons"
@@ -19,6 +17,5 @@ deploy:
   password:
     secure: UZTPSvxwpPkSWMw+7rh4bCrkQXlIzf3gZjlysaEr52Jtflg7NHsV2jNDzVnuIXJLiTVHPf8wUm4fj0Uig+deEmQx2mg2C+VMDdgAgXiKHyC95lqndE2x0EHGP3ebuk71zmEE/mGIyeorJ6yQ0nmRVBvVWw38jd+XSmH2rcZ0lRY6Vo3NjSReVT7yaOHiKJjAEdZ7FypdDrN7mXtdI6Vi3BvpQwVt04nAchgDpaMtiOTuDWy5fsc+YIYl8qMwKKVesAVoovqnCgNvdkvKW7x0d88b7zCgQYBN8lrOvhOOhL/GiY/I/zxiIeXmPsyD79fHPz/IJLveqeHgO+EUc8z471SJ50HemY/JsVl6w2uK59UJ/tc8dmjpFrVRF+idke6FoyZDIWZoSoGFXXV1UYB7NIRUzScLIiGcWHV2FT2upfMhkaA2N9J3zCxabvJ1Qtw+P8juRD9OjnPvsTWoHJOVDvQqn/fUGizUca17Tt0mVIPNvKV1EpGnNiFIlPiOnOjQLlWpvFD7mYLbkemINl58QiQPRa/O1Pi6wHjsVKdX+UJwgxmQj2g6hmTkn9b41dikLBbIIs7F1VkBNVTRk8VmQ/t13dgU8vci9xI6loaZ1KxOwkr0cKBjzYFeUGbqK8MNbzArWIo+aT1XgPOybKs9NdIeKXhqjpBy/OdOf2brVr8=
   skip_cleanup: true
-    on:
-      tags: true
-
+  on:
+    tags: true
