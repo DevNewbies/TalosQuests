@@ -77,7 +77,7 @@ public class Response<T> {
     }
 
     public static <E> ResponseEntity<Object> fail(String Message, int State) {
-        return Response.fail(Message, State);
+        return Response.fail(Message, HttpStatus.valueOf(State));
     }
 
     public static <E> ResponseEntity<Object> fail(String Message, HttpStatus State) {

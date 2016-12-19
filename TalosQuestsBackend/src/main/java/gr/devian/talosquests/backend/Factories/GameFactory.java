@@ -24,6 +24,8 @@ public class GameFactory {
         LatLng userLocation = user.getLastLocation();
         if (userLocation == null)
             throw new TalosQuestsLocationNotProvidedException();
+        if (userLocation.getLat() == 0 || userLocation.getLng() == 0)
+            throw new TalosQuestsLocationNotProvidedException();
         game.setUser(user);
         game.setCurrentUserLocation(userLocation);
 

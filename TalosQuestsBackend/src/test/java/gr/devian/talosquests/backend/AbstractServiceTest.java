@@ -1,5 +1,6 @@
 package gr.devian.talosquests.backend;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsCredentialsNotMetRequirementsException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsInsufficientUserData;
@@ -67,27 +68,14 @@ public abstract class AbstractServiceTest extends AbstractTest {
     protected String userNameWithoutSession;
     protected String token;
 
-    protected SecureRandom random = new SecureRandom();
+
 
     protected Game game;
 
-    private QuestModel generateQuest(LatLng location) {
-        QuestModel q = new QuestModel();
-        q.setLocation(location);
-        q.setContent(new BigInteger(130, random).toString(50));
-        q.setName(new BigInteger(130, random).toString(5));
-        QuestChoice c;
-        for (int i = 0; i <= 5; i++) {
-            c = new QuestChoice();
-            c.setContent(new BigInteger(130, random).toString(10));
-            q.getAvailableChoices().add(c);
-            q.setCorrectChoice(c);
-        }
-        return q;
-    }
+
 
     @Before
-    public void setUp() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData, TalosQuestsException {
+    public void setUp() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData, TalosQuestsException, JsonProcessingException {
 
         MockitoAnnotations.initMocks(this);
         //userQuestRepository.deleteAllInBatch();
@@ -137,7 +125,6 @@ public abstract class AbstractServiceTest extends AbstractTest {
 
 
         testSession = userService.createSession(testUserWithSession);
-
         LatLng userLatLng = new LatLng(41.089798, 23.551346);
 
         LatLng latLng1 = new LatLng(41.089794, 23.551346);
