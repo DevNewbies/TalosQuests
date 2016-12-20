@@ -14,16 +14,6 @@ public class Response<T> {
     private String message;
     private T response;
 
-    @Transient
-    @JsonIgnore
-    public HttpStatus getStateObj() {
-        return state;
-    }
-
-    public void setStateObj(HttpStatus state) {
-        this.state = state;
-    }
-
     public int getState() {
         return state.value();
     }
@@ -65,7 +55,7 @@ public class Response<T> {
     }
 
     public static <E> ResponseEntity<Object> success(E data, HttpStatus State) {
-        return Response.success(data, State, "");
+        return Response.success(data, State, "Success");
     }
 
     public static <E> ResponseEntity<Object> success(E data, HttpStatus State, String message) {

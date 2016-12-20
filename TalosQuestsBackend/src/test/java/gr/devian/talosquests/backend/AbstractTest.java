@@ -225,7 +225,8 @@ public abstract class AbstractTest {
 
         game = new Game();
         game.setUser(user);
-        game.setCurrentUserLocation(userLatLng);
+        game.setCurrentUserLocation(testLocationSerres2);
+        game.setCurrentUserLocation(testLocationSerres1);
 
         questFactory.setLocation(userLatLng);
 

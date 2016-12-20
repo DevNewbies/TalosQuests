@@ -1,5 +1,6 @@
 package gr.devian.talosquests.backend.Controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import gr.devian.talosquests.backend.AbstractControllerTest;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import gr.devian.talosquests.backend.Models.User;
@@ -205,5 +206,17 @@ public class UserControllerTests extends AbstractControllerTest {
                 .andExpect(jsonPath("$.response.email",is("test@test.test")))
                 .andReturn();
 
+    }
+
+    @Test
+    public void PutBadRequestOnCorrectTokenAndPasswordSpecifiedWithCredentialsNotMatchRequirements() throws Exception {
+        mockMvc.perform(put("/User")
+                .param("password",passWordPassing)
+                .param("token",testSession.getToken())
+                .content(mapToJson(testAuthRegisterModelNotMatchingImeiRequiredment))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andReturn();
     }
 }

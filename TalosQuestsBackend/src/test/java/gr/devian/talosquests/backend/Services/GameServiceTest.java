@@ -24,7 +24,7 @@ public class GameServiceTest extends AbstractServiceTest {
     public void testCreateGameOnCorrectLocation() throws TalosQuestsException {
 
         try {
-            userService.setActiveLocation(testUserWithoutSession,testLocationSerres1);
+            userService.setActiveLocation(testUserWithoutSession, testLocationSerres1);
             testGameForUserWithSession = gameService.create(testUserWithoutSession);
             assertNotNull(testGameForUserWithSession);
             assertEquals(testGameForUserWithSession.getIncompleteQuests().size(), 5);
@@ -32,6 +32,21 @@ public class GameServiceTest extends AbstractServiceTest {
         } catch (TalosQuestsLocationServiceUnavailableException e) {
             assumeTrue(true);
         }
+    }
+
+    @Test
+    public void testCreateGameOnCorrectLocationWhenLocationServiceIsUnavailable() throws TalosQuestsException {
+        LocationService.enableService = false;
+        try {
+            userService.setActiveLocation(testUserWithoutSession, testLocationSerres1);
+            testGameForUserWithSession = gameService.create(testUserWithoutSession);
+            fail();
+
+        } catch (TalosQuestsLocationServiceUnavailableException e) {
+            assertTrue(true);
+
+        }
+        LocationService.enableService = true;
     }
 
     @Test
