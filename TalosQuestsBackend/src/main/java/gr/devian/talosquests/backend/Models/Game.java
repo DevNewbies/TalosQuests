@@ -22,10 +22,6 @@ public class Game {
     private long id;
 
     @JsonIgnore
-    @Convert(converter = LatLngConverter.class)
-    private LatLng currentUserLocation;
-
-    @JsonIgnore
     @OneToOne
     private User user;
 
@@ -43,7 +39,6 @@ public class Game {
 
 
     public Game() {
-        currentUserLocation = null;
         user = null;
         activeQuest = null;
         experiencePoints = 0;
@@ -77,11 +72,12 @@ public class Game {
     }
 
     public LatLng getCurrentUserLocation() {
-        return currentUserLocation;
+        return getUser().getLastLocation();
     }
 
     public void setCurrentUserLocation(LatLng currentUserLocation) {
-        this.currentUserLocation = currentUserLocation;
+        if (getCurrentUserLocation() == null || !getCurrentUserLocation().equals(currentUserLocation))
+            this.getUser().setLastLocation(currentUserLocation);
     }
 
     public void setIncompleteQuests(ArrayList<Quest> incompleteQuests) {

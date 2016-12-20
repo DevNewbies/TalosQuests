@@ -5,6 +5,7 @@ import gr.devian.talosquests.backend.Exceptions.TalosQuestsCredentialsNotMetRequ
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsInsufficientUserData;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullArgumentException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
+import gr.devian.talosquests.backend.LocationProvider.LatLng;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import gr.devian.talosquests.backend.Models.Game;
 import gr.devian.talosquests.backend.Repositories.GameRepository;
@@ -200,6 +201,15 @@ public class UserService {
             throw new TalosQuestsNullSessionException();
 
         sessionRepository.delete(session);
+    }
+    public void setActiveLocation(User user, LatLng location) throws TalosQuestsNullArgumentException {
+        if (user == null)
+            throw new TalosQuestsNullArgumentException("user");
+        if (location == null)
+            throw new TalosQuestsNullArgumentException("location");
+
+        user.setLastLocation(location);
+
     }
 
     public void wipe() throws TalosQuestsNullArgumentException {

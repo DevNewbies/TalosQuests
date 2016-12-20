@@ -9,12 +9,6 @@ public class Distance implements Serializable {
     public long inMeters;
     public String humanReadable;
 
-    public Distance() {
-    }
-
-    public String toString() {
-        return this.humanReadable;
-    }
     public Distance(com.google.maps.model.Distance dist) {
         inMeters = dist.inMeters;
         humanReadable = dist.humanReadable;

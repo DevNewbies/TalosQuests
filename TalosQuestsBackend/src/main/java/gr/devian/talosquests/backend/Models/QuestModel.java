@@ -23,6 +23,8 @@ public class QuestModel {
     private String name;
     private String content;
 
+    private int exp;
+
     @Convert(converter = LatLngConverter.class)
     private LatLng location;
 
@@ -43,6 +45,14 @@ public class QuestModel {
 
     public String getContent() {
         return content;
+    }
+
+    public int getExp() {
+        return exp;
+    }
+
+    public void setExp(int exp) {
+        this.exp = exp;
     }
 
     public QuestChoice getCorrectChoice() {

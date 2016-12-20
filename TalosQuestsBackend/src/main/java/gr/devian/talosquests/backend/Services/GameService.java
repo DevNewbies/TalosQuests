@@ -2,6 +2,7 @@ package gr.devian.talosquests.backend.Services;
 
 import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.Factories.GameFactory;
+import gr.devian.talosquests.backend.LocationProvider.Location;
 import gr.devian.talosquests.backend.Models.Game;
 import gr.devian.talosquests.backend.Models.Quest;
 import gr.devian.talosquests.backend.Models.QuestChoice;
@@ -31,6 +32,9 @@ public class GameService {
 
     @Autowired
     UserQuestRepository userQuestRepository;
+
+    @Autowired
+    LocationService locationService;
 
 
     @Autowired
@@ -62,19 +66,26 @@ public class GameService {
         if (game == null)
             throw new TalosQuestsNullArgumentException("Game");
 
-        for (Quest quest : game.getIncompleteQuests()) {
-            quest.setGame(null);
+
+        ArrayList<Quest> quests = new ArrayList<Quest>(game.getCompletedQuests());
+        game.getCompletedQuests().clear();
+        for (Quest quest : quests) {
             quest.setQuest(null);
+            if (game.getIncompleteQuests().contains(quest))
+                game.getIncompleteQuests().remove(quest);
             userQuestRepository.save(quest);
-        }
-        for (Quest quest : game.getCompletedQuests()) {
-            quest.setGame(null);
-            quest.setQuest(null);
-            userQuestRepository.save(quest);
+            userQuestRepository.delete(quest);
         }
 
+        quests = new ArrayList<Quest>(game.getIncompleteQuests());
         game.getIncompleteQuests().clear();
-        game.getCompletedQuests().clear();
+        for (Quest quest : quests) {
+            quest.setQuest(null);
+            userQuestRepository.save(quest);
+            userQuestRepository.delete(quest);
+        }
+
+
         game.setActiveQuest(null);
 
         User user = game.getUser();
@@ -159,22 +170,23 @@ public class GameService {
             game.getIncompleteQuests().remove(quest);
             game.getCompletedQuests().add(quest);
             quest.complete(state);
+            game.setExperiencePoints(game.getExperiencePoints() + (state ? quest.getQuest().getExp() : 0));
             game.setActiveQuest(null);
         }
     }
 
-    public Quest getNextQuest(Game game) throws TalosQuestsNullArgumentException {
+    public Quest getNextQuest(Game game) throws TalosQuestsNullArgumentException, TalosQuestsLocationServiceUnavailableException {
         if (game == null)
             throw new TalosQuestsNullArgumentException("Game");
 
         Quest c = null;
         if (game.getIncompleteQuests().size() > 0) {
             if (game.getActiveQuest() != null)
-                finishQuest(game,false);
+                finishQuest(game, false);
 
             ArrayList<Quest> quests = new ArrayList<>(game.getIncompleteQuests());
-            c = quests.get(0);
-            c.setGame(game);
+
+            c = locationService.getClosestQuestDistance(game.getCurrentUserLocation(),quests).left;
             c.start();
             game.setActiveQuest(c);
         } else {
@@ -195,19 +207,26 @@ public class GameService {
     public void wipe() {
         for (Game game : gameRepository.findAll()) {
 
-            for (Quest quest : game.getIncompleteQuests()) {
-                quest.setGame(null);
+
+            ArrayList<Quest> quests = new ArrayList<Quest>(game.getCompletedQuests());
+            game.getCompletedQuests().clear();
+            for (Quest quest : quests) {
+                if (game.getIncompleteQuests().contains(quest))
+                    game.getIncompleteQuests().remove(quest);
                 quest.setQuest(null);
                 userQuestRepository.save(quest);
-            }
-            for (Quest quest : game.getCompletedQuests()) {
-                quest.setGame(null);
-                quest.setQuest(null);
-                userQuestRepository.save(quest);
+                userQuestRepository.delete(quest);
             }
 
+            quests = new ArrayList<Quest>(game.getIncompleteQuests());
             game.getIncompleteQuests().clear();
-            game.getCompletedQuests().clear();
+            for (Quest quest : quests) {
+                quest.setQuest(null);
+                userQuestRepository.save(quest);
+                userQuestRepository.delete(quest);
+            }
+
+
             game.setActiveQuest(null);
 
             User user = game.getUser();

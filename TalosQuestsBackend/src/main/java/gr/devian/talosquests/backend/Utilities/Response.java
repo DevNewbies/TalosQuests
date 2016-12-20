@@ -88,8 +88,4 @@ public class Response<T> {
         return new ResponseEntity(resp, State);
     }
 
-    public static <E> ResponseEntity<E> convert(ResponseEntity<Object> rE) {
-        E temp = (E) rE.getBody();
-        return new ResponseEntity((E) rE.getBody(), rE.getStatusCode());
-    }
 }

@@ -55,7 +55,7 @@ public class LocationService {
     public LocationService() {
 
     }
-
+    /*
     public LatLng getLatLng(String address) throws TalosQuestsLocationServiceUnavailableException {
         if (!enableService)
             throw new TalosQuestsLocationServiceUnavailableException();
@@ -91,7 +91,7 @@ public class LocationService {
             throw new TalosQuestsLocationServiceUnavailableException();
         }
     }
-
+    */
     public HashMap<Quest, Location> getQuestDistances(LatLng origin, List<Quest> quests) throws TalosQuestsLocationServiceUnavailableException {
         if (!enableService)
             throw new TalosQuestsLocationServiceUnavailableException();
@@ -109,7 +109,7 @@ public class LocationService {
             for (DistanceMatrixElement element : dMatrix.rows[0].elements) {
                 Distance dist = new Distance(element.distance);
                 Duration dur = new Duration(element.duration);
-                mapQuqestDirDur.put(quests.get(i), new Location(dur, dist, origin));
+                mapQuqestDirDur.put(quests.get(i), new Location(dur, dist));
                 i++;
             }
             return mapQuqestDirDur;
@@ -135,14 +135,20 @@ public class LocationService {
         Location minLocation = null;
         Quest minQuest = null;
 
-
         for (Map.Entry<Quest, Location> entry : getQuestDistances(origin, availableQuests).entrySet()) {
             if (entry.getValue().getDistance().inMeters < min) {
                 min = entry.getValue().getDistance().inMeters;
                 minQuest = entry.getKey();
                 minLocation = entry.getValue();
             }
+            else if (entry.getValue().getDistance().inMeters == min) {
+                if (entry.getValue().getDuration().inSeconds < minLocation.getDuration().inSeconds) {
+                    min = entry.getValue().getDistance().inMeters;
+                    minQuest = entry.getKey();
+                    minLocation = entry.getValue();
+                }
+            }
         }
-        return new Tuple<Quest, Location>(minQuest, minLocation);
+        return new Tuple<>(minQuest, minLocation);
     }
 }
