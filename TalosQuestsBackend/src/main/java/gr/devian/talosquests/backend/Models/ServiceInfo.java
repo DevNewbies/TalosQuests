@@ -1,18 +1,29 @@
 package gr.devian.talosquests.backend.Models;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
 /**
  * Created by Nikolas on 13/11/2016.
  */
+@Component
+@ConfigurationProperties
 public class ServiceInfo {
 
-    private final String version = "1.0.0";
+    @Value("${version}")
+    private String version;
 
     private final Boolean isOnline = true;
 
-    private final String RemoteAddr;
+    private String RemoteAddr;
 
-    public ServiceInfo(String ip) {
-        RemoteAddr = ip;
+    public ServiceInfo() {
+
+    }
+
+    public void setRemoteAddr(String remoteAddr) {
+        RemoteAddr = remoteAddr;
     }
 
     public String getVersion() {
