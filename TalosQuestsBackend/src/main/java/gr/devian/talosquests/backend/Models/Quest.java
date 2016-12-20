@@ -22,10 +22,6 @@ public class Quest {
     @Id
     private long id;
 
-    @JsonIgnore
-    @Transient
-    private Game game = null;
-
     private Date started = null;
     private Date completed = null;
     @Convert(converter = DurationConverter.class)
@@ -43,18 +39,6 @@ public class Quest {
 
     public void setLocation(LatLng location) {
         this.location = location;
-    }
-
-    public Quest() {
-
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
     }
 
     public void start() {

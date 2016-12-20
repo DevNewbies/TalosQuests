@@ -32,7 +32,7 @@ public class RegisterController extends BaseController {
 
             return Response.success(user, HttpStatus.CREATED, "Created");
         } catch (TalosQuestsCredentialsNotMetRequirementsException e) {
-            return Response.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return Response.fail("Credentials Not Met Requirements. Field: " + e.getField() + " Much Comply with Regex Pattern: " + e.getPattern(), HttpStatus.BAD_REQUEST);
         } catch (TalosQuestsInsufficientUserData e) {
             return Response.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

@@ -33,13 +33,7 @@ public class QuestChoice implements Serializable {
     }
 
     @Transient
-    @Override
-    public boolean equals(Object c) {
-        try {
-            QuestChoice obj = (QuestChoice) c;
-            return obj.getContent().equals(content);
-        } catch (Exception e) {
-            return false;
-        }
+    public boolean equals(QuestChoice c) {
+        return c.getContent().equals(content);
     }
 }

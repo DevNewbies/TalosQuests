@@ -18,7 +18,7 @@ public class LatLng implements Serializable {
     }
 
     public LatLng() {
-        lat=0L; lng=0L;
+        this(new com.google.maps.model.LatLng(0,0));
     }
     public LatLng(Double lat,Double lng) {
         this.lat=lat;

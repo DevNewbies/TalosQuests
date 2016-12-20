@@ -24,10 +24,10 @@ public class GameServiceTest extends AbstractServiceTest {
     public void testCreateGameOnCorrectLocation() throws TalosQuestsException {
 
         try {
-            testUserWithoutSession.setLastLocation(new LatLng(41.089798, 23.551346));
+            userService.setActiveLocation(testUserWithoutSession,testLocationSerres1);
             testGameForUserWithSession = gameService.create(testUserWithoutSession);
             assertNotNull(testGameForUserWithSession);
-            assertEquals(testGameForUserWithSession.getIncompleteQuests().size(), 2);
+            assertEquals(testGameForUserWithSession.getIncompleteQuests().size(), 5);
 
         } catch (TalosQuestsLocationServiceUnavailableException e) {
             assumeTrue(true);
@@ -176,7 +176,7 @@ public class GameServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testGetActiveQuestOnNotNullGame() throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException {
+    public void testGetActiveQuestOnNotNullGame() throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException, TalosQuestsLocationServiceUnavailableException {
         gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
         gameService.getNextQuest(testGameForUserWithSession);
 
@@ -185,7 +185,7 @@ public class GameServiceTest extends AbstractServiceTest {
 
 
     @Test
-    public void testSubmitQuestAnswerWhenQuestChoiceIsNull() throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException {
+    public void testSubmitQuestAnswerWhenQuestChoiceIsNull() throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException, TalosQuestsLocationServiceUnavailableException {
         gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
         gameService.getNextQuest(testGameForUserWithSession);
 
@@ -209,7 +209,7 @@ public class GameServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testSubmitQuestWhenGameAndQuestChoiceArePresentAndQuestChoiceIsCorrect() throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException {
+    public void testSubmitQuestWhenGameAndQuestChoiceArePresentAndQuestChoiceIsCorrect() throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException, TalosQuestsLocationServiceUnavailableException {
         gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
         gameService.getNextQuest(testGameForUserWithSession);
 
@@ -239,7 +239,7 @@ public class GameServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testFinishQuestSuccess() throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException {
+    public void testFinishQuestSuccess() throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException, TalosQuestsLocationServiceUnavailableException {
 
         gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
         gameService.getNextQuest(testGameForUserWithSession);
@@ -272,7 +272,7 @@ public class GameServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testGetNextQuestWhenGameIsNull() {
+    public void testGetNextQuestWhenGameIsNull() throws TalosQuestsLocationServiceUnavailableException {
         try {
             gameService.getNextQuest(null);
             fail();
@@ -282,7 +282,7 @@ public class GameServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testGetNextQuestWhenActiveQuestIsNull() throws TalosQuestsNullArgumentException {
+    public void testGetNextQuestWhenActiveQuestIsNull() throws TalosQuestsNullArgumentException, TalosQuestsLocationServiceUnavailableException {
         assertNull(testGameForUserWithSession.getActiveQuest());
 
         Quest quest = gameService.getNextQuest(testGameForUserWithSession);
@@ -291,7 +291,7 @@ public class GameServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testGetNextQuestWhenActiveQuestIsNotNull() throws TalosQuestsNullArgumentException {
+    public void testGetNextQuestWhenActiveQuestIsNotNull() throws TalosQuestsNullArgumentException, TalosQuestsLocationServiceUnavailableException {
         gameService.getNextQuest(testGameForUserWithSession);
 
         Quest quest1 = testGameForUserWithSession.getActiveQuest();
@@ -306,7 +306,7 @@ public class GameServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testGetNextQuestWhenNoMoreQuestsAreAvailable() throws TalosQuestsNullArgumentException {
+    public void testGetNextQuestWhenNoMoreQuestsAreAvailable() throws TalosQuestsNullArgumentException, TalosQuestsLocationServiceUnavailableException {
         testGameForUserWithSession.getIncompleteQuests().clear();
 
         assertNull(gameService.getNextQuest(testGameForUserWithSession));
@@ -315,7 +315,7 @@ public class GameServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testWipeMustClearDatabse() {
+    public void testWipeMustClearDatabase() {
         gameService.wipe();
 
         assertEquals(gameService.getAllGames().size(), 0);
