@@ -55,6 +55,7 @@ public class LocationService {
     public LocationService() {
 
     }
+
     /*
     public LatLng getLatLng(String address) throws TalosQuestsLocationServiceUnavailableException {
         if (!enableService)
@@ -93,9 +94,9 @@ public class LocationService {
     }
     */
     public HashMap<Quest, Location> getQuestDistances(LatLng origin, List<Quest> quests) throws TalosQuestsLocationServiceUnavailableException {
-        if (!enableService)
-            throw new TalosQuestsLocationServiceUnavailableException();
         try {
+            if (!enableService)
+                throw new TalosQuestsLocationServiceUnavailableException();
             HashMap<Quest, Location> mapQuqestDirDur = new HashMap<>();
             String[] destinationsStr = new String[quests.size()];
             int i = 0;
@@ -140,8 +141,7 @@ public class LocationService {
                 min = entry.getValue().getDistance().inMeters;
                 minQuest = entry.getKey();
                 minLocation = entry.getValue();
-            }
-            else if (entry.getValue().getDistance().inMeters == min) {
+            } else if (entry.getValue().getDistance().inMeters == min) {
                 if (entry.getValue().getDuration().inSeconds < minLocation.getDuration().inSeconds) {
                     min = entry.getValue().getDistance().inMeters;
                     minQuest = entry.getKey();

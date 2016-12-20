@@ -2,11 +2,12 @@ package gr.devian.talosquests.backend.Controllers;
 
 import gr.devian.talosquests.backend.AbstractControllerTest;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
+import gr.devian.talosquests.backend.Models.Session;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -86,6 +87,22 @@ public class AuthControllerTests extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.state",is(200)))
                 .andExpect(jsonPath("$.response.token",is(testSession.getToken())))
+                .andReturn();
+
+    }
+
+    @Test
+    public void AuthorizedOnCorrectCredentialsWithEmailPasswordWithExpiredSession() throws Exception {
+        Session session = userService.getSessionByUser(testUserWithSession);
+        session.expire();
+        testAuthRegisterModelCreatedWithSession.setUserName("");
+        mockMvc.perform(post("/Auth")
+                .content(mapToJson(testAuthRegisterModelCreatedWithSession))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.state",is(200)))
+                .andExpect(jsonPath("$.response.token",not(session.getToken())))
                 .andReturn();
 
     }

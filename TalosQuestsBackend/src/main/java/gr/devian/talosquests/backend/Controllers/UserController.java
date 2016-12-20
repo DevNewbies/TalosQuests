@@ -58,7 +58,7 @@ public class UserController extends BaseController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> UpdateUserById(@RequestParam(value = "token", required = true) String token, @RequestParam(value = "password", required = true) String password, @RequestBody(required = true) AuthRegisterModel model) throws TalosQuestsNullSessionException {
+    public ResponseEntity<Object> UpdateUserById(@RequestParam(value = "token", required = true) String token, @RequestParam(value = "password", required = true) String password, @RequestBody(required = true) AuthRegisterModel model) throws TalosQuestsNullSessionException, TalosQuestsInsufficientUserData {
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
@@ -70,10 +70,8 @@ public class UserController extends BaseController {
 
         try {
             User user = userService.updateUser(session.getUser(), model);
-            return Response.success(user, HttpStatus.OK, "Updated");
+            return Response.success(user, 200, "Updated");
         } catch (TalosQuestsCredentialsNotMetRequirementsException e) {
-            return Response.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (TalosQuestsInsufficientUserData e) {
             return Response.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 

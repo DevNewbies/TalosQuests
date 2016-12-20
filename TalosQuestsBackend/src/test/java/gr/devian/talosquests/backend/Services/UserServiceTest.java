@@ -333,4 +333,39 @@ public class UserServiceTest extends AbstractServiceTest {
         assertNotNull(userService.checkSessionState(testSession));
     }
 
+    @Test
+    public void testSetActiveLocationOnNullUser() {
+        try {
+            userService.setActiveLocation(null,null);
+            fail();
+        } catch (TalosQuestsNullArgumentException e) {
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testSetActiveLocationOnNullLocation() {
+        try {
+            userService.setActiveLocation(testUserWithSession,null);
+            fail();
+        } catch (TalosQuestsNullArgumentException e) {
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testRemoveUserWhenUserIsNull() throws TalosQuestsNullSessionException {
+        try {
+            userService.removeUser(null);
+            fail();
+        } catch (TalosQuestsNullArgumentException e) {
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testCreateSessionWhenSessionAlreadyExists() throws TalosQuestsNullSessionException {
+        Session session = userService.getSessionByUser(testUserWithSession);
+        assertNotEquals(userService.createSession(testUserWithSession),session);
+    }
 }

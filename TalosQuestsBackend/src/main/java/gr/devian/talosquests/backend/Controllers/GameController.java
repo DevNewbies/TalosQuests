@@ -139,7 +139,7 @@ public class GameController extends BaseController {
         if (user.getActiveGame().getActiveQuest() == null)
             return Response.fail("User doesn't have any active quest.", 404);
 
-        return Response.success(gameService.getActiveQuest(user.getActiveGame()));
+        return Response.success(gameService.getActiveQuest(user.getActiveGame()),HttpStatus.OK);
 
     }
 

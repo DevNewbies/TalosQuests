@@ -372,6 +372,17 @@ public class GameControllerTests extends AbstractControllerTest {
                 .andReturn();
     }
 
+    public void testActiveSubmitAnswerWithInvalidTokenAndAnswerProvided() throws Exception {
+
+        mockMvc.perform(post("/Game/Active/SubmitAnswer")
+                .param("token","Invalid")
+                .content(mapToJson(new QuestChoice("test")))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andReturn();
+    }
+
 
     @Test
     public void testActiveSubmitAnswerWithValidToken() throws Exception {
