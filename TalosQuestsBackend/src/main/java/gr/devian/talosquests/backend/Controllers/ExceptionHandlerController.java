@@ -26,68 +26,38 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestController
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler implements ErrorController {
 
-    public static final String DEFAULT_ERROR_VIEW = "error";
-
-
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<Object> handleOtherExceptions(final Exception ex,
                                                         final WebRequest req) {
-        logger.error(ex);
-        logger.error(ex.getCause());
-        ex.printStackTrace();
         return Response.fail(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return Response.fail("Bad Request", HttpStatus.BAD_REQUEST);
+        StringBuilder sb = new StringBuilder();
+        for (String s : ex.getSupportedMethods()) {
+            sb.append(s + ",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        return Response.fail("Bad Request - Method Not Supported. Supported Methods: " + sb.toString() + ".", HttpStatus.BAD_REQUEST);
+
     }
 
-    @Override
-    protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return Response.fail("Bad Request", HttpStatus.BAD_REQUEST);
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleServletRequestBindingException(ServletRequestBindingException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return Response.fail(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return Response.fail(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return Response.fail(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return Response.fail(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         String var = ex.getParameterName();
-        if (var.equals("token")) {
+        if (var.equals("token"))
             return Response.fail("You need to provide a Token to access this private resource.", HttpStatus.UNAUTHORIZED);
-
-        } else if (var.equals("password")) {
+        else if (var.equals("password"))
             return Response.fail("You need to provide a Password to access this private resource.", HttpStatus.UNAUTHORIZED);
-
-        } else {
-            System.out.println(var);
-            return Response.fail("Missing " + var + " Parameter.",  HttpStatus.BAD_REQUEST);
-
-        }
+        else
+            return Response.fail("Missing Parameter: " + var + ".", HttpStatus.BAD_REQUEST);
     }
 
     @RequestMapping(value = "/error")
     public ResponseEntity<Object> error() {
-        return Response.fail("Method not Found", HttpStatus.NOT_FOUND);
+        return Response.fail("Method not found.", HttpStatus.NOT_FOUND);
     }
 
     @Override
