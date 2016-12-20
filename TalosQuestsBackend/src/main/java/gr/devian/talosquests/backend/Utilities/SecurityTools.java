@@ -11,9 +11,9 @@ import java.security.SecureRandom;
 public class SecurityTools {
     private static final SecureRandom random = new SecureRandom();
 
-    public static String MD5(String value) {
+    public static String Encode(String value, String encoding) {
         try {
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance(encoding);
             byte[] array = md.digest(value.getBytes("UTF-8"));
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < array.length; i++) {
@@ -23,6 +23,10 @@ public class SecurityTools {
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             return null;
         }
+    }
+
+    public static String MD5(String value) {
+        return Encode(value, "MD5");
     }
 
     public static String GenerateRandomToken() {
