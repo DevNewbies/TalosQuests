@@ -11,4 +11,4 @@ before_install:
 - mysql -e 'CREATE DATABASE talosquests;'
 script: mvn clean verify -DskipTests
 after_success:
-- mvn -q clean site coveralls:report | egrep -v "(maps\.googleapis\.com|^Hibernate:|^\[DEBUG\])"
+- mvn clean site coveralls:report | egrep -v "(maps\.googleapis\.com|^Hibernate:|^\[DEBUG\])"

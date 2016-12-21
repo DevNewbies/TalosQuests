@@ -92,11 +92,10 @@
                         <excludes>
                             <exclude>**/AppInitializer.class</exclude>
                             <exclude>**/ServletInitializer.class</exclude>
-                            <exclude>**/AppInitializer.class</exclude>
-                            <exclude>**/AppInitializer.class</exclude>
+                            <exclude>**/TalosQuestsBackendApplication.class</exclude>
+                            <exclude>**/ExceptionHandlerController.class</exclude>
                         </excludes>
                     </instrumentation>
-                    <quiet>true</quiet>
                     <outputDirectory>${basedir}/target</outputDirectory>
                     <check>true</check>
                     <formats>
