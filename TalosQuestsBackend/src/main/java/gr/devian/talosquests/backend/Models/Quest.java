@@ -2,13 +2,17 @@ package gr.devian.talosquests.backend.Models;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.joda.deser.DurationDeserializer;
+import com.fasterxml.jackson.datatype.joda.ser.DurationSerializer;
+import gr.devian.talosquests.backend.LocationProvider.Duration;
 import gr.devian.talosquests.backend.LocationProvider.LatLng;
 import gr.devian.talosquests.backend.Utilities.DurationConverter;
 import gr.devian.talosquests.backend.Utilities.LatLngConverter;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import java.time.Duration;
 import java.util.Date;
 
 /**
@@ -25,7 +29,8 @@ public class Quest {
     private Date started = null;
     private Date completed = null;
     @Convert(converter = DurationConverter.class)
-    private Duration duration = Duration.ofSeconds(0);
+    @Column(columnDefinition = "TEXT")
+    private Duration duration = new Duration(0);
     private Boolean succeed = false;
     private Boolean active = false;
     @Convert(converter = LatLngConverter.class)
@@ -49,7 +54,7 @@ public class Quest {
     public void complete(boolean state) {
         if (getStarted() != null) {
             this.completed = new Date();
-            this.duration = Duration.between(started.toInstant(), completed.toInstant());
+            this.duration.inSeconds = java.time.Duration.between(started.toInstant(), completed.toInstant()).getSeconds();
             setSucceed(state);
             setActive(false);
         }

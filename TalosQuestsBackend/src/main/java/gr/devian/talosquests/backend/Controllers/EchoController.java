@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 public class EchoController extends BaseController {
-    @RequestMapping(path = "Echo/{echoPath}", method = RequestMethod.GET)
+    @RequestMapping(path = "/Echo/{echoPath}", method = RequestMethod.GET)
     public ResponseEntity<Object> echo(@RequestParam(value = "echoParam", required = true) String echoParam, @PathVariable("echoPath") String echoPath) {
         return Response.success(new Echo(echoPath, echoParam));
     }

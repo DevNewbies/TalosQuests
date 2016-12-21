@@ -14,6 +14,9 @@ public class ServiceInfo {
     @Value("${version}")
     private String version;
 
+    @Value("${application.build}")
+    private String buildNumber;
+
     private final Boolean isOnline = true;
 
     private String RemoteAddr;
@@ -27,7 +30,7 @@ public class ServiceInfo {
     }
 
     public String getVersion() {
-        return version;
+        return version+"-build"+buildNumber;
     }
 
     public Boolean getOnline() {

@@ -7,10 +7,14 @@ import java.io.Serializable;
  */
 public class Duration  implements Serializable {
     public long inSeconds;
-    public String humanReadable;
 
     public Duration(com.google.maps.model.Duration dur) {
         inSeconds = dur.inSeconds;
-        humanReadable = dur.humanReadable;
+    }
+    public Duration(long secs) {
+        inSeconds = secs;
+    }
+    public Duration() {
+        inSeconds = 0;
     }
 }
