@@ -36,12 +36,24 @@ public class ExceptionHandlerControllerTests extends AbstractControllerTest {
 
     @Test
     public void testMethodEchoOnSuccess() throws Exception {
-        mockMvc.perform(get("/Echo/Test").param("echoParam","test"))
+        mockMvc.perform(get("/Echo/Test").param("echoParam", "test"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.param",is("test")))
-                .andExpect(jsonPath("$.response.path",is("Test")))
+                .andExpect(jsonPath("$.response.param", is("test")))
+                .andExpect(jsonPath("$.response.path", is("Test")))
                 .andDo(print())
                 .andReturn();
     }
 
+    @Test
+    public void testMethodNotFound() throws Exception {
+        mockMvc.perform(
+                get("/error"))
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @Test
+    public void testUnhandledException() throws Exception {
+        mockMvc.perform(get("/Error/500")).andExpect(status().isInternalServerError()).andReturn();
+    }
 }

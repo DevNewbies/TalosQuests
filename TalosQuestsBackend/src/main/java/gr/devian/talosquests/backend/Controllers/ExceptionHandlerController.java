@@ -26,6 +26,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestController
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler implements ErrorController {
 
+    @RequestMapping(path = "/Error/500")
+    public ResponseEntity<Object> fail() throws Exception {
+        throw new Exception();
+    }
+
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<Object> handleOtherExceptions(final Exception ex,
                                                         final WebRequest req) {
@@ -57,7 +62,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler i
 
     @RequestMapping(value = "/error")
     public ResponseEntity<Object> error() {
-        return Response.fail("Method not found.", HttpStatus.NOT_FOUND);
+        return Response.fail("Given Path Not Found.", HttpStatus.NOT_FOUND);
     }
 
     @Override
