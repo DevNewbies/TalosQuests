@@ -94,10 +94,10 @@
                     <aggregate>true</aggregate>
                     <instrumentation>
                         <excludes>
-                            <exclude>gr.devian.talosquests.backend.ServletInitializer.class</exclude>
-                            <exclude>gr.devian.talosquests.backend.AppInitializer.class</exclude>
-                            <exclude>gr.devian.talosquests.backend.TalosQuestsBackendApplication.class</exclude>
-                            <exclude>gr.devian.talosquests.backend.Controllers.ExceptionHandlerController.class</exclude>
+                            <exclude>gr/devian/talosquests/backend/ServletInitializer.class</exclude>
+                            <exclude>gr/devian/talosquests/backend/AppInitializer.class</exclude>
+                            <exclude>gr/devian/talosquests/backend/TalosQuestsBackendApplication.class</exclude>
+                            <exclude>gr/devian/talosquests/backend/Controllers/ExceptionHandlerController.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
