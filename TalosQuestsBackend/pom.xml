@@ -99,6 +99,7 @@
                     <outputDirectory>${basedir}/target</outputDirectory>
                     <check>true</check>
                     <formats>
+                        <format>html</format>
                         <format>xml</format>
                     </formats>
                     <aggregate>true</aggregate>

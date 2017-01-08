@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import gr.devian.talosquests.backend.Models.ServiceInfo;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,5 +34,10 @@ public class ServiceInfoController extends BaseController {
         }
         serviceInfo.setRemoteAddr(remoteAddr);
         return serviceInfo;
+    }
+
+    @RequestMapping(path = "/Error/500")
+    public ResponseEntity<Object> fail() throws Exception {
+        throw new Exception("Random Error");
     }
 }

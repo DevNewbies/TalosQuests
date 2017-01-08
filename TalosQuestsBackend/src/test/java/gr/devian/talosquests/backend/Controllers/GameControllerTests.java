@@ -109,6 +109,18 @@ public class GameControllerTests extends AbstractControllerTest {
                 .andReturn();
 
     }
+    @Test
+    public void testCreateWithValidTokenWithValidLocationModelAndNoQuestsAvailableOnDesiredArea() throws Exception {
+
+        mockMvc.perform(post("/Game/Create")
+                .param("token", testSession.getToken())
+                .content(mapToJson(testLocationAthens1))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andReturn();
+
+    }
 
     @Test
     public void testCreateWithValidTokenWithValidLocationModelAndLocationServiceOffline() throws Exception {
@@ -158,6 +170,7 @@ public class GameControllerTests extends AbstractControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andReturn();
     }
+
 
     @Test
     public void testContinueWithInvalidToken() throws Exception {

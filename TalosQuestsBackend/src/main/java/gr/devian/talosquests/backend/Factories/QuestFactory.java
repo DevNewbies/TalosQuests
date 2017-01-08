@@ -1,6 +1,7 @@
 package gr.devian.talosquests.backend.Factories;
 
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationServiceUnavailableException;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationsNotAvailableException;
 import gr.devian.talosquests.backend.LocationProvider.LatLng;
 import gr.devian.talosquests.backend.Models.Quest;
 import gr.devian.talosquests.backend.Models.QuestModel;
@@ -49,7 +50,7 @@ public class QuestFactory {
         return quests;
     }
 
-    public ArrayList<Quest> getQuestsInArea() throws TalosQuestsLocationServiceUnavailableException {
+    public ArrayList<Quest> getQuestsInArea() throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
          return locationService.getQuestsInRadius(userLocation, fetchQuestsFromDatabase(), 10000);
     }
 }

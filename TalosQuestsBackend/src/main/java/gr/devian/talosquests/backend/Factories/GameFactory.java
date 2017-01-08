@@ -2,6 +2,7 @@ package gr.devian.talosquests.backend.Factories;
 
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationNotProvidedException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationServiceUnavailableException;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationsNotAvailableException;
 import gr.devian.talosquests.backend.LocationProvider.LatLng;
 import gr.devian.talosquests.backend.Models.Game;
 import gr.devian.talosquests.backend.Models.Quest;
@@ -19,7 +20,7 @@ public class GameFactory {
     @Autowired
     QuestFactory questFactory;
 
-    public Game build(User user) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationNotProvidedException {
+    public Game build(User user) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationNotProvidedException, TalosQuestsLocationsNotAvailableException {
         Game game = new Game();
         LatLng userLocation = user.getLastLocation();
         if (userLocation == null)

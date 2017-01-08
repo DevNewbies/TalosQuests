@@ -17,19 +17,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
  * Created by Nikolas on 14/11/2016.
  */
-@ControllerAdvice
-@RestController
-public class ExceptionHandlerController extends ResponseEntityExceptionHandler implements ErrorController {
 
-    @RequestMapping(path = "/Error/500")
-    public ResponseEntity<Object> fail() throws Exception {
-        throw new Exception();
-    }
+@ControllerAdvice
+public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<Object> handleOtherExceptions(final Exception ex,
@@ -44,7 +40,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler i
             sb.append(s + ",");
         }
         sb.deleteCharAt(sb.length() - 1);
-        return Response.fail("Bad Request - Method Not Supported. Supported Methods: " + sb.toString() + ".", HttpStatus.BAD_REQUEST);
+        return Response.fail("Bad Request - Method Not Supported for Path: " + request.getContextPath() + ". Supported Methods: " + sb.toString() + ".", HttpStatus.BAD_REQUEST);
 
     }
 
@@ -60,14 +56,8 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler i
             return Response.fail("Missing Parameter: " + var + ".", HttpStatus.BAD_REQUEST);
     }
 
-    @RequestMapping(value = "/error")
-    public ResponseEntity<Object> error() {
-        return Response.fail("Given Path Not Found.", HttpStatus.NOT_FOUND);
-    }
-
     @Override
-    public String getErrorPath() {
-        return "/error";
+    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        return Response.fail("Path " + ex.getRequestURL() + " is not registered in the service", HttpStatus.NOT_FOUND);
     }
-
 }

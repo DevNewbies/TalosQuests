@@ -175,7 +175,7 @@ public class GameService {
         }
     }
 
-    public Quest getNextQuest(Game game) throws TalosQuestsNullArgumentException, TalosQuestsLocationServiceUnavailableException {
+    public Quest getNextQuest(Game game) throws TalosQuestsNullArgumentException, TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
         if (game == null)
             throw new TalosQuestsNullArgumentException("Game");
 
