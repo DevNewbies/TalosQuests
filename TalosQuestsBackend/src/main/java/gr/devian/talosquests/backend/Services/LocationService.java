@@ -7,6 +7,7 @@ import com.google.maps.model.DistanceMatrix;
 import com.google.maps.model.DistanceMatrixElement;
 import com.google.maps.model.TravelMode;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationServiceUnavailableException;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationsNotAvailableException;
 import gr.devian.talosquests.backend.LocationProvider.*;
 import gr.devian.talosquests.backend.Models.Quest;
 import gr.devian.talosquests.backend.Models.QuestChoice;
@@ -93,10 +94,12 @@ public class LocationService {
         }
     }
     */
-    public HashMap<Quest, Location> getQuestDistances(LatLng origin, List<Quest> quests) throws TalosQuestsLocationServiceUnavailableException {
+    public HashMap<Quest, Location> getQuestDistances(LatLng origin, List<Quest> quests) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
         try {
             if (!enableService)
                 throw new TalosQuestsLocationServiceUnavailableException();
+            if (quests.size() <= 0)
+                throw new TalosQuestsLocationsNotAvailableException();
             HashMap<Quest, Location> mapQuqestDirDur = new HashMap<>();
             String[] destinationsStr = new String[quests.size()];
             int i = 0;
@@ -104,6 +107,7 @@ public class LocationService {
                 destinationsStr[i] = quest.getLocation().toString();
                 i++;
             }
+
             DistanceMatrix dMatrix = DistanceMatrixApi.getDistanceMatrix(GeoAPIHandler, new String[]{origin.toString()}, destinationsStr).mode(TravelMode.WALKING).await();
 
             i = 0;
@@ -114,24 +118,27 @@ public class LocationService {
                 i++;
             }
             return mapQuqestDirDur;
-
+        } catch (TalosQuestsLocationsNotAvailableException exc) {
+            throw exc;
         } catch (Exception e) {
             logger.info(e.getMessage());
             throw new TalosQuestsLocationServiceUnavailableException();
         }
     }
 
-    public ArrayList<Quest> getQuestsInRadius(LatLng origin, ArrayList<Quest> availableQuests, int radiusInMeters) throws TalosQuestsLocationServiceUnavailableException {
-
-        return getQuestDistances(origin, availableQuests)
+    public ArrayList<Quest> getQuestsInRadius(LatLng origin, ArrayList<Quest> availableQuests, int radiusInMeters) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
+        ArrayList<Quest> quests = getQuestDistances(origin, availableQuests)
                 .entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().getDistance().inMeters <= radiusInMeters)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toCollection(ArrayList::new));
+        if (quests.size() <= 0)
+            throw new TalosQuestsLocationsNotAvailableException();
+        return quests;
     }
 
-    public Tuple<Quest, Location> getClosestQuestDistance(LatLng origin, ArrayList<Quest> availableQuests) throws TalosQuestsLocationServiceUnavailableException {
+    public Tuple<Quest, Location> getClosestQuestDistance(LatLng origin, ArrayList<Quest> availableQuests) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
         long min = Long.MAX_VALUE;
         Location minLocation = null;
         Quest minQuest = null;

@@ -53,7 +53,10 @@ public class GameController extends BaseController {
             return Response.fail("Location Service is unavailable. Game cannot be created", HttpStatus.SERVICE_UNAVAILABLE);
         } catch (TalosQuestsLocationNotProvidedException e) {
             return Response.fail("Location Not Provided. Game cannot be created", HttpStatus.NOT_FOUND);
+        } catch (TalosQuestsLocationsNotAvailableException e) {
+            return Response.fail(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+
     }
 
     @RequestMapping(value = "/Continue", method = RequestMethod.GET)
@@ -139,7 +142,7 @@ public class GameController extends BaseController {
         if (user.getActiveGame().getActiveQuest() == null)
             return Response.fail("User doesn't have any active quest.", 404);
 
-        return Response.success(gameService.getActiveQuest(user.getActiveGame()),HttpStatus.OK);
+        return Response.success(gameService.getActiveQuest(user.getActiveGame()), HttpStatus.OK);
 
     }
 
@@ -154,8 +157,11 @@ public class GameController extends BaseController {
         if (user.getActiveGame() == null)
             return Response.fail("User doesn't have any active game.", 404);
 
-        return Response.success(gameService.getNextQuest(user.getActiveGame()));
-
+        try {
+            return Response.success(gameService.getNextQuest(user.getActiveGame()));
+        } catch (TalosQuestsLocationsNotAvailableException e) {
+            return Response.fail(e.getMessage(), 404);
+        }
     }
 
     @RequestMapping(value = "/Active/SubmitAnswer", method = RequestMethod.POST)
@@ -178,19 +184,4 @@ public class GameController extends BaseController {
         return Response.success(state);
 
     }
-
-    /*
-        GameController
-        /Game {GET}
-        /Game/Create {GET}
-        /Game/Continue {GET}
-        /Game/Continue/{id} {GET}
-        /Game/Delete/{id} {GET}
-        /Game/Active {GET}
-        /Game/Active/GetQuest {GET}
-        /Game/Active/SubmitAnswer {POST}
-        /Game/Active/GetNextQuest {GET}
-        /Game/Active/CheckState {UNIMPLEMENTED}
-
-     */
 }

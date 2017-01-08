@@ -23,7 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -89,6 +91,7 @@ public abstract class AbstractTest {
     protected LatLng testLocationSerres6;
     protected LatLng testLocationThessaloniki1;
     protected LatLng testLocationInvalid;
+    protected LatLng testLocationAthens1;
 
     protected QuestModel testQuestModelSerres1;
     protected QuestModel testQuestModelSerres2;
@@ -96,6 +99,7 @@ public abstract class AbstractTest {
     protected QuestModel testQuestModelSerres4;
     protected QuestModel testQuestModelSerres5;
     protected QuestModel testQuestModelThessaloniki1;
+
 
     protected Session testSession;
 
@@ -108,6 +112,7 @@ public abstract class AbstractTest {
 
     protected Game testGameForUserWithSession;
     protected Game testGameForUserWithoutSession;
+
 
 
     @Before
@@ -172,6 +177,7 @@ public abstract class AbstractTest {
         testLocationSerres5 = new LatLng(41.089276, 23.548158);
         testLocationSerres6 = new LatLng(41.088757, 23.541529);
         testLocationThessaloniki1 = new LatLng(40.633650, 22.948569);
+        testLocationAthens1 = new LatLng(37.978637, 23.739960);
         testLocationInvalid = new LatLng();
 
 
@@ -197,7 +203,7 @@ public abstract class AbstractTest {
 
     }
 
-    private Game createMockedGame(User user) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsNullArgumentException {
+    private Game createMockedGame(User user) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsNullArgumentException, TalosQuestsLocationsNotAvailableException {
         Game game;
         LatLng userLatLng = testLocationSerres1;
 
