@@ -2,6 +2,7 @@ package gr.devian.talosquests.backend.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gr.devian.talosquests.backend.LocationProvider.LatLng;
+import gr.devian.talosquests.backend.Utilities.AccessLevelConverter;
 import gr.devian.talosquests.backend.Utilities.JsonConverter;
 import gr.devian.talosquests.backend.Utilities.LatLngConverter;
 import gr.devian.talosquests.backend.Utilities.SecurityTools;
@@ -20,19 +21,19 @@ import java.util.Collection;
 public class User {
     @Id
     @GeneratedValue
-    @Column(name = "id", updatable=false, nullable=false)
+    @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
 
     @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Collection<Game> games;
 
-    @Column(unique=true)
+    @Column(unique = true)
     private String userName;
     @JsonIgnore
     private String passWord;
 
-    @Column(unique=true)
+    @Column(unique = true)
     private String email;
     @JsonIgnore
     private String salt;
@@ -42,8 +43,14 @@ public class User {
     private Game activeGame;
     private String deviceIMEI;
 
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = LatLngConverter.class)
     private LatLng lastLocation;
+
+    @JsonIgnore
+    @Column(columnDefinition = "TEXT")
+    @Convert(converter = AccessLevelConverter.class)
+    private AccessLevel access;
 
     public LatLng getLastLocation() {
         return lastLocation;
@@ -61,10 +68,12 @@ public class User {
     public void addGame(Game g) {
         games.add(g);
     }
+
     public void removeGame(Game g) {
         if (games.contains(g))
             games.remove(g);
     }
+
     public Collection<Game> getGames() {
         return games;
     }
@@ -81,6 +90,17 @@ public class User {
         this.passWord = SecurityTools.MD5(passWord + "_saltedPass:" + getSalt() + "_hashedByUsername:" + getUserName());
     }
 
+    public AccessLevel getAccess() {
+        return access;
+    }
+
+    public String getAccessLevel() {
+        return access.getName();
+    }
+
+    public void setAccess(AccessLevel access) {
+        this.access = access;
+    }
 
     public String getEmail() {
         return email;
@@ -113,9 +133,11 @@ public class User {
     public User() {
         games = new ArrayList<>();
     }
+
     public String hashStr(String str) {
         return SecurityTools.MD5(str + "_saltedPass:" + salt + "_hashedByUsername:" + userName);
     }
+
     public User(String userName, String passWord, String email, String deviceIMEI) {
         games = new ArrayList<>();
         salt = SecurityTools.GenerateRandomToken();

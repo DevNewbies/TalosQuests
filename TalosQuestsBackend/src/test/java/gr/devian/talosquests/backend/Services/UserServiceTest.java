@@ -1,32 +1,19 @@
 package gr.devian.talosquests.backend.Services;
 
 import gr.devian.talosquests.backend.AbstractServiceTest;
-import gr.devian.talosquests.backend.AbstractTest;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsCredentialsNotMetRequirementsException;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsInsufficientUserData;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullArgumentException;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
+import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Models.User;
-import gr.devian.talosquests.backend.Repositories.QuestRepository;
-import gr.devian.talosquests.backend.Repositories.UserQuestRepository;
-import gr.devian.talosquests.backend.Repositories.UserRepository;
 import gr.devian.talosquests.backend.Utilities.SecurityTools;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -49,7 +36,7 @@ public class UserServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testFindAllEmpty() throws TalosQuestsNullArgumentException {
+    public void testFindAllEmpty() throws TalosQuestsException {
         userService.wipe();
         Collection<User> list = userService.findAllUsers();
 
@@ -190,14 +177,14 @@ public class UserServiceTest extends AbstractServiceTest {
         assertNull("Failure - Expected null", user);
     }
 
-    @Test(expected = TalosQuestsInsufficientUserData.class)
-    public void testCreateUserOnInsufficientUserData() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+    @Test(expected = TalosQuestsInsufficientUserDataException.class)
+    public void testCreateUserOnInsufficientUserData() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserDataException {
         AuthRegisterModel model = new AuthRegisterModel();
         userService.createUser(model);
     }
 
     @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
-    public void testCreateUserOnCredentialNotMetRequirementsImei() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+    public void testCreateUserOnCredentialNotMetRequirementsImei() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserDataException {
         AuthRegisterModel model = new AuthRegisterModel();
         model.setUserName("TestTestTest");
         model.setImei("test15");
@@ -210,7 +197,7 @@ public class UserServiceTest extends AbstractServiceTest {
     }
 
     @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
-    public void testCreateUserOnCredentialNotMetRequirementsEmail() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+    public void testCreateUserOnCredentialNotMetRequirementsEmail() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserDataException {
         AuthRegisterModel model = new AuthRegisterModel();
         model.setUserName("TestTestTest");
         model.setImei("012345678912345");
@@ -223,7 +210,7 @@ public class UserServiceTest extends AbstractServiceTest {
     }
 
     @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
-    public void testCreateUserOnCredentialNotMetRequirementsPassword() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+    public void testCreateUserOnCredentialNotMetRequirementsPassword() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserDataException {
         AuthRegisterModel model = new AuthRegisterModel();
         model.setUserName("TestTestTest");
         model.setImei("012345678912345");
@@ -236,7 +223,7 @@ public class UserServiceTest extends AbstractServiceTest {
     }
 
     @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
-    public void testCreateUserOnCredentialNotMetRequirementsUsername() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+    public void testCreateUserOnCredentialNotMetRequirementsUsername() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserDataException {
         AuthRegisterModel model = new AuthRegisterModel();
         model.setUserName("asd$ADSga");
         model.setImei("012345678912345");
@@ -248,7 +235,7 @@ public class UserServiceTest extends AbstractServiceTest {
 
     }
 
-    public void testCreateUserOnCorretUserDataShouldCreate() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+    public void testCreateUserOnCorretUserDataShouldCreate() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserDataException {
         AuthRegisterModel model = new AuthRegisterModel();
         model.setUserName("TestTestTest");
         model.setImei("012345678912345");
@@ -267,13 +254,13 @@ public class UserServiceTest extends AbstractServiceTest {
         verify(userService,times(1)).removeUser(null);
     }*/
 
-    @Test(expected = TalosQuestsInsufficientUserData.class)
-    public void testUpdateUserOnNullModel() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+    @Test(expected = TalosQuestsInsufficientUserDataException.class)
+    public void testUpdateUserOnNullModel() throws TalosQuestsException {
         userService.updateUser(testUserWithSession, null);
     }
 
     @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
-    public void testUpdateUserOnCredentialNotMetRequirementsImei() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+    public void testUpdateUserOnCredentialNotMetRequirementsImei() throws TalosQuestsException {
         AuthRegisterModel model = new AuthRegisterModel();
         model.setImei("test15");
 
@@ -282,7 +269,7 @@ public class UserServiceTest extends AbstractServiceTest {
     }
 
     @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
-    public void testUpdateUserOnCredentialNotMetRequirementsEmail() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+    public void testUpdateUserOnCredentialNotMetRequirementsEmail() throws TalosQuestsException {
         AuthRegisterModel model = new AuthRegisterModel();
         model.setEmail("test");
 
@@ -291,7 +278,7 @@ public class UserServiceTest extends AbstractServiceTest {
     }
 
     @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
-    public void testUpdateUserOnCredentialNotMetRequirementsPassword() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+    public void testUpdateUserOnCredentialNotMetRequirementsPassword() throws TalosQuestsException {
         AuthRegisterModel model = new AuthRegisterModel();
         model.setPassWord("123");
 
@@ -300,7 +287,7 @@ public class UserServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testUpdateUserShouldPass() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+    public void testUpdateUserShouldPass() throws TalosQuestsException {
         AuthRegisterModel model = new AuthRegisterModel();
         model.setPassWord("Test123!123");
         model.setImei("012345678912345");
@@ -354,7 +341,7 @@ public class UserServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testRemoveUserWhenUserIsNull() throws TalosQuestsNullSessionException {
+    public void testRemoveUserWhenUserIsNull() throws TalosQuestsException {
         try {
             userService.removeUser(null);
             fail();

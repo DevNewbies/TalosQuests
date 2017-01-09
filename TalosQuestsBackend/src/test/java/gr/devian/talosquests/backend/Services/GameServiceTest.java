@@ -99,7 +99,7 @@ public class GameServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testDeleteGameOnNullGame() {
+    public void testDeleteGameOnNullGame() throws TalosQuestsException {
         try {
             gameService.delete(null);
             fail("Shouldn't continue");
@@ -109,7 +109,7 @@ public class GameServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testDeleteGameSuccess() throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException {
+    public void testDeleteGameSuccess() throws TalosQuestsException {
         gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
         gameService.delete(testGameForUserWithSession);
         assertTrue(true);

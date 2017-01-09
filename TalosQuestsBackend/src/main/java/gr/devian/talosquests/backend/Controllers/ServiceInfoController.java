@@ -17,12 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 public class ServiceInfoController extends BaseController {
 
-    @Autowired(required = true)
-    private HttpServletRequest request;
-
-    @Autowired
-    ServiceInfo serviceInfo;
-
     @RequestMapping(method = RequestMethod.GET)
     public ServiceInfo getServiceInfo() {
         String remoteAddr = "";

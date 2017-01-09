@@ -7,4 +7,7 @@ public class TalosQuestsAccessViolationException extends TalosQuestsException {
     public TalosQuestsAccessViolationException() {
         super("Tried to access a resource without permission.");
     }
+    public TalosQuestsAccessViolationException(String message) {
+        super(message);
+    }
 }

@@ -20,9 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/Auth")
 public class AuthController extends BaseController {
 
-    @Autowired
-    private UserService userService;
-
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> Authenticate(@RequestBody AuthRegisterModel userModel) throws TalosQuestsNullSessionException {
 

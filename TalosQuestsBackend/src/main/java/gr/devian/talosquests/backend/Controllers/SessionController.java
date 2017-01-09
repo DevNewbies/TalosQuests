@@ -19,9 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/Session")
 public class SessionController extends BaseController {
 
-    @Autowired
-    UserService userService;
-
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<Object> GetSession(@RequestParam(value = "token", required = true) String token) throws TalosQuestsNullSessionException {
         Session session = userService.getSessionByToken(token);

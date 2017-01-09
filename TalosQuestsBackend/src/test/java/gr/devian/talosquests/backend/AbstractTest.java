@@ -1,8 +1,6 @@
 package gr.devian.talosquests.backend;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.Factories.QuestFactory;
@@ -23,9 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.servlet.DispatcherServlet;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -116,7 +112,7 @@ public abstract class AbstractTest {
 
 
     @Before
-    public void setUp() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData, TalosQuestsException, JsonProcessingException {
+    public void setUp() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserDataException, TalosQuestsException, JsonProcessingException {
 
         MockitoAnnotations.initMocks(this);
 

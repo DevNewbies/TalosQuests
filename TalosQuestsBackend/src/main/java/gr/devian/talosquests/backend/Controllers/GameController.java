@@ -20,12 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/Game")
 public class GameController extends BaseController {
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    GameService gameService;
-
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<Object> listGames(@RequestParam(value = "token", required = true) String token) throws TalosQuestsNullSessionException {
@@ -93,7 +87,7 @@ public class GameController extends BaseController {
     }
 
     @RequestMapping(value = "/Delete/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Object> deleteGame(@RequestParam(value = "token", required = true) String token, @PathVariable("id") Long id) throws TalosQuestsNullArgumentException, TalosQuestsNullSessionException {
+    public ResponseEntity<Object> deleteGame(@RequestParam(value = "token", required = true) String token, @PathVariable("id") Long id) throws TalosQuestsException {
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
@@ -105,8 +99,11 @@ public class GameController extends BaseController {
 
         if (!user.getGames().contains(game))
             return Response.fail("User doesn't have any game with this id", 404);
-
-        gameService.delete(game);
+        try {
+            gameService.delete(game);
+        } catch (TalosQuestsAccessViolationException exc) {
+            return Response.fail(exc.getMessage(), HttpStatus.FORBIDDEN);
+        }
 
         return Response.success("Deleted");
 

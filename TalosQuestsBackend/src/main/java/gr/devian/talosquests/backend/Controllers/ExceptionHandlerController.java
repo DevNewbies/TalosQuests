@@ -1,6 +1,8 @@
 package gr.devian.talosquests.backend.Controllers;
 
 import gr.devian.talosquests.backend.Utilities.Response;
+import org.springframework.beans.ConversionNotSupportedException;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         return Response.fail(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         StringBuilder sb = new StringBuilder();
@@ -44,6 +47,10 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
     }
 
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        return Response.fail("Bad Request - Path Variable Type Mismatch.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {

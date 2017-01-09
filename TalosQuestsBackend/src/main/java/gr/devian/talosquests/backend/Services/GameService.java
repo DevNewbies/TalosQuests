@@ -62,10 +62,20 @@ public class GameService {
         return game;
     }
 
-    public void delete(Game game) throws TalosQuestsNullArgumentException {
+    public void delete(Game game) throws TalosQuestsException {
+        delete(game.getUser(), game);
+    }
+
+    public void delete(User originUser, Game game) throws TalosQuestsException {
         if (game == null)
             throw new TalosQuestsNullArgumentException("Game");
 
+        if (originUser != null) {
+            if (originUser.equals(game.getUser()) && !originUser.getAccess().getCanDeleteOwnGame())
+                throw new TalosQuestsAccessViolationException("User has no access deleting own game");
+            if (!originUser.equals(game.getUser()) && !originUser.getAccess().getCanManageOtherUsers())
+                throw new TalosQuestsAccessViolationException("User has no access deleting other user's game");
+        }
 
         ArrayList<Quest> quests = new ArrayList<Quest>(game.getCompletedQuests());
         game.getCompletedQuests().clear();
@@ -186,7 +196,7 @@ public class GameService {
 
             ArrayList<Quest> quests = new ArrayList<>(game.getIncompleteQuests());
 
-            c = locationService.getClosestQuestDistance(game.getCurrentUserLocation(),quests).left;
+            c = locationService.getClosestQuestDistance(game.getCurrentUserLocation(), quests).left;
             c.start();
             game.setActiveQuest(c);
         } else {
@@ -204,10 +214,13 @@ public class GameService {
         return game.getIncompleteQuests().size() <= 0;
     }
 
+    public void wipe(User user) throws TalosQuestsAccessViolationException {
+        if (!user.getAccess().getCanWipeGames())
+            throw new TalosQuestsAccessViolationException("User has no permission to wipe games.");
+    }
+
     public void wipe() {
         for (Game game : gameRepository.findAll()) {
-
-
             ArrayList<Quest> quests = new ArrayList<Quest>(game.getCompletedQuests());
             game.getCompletedQuests().clear();
             for (Quest quest : quests) {

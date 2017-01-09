@@ -1,28 +1,19 @@
 package gr.devian.talosquests.backend.Services;
 
 import com.google.common.base.Strings;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsCredentialsNotMetRequirementsException;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsInsufficientUserData;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullArgumentException;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
+import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.LocationProvider.LatLng;
-import gr.devian.talosquests.backend.Models.AuthRegisterModel;
-import gr.devian.talosquests.backend.Models.Game;
+import gr.devian.talosquests.backend.Models.*;
 import gr.devian.talosquests.backend.Repositories.GameRepository;
-import gr.devian.talosquests.backend.Utilities.Response;
-import gr.devian.talosquests.backend.Models.User;
-import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Repositories.UserRepository;
 import gr.devian.talosquests.backend.Repositories.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Nikolas on 5/12/2016.
@@ -52,6 +43,22 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public List<User> findUsersByName(String name) {
+        if (name == null)
+            return null;
+        return userRepository.findUserByUserNameLike(name);
+    }
+
+    public List<User> findUsersByEmail(String email) {
+        if (email == null)
+            return null;
+        return userRepository.findUserByEmailLike(email);
+    }
+
     public User getUserById(Long id) {
         if (id == null)
             return null;
@@ -75,13 +82,13 @@ public class UserService {
         return userRepository.findUserByEmail(email);
     }
 
-    public User createUser(AuthRegisterModel model) throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+    public User createUser(AuthRegisterModel model) throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserDataException {
 
         if (Strings.isNullOrEmpty(model.getUserName())
                 || Strings.isNullOrEmpty(model.getEmail())
                 || Strings.isNullOrEmpty(model.getPassWord())
                 || Strings.isNullOrEmpty(model.getImei()))
-            throw new TalosQuestsInsufficientUserData();
+            throw new TalosQuestsInsufficientUserDataException();
 
         if (!model.getEmail().matches(emailValidationPattern))
             throw new TalosQuestsCredentialsNotMetRequirementsException("email", emailValidationPattern);
@@ -93,55 +100,81 @@ public class UserService {
             throw new TalosQuestsCredentialsNotMetRequirementsException("userName", userNameValidationPattern);
 
         User user = new User(model.getUserName(), model.getPassWord(), model.getEmail(), model.getImei());
-
+        user.setAccess(AccessLevel.User);
         userRepository.save(user);
 
         return user;
     }
 
-    public User updateUser(User user, AuthRegisterModel model) throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData {
+    public User updateUser(User user, AuthRegisterModel model) throws TalosQuestsException {
+        return updateUser(user, user, model);
+    }
+
+    public User updateUser(User origin, User target, AuthRegisterModel model) throws TalosQuestsException {
         if (model == null)
-            throw new TalosQuestsInsufficientUserData();
+            throw new TalosQuestsInsufficientUserDataException();
+        if (target == null)
+            throw new TalosQuestsNullArgumentException("target");
+        if (origin == null)
+            throw new TalosQuestsNullArgumentException("origin");
+
+
+        if (origin.equals(target) && !origin.getAccess().getCanEditOwnData())
+            throw new TalosQuestsAccessViolationException("User has no permissions to edit own data.");
+        if (!origin.equals(target) && !origin.getAccess().getCanManageOtherUsers())
+            throw new TalosQuestsAccessViolationException("User has no permissions to edit other user's data.");
 
         if (!Strings.isNullOrEmpty(model.getEmail())) {
             if (!model.getEmail().matches(emailValidationPattern))
                 throw new TalosQuestsCredentialsNotMetRequirementsException("email", emailValidationPattern);
-            user.setEmail(model.getEmail());
+            target.setEmail(model.getEmail());
         }
         if (!Strings.isNullOrEmpty(model.getImei())) {
             if (!model.getImei().matches(imeiValidationPattern))
                 throw new TalosQuestsCredentialsNotMetRequirementsException("imei", imeiValidationPattern);
-            user.setDeviceIMEI(model.getImei());
+            target.setDeviceIMEI(model.getImei());
         }
         if (!Strings.isNullOrEmpty(model.getPassWord())) {
             if (!model.getPassWord().matches(passWordValidationPattern))
                 throw new TalosQuestsCredentialsNotMetRequirementsException("passWord", passWordValidationPattern);
-            user.setPassWord(model.getPassWord());
+            target.setPassWord(model.getPassWord());
         }
 
-        userRepository.save(user);
+        userRepository.save(target);
 
-        return user;
+        return target;
     }
 
-    public User removeUser(User user) throws TalosQuestsNullArgumentException, TalosQuestsNullSessionException {
-        if (user == null)
-            throw new TalosQuestsNullArgumentException("user");
+    public User removeUser(User user) throws TalosQuestsException {
+        return removeUser(user, user);
+    }
 
-        if (getSessionByUser(user) != null) {
-            sessionRepository.deleteSessionByUser(user);
+    public User removeUser(User origin, User target) throws TalosQuestsException {
+        if (target == null)
+            throw new TalosQuestsNullArgumentException("target");
+        if (origin == null)
+            throw new TalosQuestsNullArgumentException("origin");
+
+        if (origin.equals(target) && !origin.getAccess().getCanDeleteOwnData())
+            throw new TalosQuestsAccessViolationException("User has no permissions to delete own data.");
+        if (!origin.equals(target) && !origin.getAccess().getCanManageOtherUsers())
+            throw new TalosQuestsAccessViolationException("User has no permissions to delete other user's data.");
+
+
+        if (getSessionByUser(target) != null) {
+            sessionRepository.deleteSessionByUser(target);
         }
 
-        ArrayList<Game> games = new ArrayList<Game>(user.getGames());
+        ArrayList<Game> games = new ArrayList<Game>(target.getGames());
         for (Game game : games) {
             gameService.delete(game);
         }
-        user.getGames().clear();
-        user.setActiveGame(null);
-        userRepository.save(user);
-        userRepository.delete(user);
+        target.getGames().clear();
+        target.setActiveGame(null);
+        userRepository.save(target);
+        userRepository.delete(target);
 
-        return user;
+        return target;
     }
 
     public Session getSessionByUser(User user) throws TalosQuestsNullSessionException {
@@ -202,6 +235,7 @@ public class UserService {
 
         sessionRepository.delete(session);
     }
+
     public void setActiveLocation(User user, LatLng location) throws TalosQuestsNullArgumentException {
         if (user == null)
             throw new TalosQuestsNullArgumentException("user");
@@ -212,12 +246,21 @@ public class UserService {
 
     }
 
-    public void wipe() throws TalosQuestsNullArgumentException {
+    public void wipe(User user) throws TalosQuestsException {
+        if (user == null)
+            throw new TalosQuestsNullArgumentException("user");
+        if (!user.getAccess().getCanWipeUsers())
+            throw new TalosQuestsAccessViolationException("User has no permission to wipe users");
+
+        wipe();
+    }
+
+    public void wipe() throws TalosQuestsException {
         sessionRepository.deleteAllInBatch();
         for (User user : userRepository.findAll()) {
             ArrayList<Game> games = new ArrayList<Game>(user.getGames());
             for (Game game : games) {
-                gameService.delete(game);
+                gameService.delete(null, game);
             }
             user.getGames().clear();
             user.setActiveGame(null);
@@ -225,4 +268,6 @@ public class UserService {
             userRepository.delete(user);
         }
     }
+
+
 }
