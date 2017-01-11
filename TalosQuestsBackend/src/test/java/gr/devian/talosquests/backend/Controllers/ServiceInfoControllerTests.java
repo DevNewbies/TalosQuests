@@ -26,7 +26,7 @@ public class ServiceInfoControllerTests extends AbstractControllerTest {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.remoteAddr",is("127.0.0.1")))
+                .andExpect(jsonPath("$.response.remoteAddr",is("127.0.0.1")))
                 .andReturn();
     }
     @Test
@@ -34,7 +34,7 @@ public class ServiceInfoControllerTests extends AbstractControllerTest {
         mockMvc.perform(get("/").header("X-Forwarded-For","0.0.0.0"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.remoteAddr",is("0.0.0.0")))
+                .andExpect(jsonPath("$.response.remoteAddr",is("0.0.0.0")))
                 .andReturn();
     }
 

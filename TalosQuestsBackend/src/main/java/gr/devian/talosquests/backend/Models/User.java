@@ -1,7 +1,6 @@
 package gr.devian.talosquests.backend.Models;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import gr.devian.talosquests.backend.Utilities.AccessLevelConverter;
 import gr.devian.talosquests.backend.Utilities.LatLngConverter;
 import gr.devian.talosquests.backend.Utilities.SecurityTools;
 import gr.devian.talosquests.backend.Views.View;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by Nikolas on 3/12/2016.
@@ -144,6 +142,7 @@ public class User {
 
     public User() {
         games = new ArrayList<>();
+        banned = false;
     }
 
     public String hashStr(String str) {
@@ -165,5 +164,6 @@ public class User {
         this.passWord = hashStr(passWord);
         this.email = email;
         this.deviceIMEI = deviceIMEI;
+        this.banned = false;
     }
 }

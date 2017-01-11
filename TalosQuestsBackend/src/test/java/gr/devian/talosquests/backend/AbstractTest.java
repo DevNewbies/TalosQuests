@@ -12,6 +12,7 @@ import gr.devian.talosquests.backend.Repositories.UserQuestRepository;
 import gr.devian.talosquests.backend.Repositories.UserRepository;
 import gr.devian.talosquests.backend.Services.GameService;
 import gr.devian.talosquests.backend.Services.LocationService;
+import gr.devian.talosquests.backend.Services.QuestService;
 import gr.devian.talosquests.backend.Services.UserService;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -45,6 +46,9 @@ public abstract class AbstractTest {
 
     @Autowired
     protected GameService gameService;
+
+    @Autowired
+    protected QuestService questService;
 
     @Autowired
     protected UserQuestRepository userQuestRepository;
@@ -245,7 +249,7 @@ public abstract class AbstractTest {
         return game;
     }
 
-    private QuestModel generateQuest(LatLng location) {
+    protected QuestModel generateQuest(LatLng location) {
         QuestModel q = new QuestModel();
         q.setLocation(location);
         q.setContent(new BigInteger(130, random).toString(50));
@@ -261,8 +265,8 @@ public abstract class AbstractTest {
             q.getAvailableChoices().add(c);
             q.setCorrectChoice(c);
         }
-        questRepository.save(q);
-        return q;
+
+        return questRepository.save(q);
     }
 
     protected String mapToJson(Object obj) throws JsonProcessingException {

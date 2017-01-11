@@ -109,6 +109,17 @@ public class UserControllerTests extends AbstractControllerTest {
     }
 
     @Test
+    public void DeleteForbiddenOnCorrectTokenAndPasswordSpecifiedButNoAccess() throws Exception {
+        testUserWithSession.getAccess().setCanManageOwnData(false);
+        mockMvc.perform(delete("/User")
+                .param("password",passWordPassing)
+                .param("token",testSession.getToken()))
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andReturn();
+    }
+
+    @Test
     public void DeleteOkOnCorrectTokenAndPasswordSpecified() throws Exception {
 
         mockMvc.perform(delete("/User")
@@ -204,6 +215,22 @@ public class UserControllerTests extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.response.email",is("test@test.test")))
+                .andReturn();
+
+    }
+
+    @Test
+    public void PutForbiddenOnCorrectTokenAndPasswordSpecifiedWhenUserHasNoAccess() throws Exception {
+
+        testAuthRegisterModelCreatedWithSession.setEmail("test@test.test");
+        testUserWithSession.getAccess().setCanManageOwnData(false);
+        mockMvc.perform(put("/User")
+                .param("password",passWordPassing)
+                .param("token",testSession.getToken())
+                .content(mapToJson(testAuthRegisterModelCreatedWithSession))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andReturn();
 
     }

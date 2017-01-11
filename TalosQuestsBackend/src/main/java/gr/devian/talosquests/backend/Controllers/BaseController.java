@@ -11,6 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Created by Nikolas on 5/12/2016.
  */
@@ -28,12 +31,34 @@ public abstract class BaseController {
     protected QuestService questService;
 
     @Autowired(required = true)
-    protected org.apache.catalina.servlet4preview.http.HttpServletRequest request;
+    protected HttpServletRequest request;
 
     @Autowired
     protected ServiceInfo serviceInfo;
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private final String[] IP_HEADER_CANDIDATES = {
+            "X-Forwarded-For",
+            "Proxy-Client-IP",
+            "WL-Proxy-Client-IP",
+            "HTTP_X_FORWARDED_FOR",
+            "HTTP_X_FORWARDED",
+            "HTTP_X_CLUSTER_CLIENT_IP",
+            "HTTP_CLIENT_IP",
+            "HTTP_FORWARDED_FOR",
+            "HTTP_FORWARDED",
+            "HTTP_VIA",
+            "REMOTE_ADDR"};
+
+    protected String getClientIpAddress() {
+        for (String header : IP_HEADER_CANDIDATES) {
+            String ip = request.getHeader(header);
+            if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
+                return ip;
+            }
+        }
+        return request.getRemoteAddr();
+    }
 
 }

@@ -41,11 +41,7 @@ public class AccessLevel {
     public Long getId() {
         return id;
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    
     public Boolean getCanWipeQuests() {
         return canWipeQuests;
     }
@@ -57,6 +53,7 @@ public class AccessLevel {
     public String getName() {
         return name;
     }
+
 
     public void setName(String name) {
         this.name = name;
@@ -73,6 +70,7 @@ public class AccessLevel {
     public Boolean getCanManageService() {
         return canManageService;
     }
+
 
     public void setCanManageService(Boolean canManageService) {
         this.canManageService = canManageService;
@@ -118,53 +116,4 @@ public class AccessLevel {
         this.canBanUsers = canBanUsers;
     }
 
-    static {
-        AccessLevel level = new AccessLevel();
-        level.setCanBanUsers(true);
-        level.setName("Root");
-        level.setCanWipeUsers(true);
-        level.setCanWipeGames(true);
-        level.setCanWipeQuests(true);
-        level.setCanManageUsers(true);
-        level.setCanManageQuests(true);
-        level.setCanManageService(true);
-        level.setCanManageOwnData(true);
-        Root = level;
-
-        level = new AccessLevel();
-        level.setCanBanUsers(true);
-        level.setName("Admin");
-        level.setCanWipeUsers(false);
-        level.setCanWipeGames(false);
-        level.setCanWipeQuests(false);
-        level.setCanManageUsers(true);
-        level.setCanManageQuests(true);
-        level.setCanManageService(false);
-        level.setCanManageOwnData(true);
-
-        Admin = level;
-
-        level = new AccessLevel();
-        level.setName("User");
-        User = level;
-    }
-
-    public static AccessLevel Root;
-    public static AccessLevel Admin;
-    public static AccessLevel User;
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == null) {
-            return false;
-        }
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof AccessLevel)) {
-            return false;
-        }
-        AccessLevel obj = (AccessLevel) other;
-        return Objects.equals(other, obj);
-    }
 }

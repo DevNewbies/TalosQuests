@@ -8,10 +8,8 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Created by Xrysa on 18/12/2016.
@@ -49,6 +47,33 @@ public class GameControllerTests extends AbstractControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andReturn();
 
+    }
+
+    @Test
+    public void testShowGameWithValidTokenAndValidGame() throws Exception {
+        mockMvc.perform(get("/Game/"+testGameForUserWithSession.getId())
+                .param("token", testSession.getToken()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andReturn();
+    }
+
+    @Test
+    public void testShowGameWithValidTokenAndInvalidGame() throws Exception {
+        mockMvc.perform(get("/Game/"+Long.MAX_VALUE)
+                .param("token", testSession.getToken()))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andReturn();
+    }
+
+    @Test
+    public void testShowGameWithValidTokenAndOtherUserGame() throws Exception {
+        mockMvc.perform(get("/Game/"+testGameForUserWithoutSession.getId())
+                .param("token", testSession.getToken()))
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andReturn();
     }
 
     @Test
@@ -151,38 +176,6 @@ public class GameControllerTests extends AbstractControllerTest {
 
 
     @Test
-    public void testContinueWithValidToken() throws Exception {
-
-        mockMvc.perform(get("/Game/Continue")
-                .param("token", testSession.getToken()))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-
-    @Test
-    public void testContinueWithValidTokenAndActiveGameSet() throws Exception {
-        gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
-        mockMvc.perform(get("/Game/Continue")
-                .param("token", testSession.getToken()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-
-    @Test
-    public void testContinueWithInvalidToken() throws Exception {
-
-        mockMvc.perform(get("/Game/Continue")
-                .param("token", "Invalid"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-    @Test
     public void testContinueByIdWithInvalidId() throws Exception {
 
         mockMvc.perform(get("/Game/Continue/-1")
@@ -226,7 +219,39 @@ public class GameControllerTests extends AbstractControllerTest {
     @Test
     public void testDeleteByIdWithValidId() throws Exception {
 
-        mockMvc.perform(get("/Game/Delete/" + testGameForUserWithSession.getId())
+        mockMvc.perform(delete("/Game/" + testGameForUserWithSession.getId())
+                .param("token", testSession.getToken()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andReturn();
+    }
+
+    @Test
+    public void testDeleteByIdWithValidIdWhenUserHasNoAccess() throws Exception {
+
+        testUserWithSession.getAccess().setCanManageOwnData(false);
+        mockMvc.perform(delete("/Game/" + testGameForUserWithSession.getId())
+                .param("token", testSession.getToken()))
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andReturn();
+    }
+
+    @Test
+    public void testDeleteAllWhenUserHasNoAccess() throws Exception {
+
+        testUserWithSession.getAccess().setCanManageOwnData(false);
+        mockMvc.perform(delete("/Game")
+                .param("token", testSession.getToken()))
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andReturn();
+    }
+
+    @Test
+    public void testDeleteAll() throws Exception {
+
+        mockMvc.perform(delete("/Game")
                 .param("token", testSession.getToken()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -236,7 +261,7 @@ public class GameControllerTests extends AbstractControllerTest {
     @Test
     public void testDeleteByIdWithInvalidToken() throws Exception {
 
-        mockMvc.perform(get("/Game/Delete/" + testGameForUserWithSession.getId())
+        mockMvc.perform(delete("/Game/" + testGameForUserWithSession.getId())
                 .param("token", "Invalid"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -247,7 +272,7 @@ public class GameControllerTests extends AbstractControllerTest {
     @Test
     public void testDeleteByIdWithInvalidId() throws Exception {
 
-        mockMvc.perform(get("/Game/Delete/-1")
+        mockMvc.perform(delete("/Game/"+Long.MAX_VALUE)
                 .param("token", testSession.getToken()))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -257,7 +282,7 @@ public class GameControllerTests extends AbstractControllerTest {
     @Test
     public void testDeleteByIdWithOtherUsersGameId() throws Exception {
 
-        mockMvc.perform(get("/Game/Delete/" + testGameForUserWithoutSession.getId())
+        mockMvc.perform(delete("/Game/" + testGameForUserWithoutSession.getId())
                 .param("token", testSession.getToken()))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -297,149 +322,6 @@ public class GameControllerTests extends AbstractControllerTest {
     }
 
 
-    @Test
-    public void testActiveGetQuestWithValidToken() throws Exception {
 
-        mockMvc.perform(get("/Game/Active/GetQuest")
-                .param("token", testSession.getToken()))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-
-    @Test
-    public void testActiveGetQuestWithValidTokenAndActiveGameSet() throws Exception {
-        gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
-        mockMvc.perform(get("/Game/Active/GetQuest")
-                .param("token", testSession.getToken()))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-    @Test
-    public void testActiveGetQuestWithValidTokenAndActiveGameSetAndActiveQuestSet() throws Exception {
-        gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
-        gameService.getNextQuest(testGameForUserWithSession);
-        mockMvc.perform(get("/Game/Active/GetQuest")
-                .param("token", testSession.getToken()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-    @Test
-    public void testActiveGetQuestWithInvalidToken() throws Exception {
-
-        mockMvc.perform(get("/Game/Active/GetQuest")
-                .param("token", "Invalid"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-
-    @Test
-    public void testActiveGetNextQuestWithValidToken() throws Exception {
-
-        mockMvc.perform(get("/Game/Active/GetNextQuest")
-                .param("token", testSession.getToken()))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-
-    @Test
-    public void testActiveGetNextQuestWithValidTokenAndActiveGameSet() throws Exception {
-        gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
-        mockMvc.perform(get("/Game/Active/GetNextQuest")
-                .param("token", testSession.getToken()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-
-    @Test
-    public void testActiveGetNextQuestWithInvalidToken() throws Exception {
-
-        mockMvc.perform(get("/Game/Active/GetNextQuest")
-                .param("token", "Invalid"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-
-    @Test
-    public void testActiveSubmitAnswerWithInvalidToken() throws Exception {
-
-        mockMvc.perform(post("/Game/Active/SubmitAnswer")
-                .param("token", "Invalid"))
-                .andExpect(status().isBadRequest())
-                .andReturn();
-    }
-
-    @Test
-    public void testActiveSubmitAnswerWithInvalidTokenAndAnswerProvided() throws Exception {
-
-        mockMvc.perform(post("/Game/Active/SubmitAnswer")
-                .param("token", "Invalid")
-                .content(mapToJson(new QuestChoice("test")))
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-
-    @Test
-    public void testActiveSubmitAnswerWithValidToken() throws Exception {
-
-        mockMvc.perform(post("/Game/Active/SubmitAnswer")
-                .param("token", testSession.getToken()))
-                .andExpect(status().isBadRequest())
-                .andReturn();
-    }
-
-    @Test
-    public void testActiveSubmitAnswerWithValidTokenAndAnswerProvided() throws Exception {
-
-        mockMvc.perform(post("/Game/Active/SubmitAnswer")
-                .param("token", testSession.getToken())
-                .content(mapToJson(new QuestChoice()))
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-
-    @Test
-    public void testActiveSubmitAnswerWithValidTokenAndAnswerProvidedAndActiveGameSet() throws Exception {
-        gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
-        mockMvc.perform(post("/Game/Active/SubmitAnswer")
-                .param("token", testSession.getToken())
-                .content(mapToJson(new QuestChoice()))
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-    @Test
-    public void testActiveSubmitAnswerWithValidTokenAndAnswerProvidedAndActiveGameSetAndActiveQuestSet() throws Exception {
-        gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
-        gameService.getNextQuest(testGameForUserWithSession);
-        mockMvc.perform(post("/Game/Active/SubmitAnswer")
-                .param("token", testSession.getToken())
-                .content(mapToJson(new QuestChoice()))
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
 
 }

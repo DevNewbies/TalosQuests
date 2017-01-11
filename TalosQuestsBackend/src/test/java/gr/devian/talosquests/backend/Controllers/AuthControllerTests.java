@@ -108,6 +108,20 @@ public class AuthControllerTests extends AbstractControllerTest {
     }
 
     @Test
+    public void ForbiddenOnCorrectCredentialsWithEmailPasswordWithExpiredSessionButBanned() throws Exception {
+
+        testAuthRegisterModelCreatedWithSession.setUserName("");
+        testUserWithSession.setBanned(true);
+        mockMvc.perform(post("/Auth")
+                .content(mapToJson(testAuthRegisterModelCreatedWithSession))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+    }
+
+    @Test
     public void BadRequestOnInsufficientCredentials() throws Exception {
 
         mockMvc.perform(post("/Auth")

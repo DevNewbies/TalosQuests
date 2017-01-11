@@ -33,7 +33,7 @@ public class ServiceInfo {
 
 
     public void setRemoteAddr(String remoteAddr) {
-        remoteAddr = remoteAddr;
+        this.remoteAddr = remoteAddr;
     }
 
     public String getVersion() {

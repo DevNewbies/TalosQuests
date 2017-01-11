@@ -3,6 +3,7 @@ package gr.devian.talosquests.backend.Services;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsAccessViolationException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullArgumentException;
 import gr.devian.talosquests.backend.Models.Game;
+import gr.devian.talosquests.backend.Models.Quest;
 import gr.devian.talosquests.backend.Models.QuestModel;
 import gr.devian.talosquests.backend.Models.User;
 import gr.devian.talosquests.backend.Repositories.GameRepository;
@@ -11,13 +12,14 @@ import gr.devian.talosquests.backend.Repositories.UserQuestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Nikolas on 10/1/2017.
  */
 @Service
-public final class QuestService {
+public class QuestService {
 
     @Autowired
     private QuestRepository questRepository;
@@ -40,6 +42,7 @@ public final class QuestService {
             return null;
         return questRepository.findOne(id);
     }
+
     public QuestModel create(User originUser, QuestModel model) throws TalosQuestsAccessViolationException, TalosQuestsNullArgumentException {
         if (originUser == null)
             throw new TalosQuestsNullArgumentException("originUser");
@@ -54,6 +57,7 @@ public final class QuestService {
         return questRepository.save(model);
 
     }
+
     public void delete(User originUser, QuestModel model) throws TalosQuestsAccessViolationException, TalosQuestsNullArgumentException {
         if (originUser == null)
             throw new TalosQuestsNullArgumentException("originUser");
@@ -63,15 +67,28 @@ public final class QuestService {
             throw new TalosQuestsAccessViolationException("User has no permission deleting quests.");
 
         for (Game game : gameRepository.findAll()) {
-            if (game.getCompletedQuests().contains(model)) {
-                game.getCompletedQuests().remove(model);
+            ArrayList<Quest> quests = new ArrayList<>(game.getCompletedQuests());
+
+            for (Quest quest : quests) {
+                if (quest.getQuest().equals(model)) {
+                    game.getCompletedQuests().remove(quest);
+                }
             }
-            if (game.getIncompleteQuests().contains(model)) {
-                game.getIncompleteQuests().remove(model);
+
+            quests = new ArrayList<>(game.getIncompleteQuests());
+            for (Quest quest : quests) {
+                if (quest.getQuest().equals(model)) {
+                    game.getIncompleteQuests().remove(quest);
+
+                }
             }
-            if (game.getActiveQuest().equals(model)) {
+
+            if (game.getActiveQuest() != null && game.getActiveQuest().getQuest().equals(model))
                 game.setActiveQuest(null);
-            }
+
+            gameRepository.save(game);
+
+
         }
 
         questRepository.delete(model);
@@ -106,5 +123,8 @@ public final class QuestService {
         if (!originUser.getAccess().getCanWipeQuests())
             throw new TalosQuestsAccessViolationException("User has no permission wiping quests.");
 
+        for (QuestModel model : listQuests()) {
+            delete(originUser, model);
+        }
     }
 }
