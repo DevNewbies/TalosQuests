@@ -1,7 +1,10 @@
 var config = require("../../shared/config");
 var fetchModule = require("fetch");
 var Observable = require("data/observable").Observable;
-
+var fs = require("file-system");
+var documents = fs.knownFolders.documents();
+var file = documents.getFile("cookies.txt");
+var cookie = require ("../../shared/view-models/cookies");
 function User(info) {
     info = info || {};
 
@@ -10,8 +13,10 @@ function User(info) {
         email:  info.email || "",
         password:  info.password || "",
         username: info.username || "",
+        imei: "" || info.imei,
         isLoading: false,
-        isItemVisible: true
+        isItemVisible: true,
+        error: ""
     });
     viewModel.login = function() {
         return fetchModule.fetch(config.apiUrl + "Auth", {
@@ -26,14 +31,15 @@ function User(info) {
         })
         .then(handleErrors)
         .then(function(response) {
-            //console.log(JSON.stringify(response));
             return response.json();
-        })
-        //.then(function(data) {
-            //config.token = data.Result.access_token;
-           // console.log(data.stringify);
-        //});
-    };
+        }).then(function(data) {
+            var date = new Date();
+            date.setTime(date.getTime() + (data.response.expireDate));
+            config.token = data.response.token;
+            cookie.saveCookie(data.response.token + "|" + date);
+            return data;
+        });
+    }
     viewModel.register = function() {
         return fetchModule.fetch(config.apiUrl + "Register", {
             method: "POST",
@@ -41,22 +47,38 @@ function User(info) {
                 userName: viewModel.username, 
                 passWord: viewModel.password,
                 email: viewModel.email,
-                imei: 2223566
+                imei:  viewModel.imei
             }),
             headers: {
                 "Content-Type": "application/json"
             }
         }).then(handleErrors);
-    };
+    }
+    viewModel.readCookie = function(){
+       return cookie.readCookie(getRequest);
+}
     return viewModel;
 }
 
+function getRequest(service){
+    return fetchModule.fetch(config.apiUrl + service, {
+            headers: {
+                "Content-Type": "application/json"
+            }}).then(handleErrors).then(function(response){
+                return response.json();
+            }).then(function(data){
+                var date = new Date();
+                date.setTime(date.getTime() + (data.response.expireDate));
+                cookie.saveCookie(data.response.token + "|" + date);
+                return data;
+            });
+}
 function handleErrors(response) {
     if (!response.ok) {
-        console.log(JSON.stringify(response));
-       throw Error(response.status);
+        //console.log("response not ok : " + JSON.stringify(response));
+        throw Error(response.status).message;
     }
+     //console.log("response ok : " + JSON.stringify(response));
     return response;
 }
-
 module.exports = User;
