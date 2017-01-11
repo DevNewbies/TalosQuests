@@ -3,5 +3,6 @@
 ################################################################################
 
 /.vs/TalosQuestsAdministrationPanel/v14
-/TalosQuestsAdministrationPanel/bin/Debug
-/TalosQuestsAdministrationPanel/obj/Debug
+/TalosQuestsAdministrationPanel/bin
+/TalosQuestsAdministrationPanel/obj
+/packages
