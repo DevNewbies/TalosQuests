@@ -1,0 +1,13 @@
+<Page xmlns="http://www.nativescript.org/tns.xsd" loaded="loaded" >
+	<GridLayout rows="*" columns="*">
+		<StackLayout visibility="{{ isItemVisible ? 'visible' : 'collapsed' }}"
+			id="StackLayout">
+			<TextField hint="Username" text="{{ username }}"  autocorrect="false" autocapitalizationType="none" id="child0"/>
+			<TextField hint="Email Address" text="{{ email }}" autocorrect="false" autocapitalizationType="none" keyboardType="email" id="child1"/>
+			<TextField hint="Password" text="{{ password }}" secure="true"  autocorrect="false" autocapitalizationType="none" id="child2"/>
+			<Button text="CREATE ACCOUNT" tap="register" id="child3"/>
+			<Label text=" {{ error }}" textWrap="true" id="child4" />
+		</StackLayout>
+		<ActivityIndicator busy="{{ isLoading }}" row="1" col="1" rowSpan="1" colSpan="1"/>
+	</GridLayout>
+</Page>

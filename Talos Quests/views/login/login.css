@@ -1,0 +1,21 @@
+@import {url('~/platform.css')};
+Page {
+    background-color: white;
+    font-size: 10;
+}
+TextField {
+    margin: 5;
+    padding: 5;
+}
+Image {
+    margin-top: 20;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 80;
+}
+.link {
+    background-color:#7DFF69;
+}
+#child0,#child1,#child2,#child3{
+	opacity:0;
+}

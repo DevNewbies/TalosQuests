@@ -1,0 +1,22 @@
+@import {url('~/platform.css')}; 
+Page {
+    background-color: white;
+    font-size: 10;
+}
+TextField {
+    padding: 2;
+    margin: 2;
+}
+Button{
+	background-color: #7DFF69;
+}
+#StackLayout{
+	opacity: 1;
+}
+#child0,#child1,#child2,#child3,#child4{
+	opacity: 0;
+}
+Label{
+	font-size:10;
+	 font-weight: bold;
+}

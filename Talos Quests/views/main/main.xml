@@ -1,0 +1,9 @@
+<Page xmlns="http://www.nativescript.org/tns.xsd" loaded="loaded">
+	<GridLayout rows="*" columns="*" >
+		<StackLayout orientation="vertical" visibility="{{ isItemVisible ? 'visible' : 'collapsed' }}">
+			<TextField  hint="yooo" keyboardType="email" autocorrect="false" autocapitalizationType="none"
+			id="email" text="{{email}}"/>
+		</StackLayout>
+	<ActivityIndicator busy="{{ isLoading }}" row="1" col="1" rowSpan="1" colSpan="1"/>
+	</GridLayout>
+</Page>	
