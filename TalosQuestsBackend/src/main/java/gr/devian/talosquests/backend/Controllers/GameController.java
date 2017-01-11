@@ -34,7 +34,7 @@ public class GameController extends BaseController {
             if (game == null)
                 return Response.fail("Game not found.", 404);
             if (!game.getUser().equals(session.getUser()))
-                return Response.fail("Game not found.", 404);
+                return Response.fail("Tried to access other user's game.", HttpStatus.FORBIDDEN);
             return Response.success(game);
         } else {
             User user = session.getUser();
@@ -49,7 +49,7 @@ public class GameController extends BaseController {
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
 
-        if (!param.isPresent()) {
+        if (param.isPresent()) {
             User user = session.getUser();
             Game game = gameService.getGameById(param.get());
             if (game == null)

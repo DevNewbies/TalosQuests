@@ -1,6 +1,7 @@
 package gr.devian.talosquests.backend.Controllers;
 
 import gr.devian.talosquests.backend.Exceptions.*;
+import gr.devian.talosquests.backend.Models.Quest;
 import gr.devian.talosquests.backend.Models.QuestChoice;
 import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Models.User;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/Game/Quest")
 public class QuestController extends BaseController {
-    @RequestMapping(value = "/Active", method = RequestMethod.GET)
+    @RequestMapping(value = {"","/Active"}, method = RequestMethod.GET)
     public ResponseEntity<Object> getActiveGameQuest(@RequestParam(value = "token", required = true) String token) throws TalosQuestsNullSessionException {
         Session session = userService.getSessionByToken(token);
         if (session == null)
@@ -75,7 +76,8 @@ public class QuestController extends BaseController {
             return Response.fail("User doesn't have any active game.", 404);
 
         try {
-            return Response.success(gameService.getNextQuest(user.getActiveGame()));
+            Quest quest = gameService.getNextQuest(user.getActiveGame());
+            return Response.success(quest);
         } catch (TalosQuestsLocationsNotAvailableException e) {
             return Response.fail(e.getMessage(), 404);
         }

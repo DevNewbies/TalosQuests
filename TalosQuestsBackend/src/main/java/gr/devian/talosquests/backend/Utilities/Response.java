@@ -86,11 +86,6 @@ public class Response<T> {
         }
     }
 
-    public Class<? extends View.Simple> getView() {
-        return view;
-    }
-
-
     @JsonView(View.Extended.class)
     public String getViewName() {
         return view.getSimpleName();

@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.Models.LatLng;
 import gr.devian.talosquests.backend.Models.*;
+import gr.devian.talosquests.backend.Repositories.AccessRepository;
 import gr.devian.talosquests.backend.Repositories.GameRepository;
 import gr.devian.talosquests.backend.Repositories.SessionRepository;
 import gr.devian.talosquests.backend.Repositories.UserRepository;
@@ -19,7 +20,7 @@ import java.util.List;
  * Created by Nikolas on 5/12/2016.
  */
 @Service
-public final class UserService {
+public class UserService {
 
     @Autowired
     UserRepository userRepository;
@@ -33,14 +34,17 @@ public final class UserService {
     @Autowired
     SessionRepository sessionRepository;
 
+    @Autowired
+    AccessRepository accessRepository;
+
 
     public final String userNameValidationPattern = "^[a-zA-Z0-9_\\-]{4,32}$";
     public final String passWordValidationPattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,32}$";
     public final String emailValidationPattern = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
     public final String imeiValidationPattern = "^\\d{15}$";
 
-    public Collection<User> findAllUsers() {
-        return userRepository.findAll();
+    public List<User> findAllUsers() {
+        return getAllUsers();
     }
 
     public List<User> getAllUsers() {
@@ -100,7 +104,7 @@ public final class UserService {
             throw new TalosQuestsCredentialsNotMetRequirementsException("userName", userNameValidationPattern);
 
         User user = new User(model.getUserName(), model.getPassWord(), model.getEmail(), model.getImei());
-        user.setAccess(AccessLevel.User);
+        user.setAccess(getAccessLevelByName("User"));
         userRepository.save(user);
 
         return user;
@@ -175,7 +179,8 @@ public final class UserService {
 
         return target;
     }
-    public void setBannedState(User originUser,User targetUser, Boolean ban) throws TalosQuestsAccessViolationException, TalosQuestsNullArgumentException {
+
+    public void setBannedState(User originUser, User targetUser, Boolean ban) throws TalosQuestsAccessViolationException, TalosQuestsNullArgumentException {
         if (targetUser == null)
             throw new TalosQuestsNullArgumentException("targetUser");
         if (originUser == null)
@@ -213,6 +218,23 @@ public final class UserService {
 
         return checkSessionState(session);
 
+    }
+
+    public AccessLevel getAccessLevelByName(String name) {
+        if (name == null)
+            return null;
+
+        return accessRepository.findAccessLevelByName(name);
+    }
+
+    public void setAccessLevel(User user, AccessLevel accessLevel) throws TalosQuestsNullArgumentException {
+        if (user == null)
+            throw new TalosQuestsNullArgumentException("user");
+        if (accessLevel == null)
+            throw new TalosQuestsNullArgumentException("accessLevel");
+
+        user.setAccess(accessLevel);
+        userRepository.save(user);
     }
 
     public Session createSession(User user) throws TalosQuestsNullSessionException {

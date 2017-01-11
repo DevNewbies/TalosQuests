@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * Created by Nikolas on 2/12/2016.
  */
 @Service
-public final class LocationService {
+public class LocationService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static Boolean enableService = true;

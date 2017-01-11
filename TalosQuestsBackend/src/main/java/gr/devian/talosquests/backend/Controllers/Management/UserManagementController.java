@@ -59,32 +59,32 @@ public class UserManagementController extends AdminController {
         if (!session.getUser().getAccess().getCanManageUsers())
             return Response.fail("Access Denied", HttpStatus.FORBIDDEN);
 
-        if (!param.isPresent() && !session.getUser().getAccess().getCanWipeUsers())
-            return Response.fail("Access Denied", HttpStatus.FORBIDDEN);
-
-        if (!param.isPresent() && !password.isPresent())
-            return Response.fail("You are about to wipe all users on database. You must provide your password", HttpStatus.FORBIDDEN);
-
-        if (!param.isPresent() && !session.getUser().hashStr(password.get()).equals(session.getUser().getPassWord()))
-            return Response.fail("Incorrect Password.", HttpStatus.FORBIDDEN);
-
         if (!param.isPresent()) {
+            if (!session.getUser().getAccess().getCanWipeUsers())
+                return Response.fail("Access Denied", HttpStatus.FORBIDDEN);
+
+            if (!password.isPresent())
+                return Response.fail("You are about to wipe all users on database. You must provide your password", HttpStatus.FORBIDDEN);
+
+            if (!session.getUser().hashStr(password.get()).equals(session.getUser().getPassWord()))
+                return Response.fail("Incorrect Password.", HttpStatus.FORBIDDEN);
+
             userService.wipe();
             return Response.success(null, 200, "User Database Wiped.");
         } else {
             User user = userService.getUserById(param.get());
             if (user == null)
                 return Response.fail("User not found.", HttpStatus.NOT_FOUND);
+            if (user.equals(session.getUser()))
+                return Response.fail("You cannot delete your self.", HttpStatus.FORBIDDEN);
             userService.delete(user);
             return Response.success(null, 200, "User Deleted.");
+
         }
     }
 
     @RequestMapping(value = {"/User/{param}"}, method = RequestMethod.PUT)
-    public ResponseEntity<Object> EditUser(
-            @PathVariable("param") Optional<Long> param,
-            @RequestBody AuthRegisterModel model,
-            @RequestParam(value = "token", required = true) String token) throws TalosQuestsException {
+    public ResponseEntity<Object> EditUser(@PathVariable("param") Optional<Long> param, @RequestBody AuthRegisterModel model,@RequestParam(value = "token", required = true) String token) throws TalosQuestsException {
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
@@ -100,10 +100,7 @@ public class UserManagementController extends AdminController {
     }
 
     @RequestMapping(value = {"/User/SetBannedState/{param}"}, method = RequestMethod.GET)
-    public ResponseEntity<Object> BanUser(
-            @PathVariable("param") Long param,
-            @RequestParam(value = "ban", required = true) Boolean ban,
-            @RequestParam(value = "token", required = true) String token) throws TalosQuestsException {
+    public ResponseEntity<Object> BanUser(@PathVariable("param") Long param,@RequestParam(value = "ban", required = true) Boolean ban,@RequestParam(value = "token", required = true) String token) throws TalosQuestsException {
         Session session = userService.getSessionByToken(token);
         if (session == null)
             return Response.fail("Token is not valid.", HttpStatus.UNAUTHORIZED);

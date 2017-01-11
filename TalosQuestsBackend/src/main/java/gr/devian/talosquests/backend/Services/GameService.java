@@ -19,7 +19,7 @@ import java.util.List;
  * Created by Nikolas on 17/12/2016.
  */
 @Service
-public final class GameService {
+public class GameService {
 
 
     @Autowired
@@ -63,18 +63,20 @@ public final class GameService {
     public void delete(Game game) throws TalosQuestsException {
         delete(game.getUser(), game);
     }
+
     public void delete(User originUser, User targetUser) throws TalosQuestsException {
         if (originUser == null)
             throw new TalosQuestsNullArgumentException("originUser");
         if (targetUser == null)
             throw new TalosQuestsNullArgumentException("targetUser");
-
-        for (Game game : targetUser.getGames()) {
-            delete(originUser,game);
+        ArrayList<Game> games = new ArrayList<>(targetUser.getGames());
+        for (Game game : games) {
+            delete(originUser, game);
         }
     }
+
     public void delete(User user) throws TalosQuestsException {
-        delete(user,user);
+        delete(user, user);
     }
 
     public void delete(User originUser, Game game) throws TalosQuestsException {
@@ -196,28 +198,6 @@ public final class GameService {
         }
     }
 
-    public Quest getNextQuest(Game game) throws TalosQuestsNullArgumentException, TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
-        if (game == null)
-            throw new TalosQuestsNullArgumentException("Game");
-
-        Quest c = null;
-        if (game.getIncompleteQuests().size() > 0) {
-            if (game.getActiveQuest() != null)
-                finishQuest(game, false);
-
-            ArrayList<Quest> quests = new ArrayList<>(game.getIncompleteQuests());
-
-            c = locationService.getClosestQuestDistance(game.getCurrentUserLocation(), quests).left;
-            c.start();
-            game.setActiveQuest(c);
-        } else {
-            game.setActiveQuest(null);
-
-        }
-        gameRepository.save(game);
-
-        return c;
-    }
 
     public Boolean checkGameState(Game game) {
         if (game == null)
@@ -225,9 +205,35 @@ public final class GameService {
         return game.getIncompleteQuests().size() <= 0;
     }
 
-    public void wipe(User user) throws TalosQuestsAccessViolationException {
+    public Quest getNextQuest(Game game) throws TalosQuestsNullArgumentException, TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
+        if (game == null)
+            throw new TalosQuestsNullArgumentException("Game");
+
+        if (game.getIncompleteQuests().size() <= 0)
+            throw new TalosQuestsLocationsNotAvailableException();
+
+        if (game.getActiveQuest() != null)
+            finishQuest(game, false);
+
+        ArrayList<Quest> quests = new ArrayList<>(game.getIncompleteQuests());
+
+        Quest c = locationService.getClosestQuestDistance(game.getCurrentUserLocation(), quests).left;
+        c.start();
+        game.setActiveQuest(c);
+        gameRepository.save(game);
+
+        return c;
+    }
+
+
+    public void wipe(User user) throws TalosQuestsAccessViolationException, TalosQuestsNullArgumentException {
+        if (user == null)
+            throw new TalosQuestsNullArgumentException("user");
+
         if (!user.getAccess().getCanWipeGames())
             throw new TalosQuestsAccessViolationException("User has no permission to wipe games.");
+
+        wipe();
     }
 
     public void wipe() {

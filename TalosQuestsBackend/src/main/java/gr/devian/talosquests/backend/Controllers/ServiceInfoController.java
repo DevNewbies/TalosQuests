@@ -18,14 +18,7 @@ public class ServiceInfoController extends BaseController {
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Object> getServiceInfo() {
-        String remoteAddr = "";
-        if (Strings.isNullOrEmpty(request.getHeader("X-Forwarded-For"))) {
-            remoteAddr = request.getRemoteAddr();
-        }
-        else {
-            remoteAddr = request.getHeader("X-Forwarded-For");
-        }
-        serviceInfo.setRemoteAddr(remoteAddr);
+        serviceInfo.setRemoteAddr(getClientIpAddress());
         return Response.success(serviceInfo);
     }
 
