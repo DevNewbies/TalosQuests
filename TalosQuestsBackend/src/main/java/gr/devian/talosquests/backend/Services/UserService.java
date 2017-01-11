@@ -11,6 +11,7 @@ import gr.devian.talosquests.backend.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -37,11 +38,49 @@ public class UserService {
     @Autowired
     AccessRepository accessRepository;
 
+    @PostConstruct
+    public void init() {
+        if (!accessLevelsPresent) {
+
+            if (getAccessLevelByName("User") == null) {
+
+                AccessLevel accessLevel = new AccessLevel();
+                accessLevel.setName("User");
+                accessRepository.save(accessLevel);
+
+                accessLevel = new AccessLevel();
+                accessLevel.setName("Root");
+                accessLevel.setCanWipeQuests(true);
+                accessLevel.setCanWipeUsers(true);
+                accessLevel.setCanWipeGames(true);
+                accessLevel.setCanManageQuests(true);
+                accessLevel.setCanManageService(true);
+                accessLevel.setCanManageUsers(true);
+                accessLevel.setCanBanUsers(true);
+                accessRepository.save(accessLevel);
+
+                accessLevel = new AccessLevel();
+                accessLevel.setName("Admin");
+                accessLevel.setCanManageQuests(true);
+                accessLevel.setCanManageService(true);
+                accessLevel.setCanManageUsers(true);
+                accessLevel.setCanBanUsers(true);
+                accessRepository.save(accessLevel);
+
+            }
+            accessLevelsPresent = true;
+        }
+
+    }
+
+    static Boolean accessLevelsPresent = false;
 
     public final String userNameValidationPattern = "^[a-zA-Z0-9_\\-]{4,32}$";
     public final String passWordValidationPattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,32}$";
     public final String emailValidationPattern = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
     public final String imeiValidationPattern = "^\\d{15}$";
+
+
 
     public List<User> findAllUsers() {
         return getAllUsers();
