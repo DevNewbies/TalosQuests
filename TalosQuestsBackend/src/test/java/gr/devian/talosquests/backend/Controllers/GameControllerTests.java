@@ -1,7 +1,7 @@
 package gr.devian.talosquests.backend.Controllers;
 
 import gr.devian.talosquests.backend.AbstractControllerTest;
-import gr.devian.talosquests.backend.LocationProvider.LatLng;
+import gr.devian.talosquests.backend.Models.LatLng;
 import gr.devian.talosquests.backend.Models.QuestChoice;
 import gr.devian.talosquests.backend.Services.LocationService;
 import org.junit.Test;

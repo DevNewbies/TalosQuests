@@ -1,12 +1,15 @@
 package gr.devian.talosquests.backend.Controllers;
 
-import gr.devian.talosquests.backend.Exceptions.*;
+import com.fasterxml.jackson.annotation.JsonView;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsAccessViolationException;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsCredentialsNotMetRequirementsException;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsException;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import gr.devian.talosquests.backend.Models.Session;
-import gr.devian.talosquests.backend.Utilities.Response;
 import gr.devian.talosquests.backend.Models.User;
-import gr.devian.talosquests.backend.Services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import gr.devian.talosquests.backend.Utilities.Response;
+import gr.devian.talosquests.backend.Views.View;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/User")
 public class UserController extends BaseController {
-
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<Object> GetUserById(@RequestParam(value = "token", required = true) String token) throws TalosQuestsNullSessionException {
         Session session = userService.getSessionByToken(token);
@@ -28,9 +30,8 @@ public class UserController extends BaseController {
 
         User user = session.getUser();
 
-        return Response.success(user);
+        return Response.success(user,View.Extended.class);
     }
-
 
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     public ResponseEntity<Object> DeleteUserById(@RequestParam(value = "token", required = true) String token, @RequestParam(value = "password", required = true) String password) throws TalosQuestsException {
@@ -45,14 +46,15 @@ public class UserController extends BaseController {
             return Response.fail("Incorrect User Credentials", HttpStatus.UNAUTHORIZED);
 
         try {
-            User user = userService.removeUser(session.getUser());
-            return Response.success(user, HttpStatus.OK, "Deleted");
+            User user = userService.delete(session.getUser());
+            return Response.success(user, View.Extended.class, HttpStatus.OK, "Deleted");
         } catch (TalosQuestsAccessViolationException exc) {
             return Response.fail(exc.getMessage(), HttpStatus.FORBIDDEN);
         }
 
     }
 
+    @JsonView(View.Simple.class)
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> UpdateUserById(@RequestParam(value = "token", required = true) String token, @RequestParam(value = "password", required = true) String password, @RequestBody(required = true) AuthRegisterModel model) throws TalosQuestsException {
         Session session = userService.getSessionByToken(token);
@@ -65,8 +67,8 @@ public class UserController extends BaseController {
             return Response.fail("Incorrect User Credentials", HttpStatus.UNAUTHORIZED);
 
         try {
-            User user = userService.updateUser(session.getUser(), model);
-            return Response.success(user, 200, "Updated");
+            User user = userService.update(session.getUser(), model);
+            return Response.success(user, View.Extended.class, 200, "Updated");
         } catch (TalosQuestsCredentialsNotMetRequirementsException e) {
             return Response.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (TalosQuestsAccessViolationException exc) {

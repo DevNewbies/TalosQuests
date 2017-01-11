@@ -1,6 +1,8 @@
 package gr.devian.talosquests.backend.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import gr.devian.talosquests.backend.Views.View;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -20,10 +22,17 @@ public class Session {
     private static final SecureRandom random = new SecureRandom();
     @GeneratedValue
     @Id
+    @JsonView(View.Extended.class)
     private long sessionId;
+
     @OneToOne
+    @JsonView(View.Simple.class)
     private User user;
+
+    @JsonView(View.Simple.class)
     private String token;
+
+    @JsonView(View.Simple.class)
     private Date expires;
 
     @Transient
@@ -42,7 +51,7 @@ public class Session {
         return token;
     }
 
-    public Date getExpireDate() {
+    public Date getExpires() {
         return expires;
     }
 

@@ -1,10 +1,10 @@
 package gr.devian.talosquests.backend.Controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
 import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Utilities.Response;
-import gr.devian.talosquests.backend.Services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import gr.devian.talosquests.backend.Views.View;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;

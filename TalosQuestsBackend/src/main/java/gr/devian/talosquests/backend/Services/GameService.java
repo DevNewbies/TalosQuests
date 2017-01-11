@@ -2,7 +2,6 @@ package gr.devian.talosquests.backend.Services;
 
 import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.Factories.GameFactory;
-import gr.devian.talosquests.backend.LocationProvider.Location;
 import gr.devian.talosquests.backend.Models.Game;
 import gr.devian.talosquests.backend.Models.Quest;
 import gr.devian.talosquests.backend.Models.QuestChoice;
@@ -14,14 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
  * Created by Nikolas on 17/12/2016.
  */
 @Service
-public class GameService {
+public final class GameService {
 
 
     @Autowired
@@ -65,15 +63,28 @@ public class GameService {
     public void delete(Game game) throws TalosQuestsException {
         delete(game.getUser(), game);
     }
+    public void delete(User originUser, User targetUser) throws TalosQuestsException {
+        if (originUser == null)
+            throw new TalosQuestsNullArgumentException("originUser");
+        if (targetUser == null)
+            throw new TalosQuestsNullArgumentException("targetUser");
+
+        for (Game game : targetUser.getGames()) {
+            delete(originUser,game);
+        }
+    }
+    public void delete(User user) throws TalosQuestsException {
+        delete(user,user);
+    }
 
     public void delete(User originUser, Game game) throws TalosQuestsException {
         if (game == null)
             throw new TalosQuestsNullArgumentException("Game");
 
         if (originUser != null) {
-            if (originUser.equals(game.getUser()) && !originUser.getAccess().getCanDeleteOwnGame())
+            if (originUser.equals(game.getUser()) && !originUser.getAccess().getCanManageOwnData())
                 throw new TalosQuestsAccessViolationException("User has no access deleting own game");
-            if (!originUser.equals(game.getUser()) && !originUser.getAccess().getCanManageOtherUsers())
+            if (!originUser.equals(game.getUser()) && !originUser.getAccess().getCanManageUsers())
                 throw new TalosQuestsAccessViolationException("User has no access deleting other user's game");
         }
 

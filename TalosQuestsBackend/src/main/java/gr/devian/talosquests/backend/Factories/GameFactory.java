@@ -3,11 +3,9 @@ package gr.devian.talosquests.backend.Factories;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationNotProvidedException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationServiceUnavailableException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationsNotAvailableException;
-import gr.devian.talosquests.backend.LocationProvider.LatLng;
+import gr.devian.talosquests.backend.Models.LatLng;
 import gr.devian.talosquests.backend.Models.Game;
-import gr.devian.talosquests.backend.Models.Quest;
 import gr.devian.talosquests.backend.Models.User;
-import gr.devian.talosquests.backend.Services.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

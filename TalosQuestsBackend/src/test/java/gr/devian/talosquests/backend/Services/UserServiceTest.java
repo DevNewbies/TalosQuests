@@ -180,7 +180,7 @@ public class UserServiceTest extends AbstractServiceTest {
     @Test(expected = TalosQuestsInsufficientUserDataException.class)
     public void testCreateUserOnInsufficientUserData() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserDataException {
         AuthRegisterModel model = new AuthRegisterModel();
-        userService.createUser(model);
+        userService.create(model);
     }
 
     @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
@@ -191,7 +191,7 @@ public class UserServiceTest extends AbstractServiceTest {
         model.setPassWord("Asd123!!");
         model.setEmail("test@test.gr");
 
-        User user = userService.createUser(model);
+        User user = userService.create(model);
 
 
     }
@@ -204,7 +204,7 @@ public class UserServiceTest extends AbstractServiceTest {
         model.setPassWord("Asd123!!");
         model.setEmail("test");
 
-        User user = userService.createUser(model);
+        User user = userService.create(model);
 
 
     }
@@ -217,7 +217,7 @@ public class UserServiceTest extends AbstractServiceTest {
         model.setPassWord("asdsda");
         model.setEmail("test@test.gr");
 
-        User user = userService.createUser(model);
+        User user = userService.create(model);
 
 
     }
@@ -230,7 +230,7 @@ public class UserServiceTest extends AbstractServiceTest {
         model.setPassWord("Asd123!!");
         model.setEmail("test@test.gr");
 
-        User user = userService.createUser(model);
+        User user = userService.create(model);
 
 
     }
@@ -242,7 +242,7 @@ public class UserServiceTest extends AbstractServiceTest {
         model.setPassWord("Asd123!!");
         model.setEmail("test@test.gr");
 
-        User user = userService.createUser(model);
+        User user = userService.create(model);
 
         assertNotNull(user);
 
@@ -250,13 +250,13 @@ public class UserServiceTest extends AbstractServiceTest {
 
     /*@Test
     public void testRemoveUserWhenUserIsNull() {
-        userService.removeUser(null);
-        verify(userService,times(1)).removeUser(null);
+        userService.delete(null);
+        verify(userService,times(1)).delete(null);
     }*/
 
     @Test(expected = TalosQuestsInsufficientUserDataException.class)
     public void testUpdateUserOnNullModel() throws TalosQuestsException {
-        userService.updateUser(testUserWithSession, null);
+        userService.update(testUserWithSession, null);
     }
 
     @Test(expected = TalosQuestsCredentialsNotMetRequirementsException.class)
@@ -264,7 +264,7 @@ public class UserServiceTest extends AbstractServiceTest {
         AuthRegisterModel model = new AuthRegisterModel();
         model.setImei("test15");
 
-        userService.updateUser(testUserWithSession, model);
+        userService.update(testUserWithSession, model);
 
     }
 
@@ -273,7 +273,7 @@ public class UserServiceTest extends AbstractServiceTest {
         AuthRegisterModel model = new AuthRegisterModel();
         model.setEmail("test");
 
-        userService.updateUser(testUserWithSession, model);
+        userService.update(testUserWithSession, model);
 
     }
 
@@ -282,7 +282,7 @@ public class UserServiceTest extends AbstractServiceTest {
         AuthRegisterModel model = new AuthRegisterModel();
         model.setPassWord("123");
 
-        userService.updateUser(testUserWithSession, model);
+        userService.update(testUserWithSession, model);
 
     }
 
@@ -293,7 +293,7 @@ public class UserServiceTest extends AbstractServiceTest {
         model.setImei("012345678912345");
         model.setEmail("test@test.gr");
 
-        User user = userService.updateUser(testUserWithSession, model);
+        User user = userService.update(testUserWithSession, model);
 
         assertNotNull(user);
 
@@ -343,7 +343,7 @@ public class UserServiceTest extends AbstractServiceTest {
     @Test
     public void testRemoveUserWhenUserIsNull() throws TalosQuestsException {
         try {
-            userService.removeUser(null);
+            userService.delete(null);
             fail();
         } catch (TalosQuestsNullArgumentException e) {
             assertTrue(true);

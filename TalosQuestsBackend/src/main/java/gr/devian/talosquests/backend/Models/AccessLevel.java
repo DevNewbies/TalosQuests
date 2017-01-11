@@ -1,6 +1,7 @@
 package gr.devian.talosquests.backend.Models;
 
-import gr.devian.talosquests.backend.Utilities.Tuple;
+import com.fasterxml.jackson.annotation.JsonView;
+import gr.devian.talosquests.backend.Views.View;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.Entity;
@@ -11,24 +12,47 @@ import java.util.Objects;
 /**
  * Created by Nikolas on 9/1/2017.
  */
-
+@Component
+@Entity
 public class AccessLevel {
+    @GeneratedValue
+    @Id
     private Long id;
 
-    private String name;
-    private Boolean canCreateOwnGame;
-    private Boolean canDeleteOwnGame;
-    private Boolean canEditOwnGame;
-    private Boolean canEditOwnData;
-    private Boolean canDeleteOwnData;
-    private Boolean canManageOtherUsers;
-    private Boolean canDeleteOtherUsers;
-    private Boolean canAddQuests;
-    private Boolean canRemoveQuests;
-    private Boolean canEditQuests;
-    private Boolean canWipeUsers;
-    private Boolean canWipeGames;
-    private Boolean canBanUsers;
+    @JsonView(View.Simple.class)
+    private String name = "User";
+    @JsonView(View.Simple.class)
+    private Boolean canManageOwnData = true;
+    @JsonView(View.Simple.class)
+    private Boolean canManageUsers = false;
+    @JsonView(View.Simple.class)
+    private Boolean canManageService = false;
+    @JsonView(View.Simple.class)
+    private Boolean canManageQuests = false;
+    @JsonView(View.Simple.class)
+    private Boolean canWipeUsers = false;
+    @JsonView(View.Simple.class)
+    private Boolean canWipeGames = false;
+    @JsonView(View.Simple.class)
+    private Boolean canWipeQuests = false;
+    @JsonView(View.Simple.class)
+    private Boolean canBanUsers = false;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Boolean getCanWipeQuests() {
+        return canWipeQuests;
+    }
+
+    public void setCanWipeQuests(Boolean canWipeQuests) {
+        this.canWipeQuests = canWipeQuests;
+    }
 
     public String getName() {
         return name;
@@ -38,84 +62,36 @@ public class AccessLevel {
         this.name = name;
     }
 
-    public Boolean getCanCreateOwnGame() {
-        return canCreateOwnGame;
+    public Boolean getCanManageOwnData() {
+        return canManageOwnData;
     }
 
-    public void setCanCreateOwnGame(Boolean canCreateOwnGame) {
-        this.canCreateOwnGame = canCreateOwnGame;
+    public void setCanManageOwnData(Boolean canManageOwnData) {
+        this.canManageOwnData = canManageOwnData;
     }
 
-    public Boolean getCanDeleteOwnGame() {
-        return canDeleteOwnGame;
+    public Boolean getCanManageService() {
+        return canManageService;
     }
 
-    public void setCanDeleteOwnGame(Boolean canDeleteOwnGame) {
-        this.canDeleteOwnGame = canDeleteOwnGame;
+    public void setCanManageService(Boolean canManageService) {
+        this.canManageService = canManageService;
     }
 
-    public Boolean getCanEditOwnGame() {
-        return canEditOwnGame;
+    public Boolean getCanManageUsers() {
+        return canManageUsers;
     }
 
-    public void setCanEditOwnGame(Boolean canEditOwnGame) {
-        this.canEditOwnGame = canEditOwnGame;
+    public void setCanManageUsers(Boolean canManageUsers) {
+        this.canManageUsers = canManageUsers;
     }
 
-    public Boolean getCanEditOwnData() {
-        return canEditOwnData;
+    public Boolean getCanManageQuests() {
+        return canManageQuests;
     }
 
-    public void setCanEditOwnData(Boolean canEditOwnData) {
-        this.canEditOwnData = canEditOwnData;
-    }
-
-    public Boolean getCanDeleteOwnData() {
-        return canDeleteOwnData;
-    }
-
-    public void setCanDeleteOwnData(Boolean canDeleteOwnData) {
-        this.canDeleteOwnData = canDeleteOwnData;
-    }
-
-    public Boolean getCanManageOtherUsers() {
-        return canManageOtherUsers;
-    }
-
-    public void setCanManageOtherUsers(Boolean canManageOtherUsers) {
-        this.canManageOtherUsers = canManageOtherUsers;
-    }
-
-    public Boolean getCanDeleteOtherUsers() {
-        return canDeleteOtherUsers;
-    }
-
-    public void setCanDeleteOtherUsers(Boolean canDeleteOtherUsers) {
-        this.canDeleteOtherUsers = canDeleteOtherUsers;
-    }
-
-    public Boolean getCanAddQuests() {
-        return canAddQuests;
-    }
-
-    public void setCanAddQuests(Boolean canAddQuests) {
-        this.canAddQuests = canAddQuests;
-    }
-
-    public Boolean getCanRemoveQuests() {
-        return canRemoveQuests;
-    }
-
-    public void setCanRemoveQuests(Boolean canRemoveQuests) {
-        this.canRemoveQuests = canRemoveQuests;
-    }
-
-    public Boolean getCanEditQuests() {
-        return canEditQuests;
-    }
-
-    public void setCanEditQuests(Boolean canEditQuests) {
-        this.canEditQuests = canEditQuests;
+    public void setCanManageQuests(Boolean canManageQuests) {
+        this.canManageQuests = canManageQuests;
     }
 
     public Boolean getCanWipeUsers() {
@@ -144,55 +120,32 @@ public class AccessLevel {
 
     static {
         AccessLevel level = new AccessLevel();
-        level.setCanAddQuests(true);
         level.setCanBanUsers(true);
-        level.setCanCreateOwnGame(true);
-        level.setCanDeleteOtherUsers(true);
-        level.setCanDeleteOwnData(true);
         level.setName("Root");
         level.setCanWipeUsers(true);
         level.setCanWipeGames(true);
-        level.setCanRemoveQuests(true);
-        level.setCanManageOtherUsers(true);
-        level.setCanEditQuests(true);
-        level.setCanEditOwnGame(true);
-        level.setCanDeleteOwnGame(true);
-        level.setCanEditOwnData(true);
-
+        level.setCanWipeQuests(true);
+        level.setCanManageUsers(true);
+        level.setCanManageQuests(true);
+        level.setCanManageService(true);
+        level.setCanManageOwnData(true);
         Root = level;
 
         level = new AccessLevel();
-        level.setCanAddQuests(true);
         level.setCanBanUsers(true);
-        level.setCanCreateOwnGame(true);
-        level.setCanDeleteOtherUsers(true);
-        level.setCanDeleteOwnData(true);
         level.setName("Admin");
         level.setCanWipeUsers(false);
         level.setCanWipeGames(false);
-        level.setCanRemoveQuests(true);
-        level.setCanManageOtherUsers(true);
-        level.setCanEditQuests(true);
-        level.setCanEditOwnGame(true);
-        level.setCanDeleteOwnGame(true);
-        level.setCanEditOwnData(true);
+        level.setCanWipeQuests(false);
+        level.setCanManageUsers(true);
+        level.setCanManageQuests(true);
+        level.setCanManageService(false);
+        level.setCanManageOwnData(true);
+
         Admin = level;
 
         level = new AccessLevel();
-        level.setCanAddQuests(false);
-        level.setCanBanUsers(false);
-        level.setCanCreateOwnGame(true);
-        level.setCanDeleteOtherUsers(false);
-        level.setCanDeleteOwnData(true);
         level.setName("User");
-        level.setCanWipeUsers(false);
-        level.setCanWipeGames(false);
-        level.setCanRemoveQuests(false);
-        level.setCanManageOtherUsers(false);
-        level.setCanEditQuests(false);
-        level.setCanEditOwnGame(true);
-        level.setCanDeleteOwnGame(true);
-        level.setCanEditOwnData(true);
         User = level;
     }
 

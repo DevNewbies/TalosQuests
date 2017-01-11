@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.Factories.QuestFactory;
-import gr.devian.talosquests.backend.LocationProvider.LatLng;
+import gr.devian.talosquests.backend.Models.LatLng;
 import gr.devian.talosquests.backend.Models.*;
 import gr.devian.talosquests.backend.Repositories.GameRepository;
 import gr.devian.talosquests.backend.Repositories.QuestRepository;
@@ -184,8 +184,8 @@ public abstract class AbstractTest {
         testQuestModelSerres5 = generateQuest(testLocationSerres6);
         testQuestModelThessaloniki1 = generateQuest(testLocationThessaloniki1);
 
-        testUserWithSession = userService.createUser(testAuthRegisterModelCreatedWithSession);
-        testUserWithoutSession = userService.createUser(testAuthRegisterModelCreatedWithoutSession);
+        testUserWithSession = userService.create(testAuthRegisterModelCreatedWithSession);
+        testUserWithoutSession = userService.create(testAuthRegisterModelCreatedWithoutSession);
 
         testSession = userService.createSession(testUserWithSession);
 

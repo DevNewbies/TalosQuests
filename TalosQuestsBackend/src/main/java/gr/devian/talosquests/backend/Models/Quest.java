@@ -1,15 +1,10 @@
 package gr.devian.talosquests.backend.Models;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.joda.deser.DurationDeserializer;
-import com.fasterxml.jackson.datatype.joda.ser.DurationSerializer;
-import gr.devian.talosquests.backend.LocationProvider.Duration;
-import gr.devian.talosquests.backend.LocationProvider.LatLng;
+import com.fasterxml.jackson.annotation.JsonView;
 import gr.devian.talosquests.backend.Utilities.DurationConverter;
 import gr.devian.talosquests.backend.Utilities.LatLngConverter;
+import gr.devian.talosquests.backend.Views.View;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -24,17 +19,30 @@ import java.util.Date;
 public class Quest {
     @GeneratedValue
     @Id
+    @JsonView(View.Extended.class)
     private long id;
 
+    @JsonView(View.Simple.class)
     private Date started = null;
+
+    @JsonView(View.Simple.class)
     private Date completed = null;
+
     @Convert(converter = DurationConverter.class)
     @Column(columnDefinition = "TEXT")
     private Duration duration = new Duration(0);
+
+    @JsonView(View.Simple.class)
     private Boolean succeed = false;
+
+    @JsonView(View.Simple.class)
     private Boolean active = false;
+
+    @JsonView(View.Simple.class)
     @Convert(converter = LatLngConverter.class)
     private LatLng location = null;
+
+    @JsonView(View.Simple.class)
     @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private QuestModel quest;
 

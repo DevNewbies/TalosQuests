@@ -1,9 +1,10 @@
 package gr.devian.talosquests.backend.Models;
 
-import gr.devian.talosquests.backend.LocationProvider.LatLng;
-import gr.devian.talosquests.backend.Utilities.QuestChoiceConverter;
+import com.fasterxml.jackson.annotation.JsonView;
 import gr.devian.talosquests.backend.Utilities.LatLngConverter;
 import gr.devian.talosquests.backend.Utilities.QuestChoiceCollectionConverter;
+import gr.devian.talosquests.backend.Utilities.QuestChoiceConverter;
+import gr.devian.talosquests.backend.Views.View;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -17,24 +18,39 @@ import java.util.ArrayList;
 @Entity
 public class QuestModel {
     @GeneratedValue
+    @Column(name = "id", updatable = false, nullable = false)
     @Id
-    private long id;
+    @JsonView(View.Extended.class)
+    private Long id;
 
+    @JsonView(View.Simple.class)
     private String name;
+
+    @JsonView(View.Simple.class)
     private String content;
 
+    @JsonView(View.Simple.class)
     private int exp;
 
     @Convert(converter = LatLngConverter.class)
+    @JsonView(View.Simple.class)
     private LatLng location;
 
     @Convert(converter = QuestChoiceConverter.class)
+    @JsonView(View.Internal.class)
     private QuestChoice correctChoice;
 
     @Column(columnDefinition = "TEXT")
     @Convert(converter = QuestChoiceCollectionConverter.class)
+    @JsonView(View.Simple.class)
     private ArrayList<QuestChoice> availableChoices;
 
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
     public LatLng getLocation() {
         return location;
     }
@@ -66,6 +82,10 @@ public class QuestModel {
 
     public ArrayList<QuestChoice> getAvailableChoices() {
         return availableChoices;
+    }
+
+    public void setAvailableChoices(ArrayList<QuestChoice> availableChoices) {
+        this.availableChoices = availableChoices;
     }
 
     public void setName(String name) {

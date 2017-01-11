@@ -1,10 +1,8 @@
 package gr.devian.talosquests.backend.Models;
 
-import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.annotation.JsonView;
+import gr.devian.talosquests.backend.Views.View;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Transient;
 import java.io.Serializable;
 
@@ -13,8 +11,9 @@ import java.io.Serializable;
  */
 
 public class QuestChoice implements Serializable {
-    private String content;
 
+    @JsonView(View.Simple.class)
+    private String content;
 
     public QuestChoice(String cont) {
         content = cont;
