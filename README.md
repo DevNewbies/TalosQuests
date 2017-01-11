@@ -48,7 +48,7 @@ End Point | Methods | Parameters | Request Body | States
 
 ## Backend Service Administration Panel
 ---
-### Language C\#
+### Language C# #
 [![Build Status](https://ci.appveyor.com/api/projects/status/suysvxkqmijayb6f?svg=true)](https://ci.appveyor.com/project/ProIcons/talosquests-ilq7l/)
 
 TalosQuests is an RPG Quest Game for Mobile Phones on the Real World.
