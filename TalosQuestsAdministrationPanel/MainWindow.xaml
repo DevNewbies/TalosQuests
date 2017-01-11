@@ -2,12 +2,12 @@
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-                      xmlns:talosQuestsAdministrationPanel="clr-namespace:TalosQuestsAdministrationPanel"
                       Title="TalosQuests Server Interface"
-                      Height="360"
-                      MinHeight="360"
+                      Height="420"
+                      MinHeight="420"
                       MinWidth="475"
-                      Width="475">
+                      Width="475"
+                      TitleCharacterCasing="Normal">
     <Window.Resources>
         <Style x:Key="MyColumnHeader" 
                BasedOn="{StaticResource MetroDataGridColumnHeader}" 
@@ -47,7 +47,7 @@
             </TabItem>
             <TabItem Header="Users">
                 <Grid Background="#FFE5E5E5">
-                    <DataGrid MouseUp="UserGrid_OnMouseUp"  x:Name="userGrid" ColumnHeaderStyle="{StaticResource MyColumnHeader}" ColumnWidth="Auto"  AutoGenerateColumns="False" Margin="0,0,0,183">
+                    <DataGrid MouseUp="Grid_OnMouseUp"  x:Name="userGrid" ColumnHeaderStyle="{StaticResource MyColumnHeader}" ColumnWidth="Auto"  AutoGenerateColumns="False" Margin="0,0,0,180">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="#" IsReadOnly="True" Binding="{Binding id}"></DataGridTextColumn>
                             <DataGridTextColumn Header="Username" IsReadOnly="True" Binding="{Binding userName}"></DataGridTextColumn>
@@ -56,8 +56,8 @@
                             <DataGridCheckBoxColumn Header="Is Banned" IsReadOnly="True" Binding="{Binding banned}"></DataGridCheckBoxColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBox x:Name="searchUserField" Controls:TextBoxHelper.Watermark="Search" Height="25" Margin="0,0,135,157" TextWrapping="Wrap" VerticalAlignment="Bottom"/>
-                    <Button x:Name="button" Content="Search" Click="Button_OnClick" HorizontalContentAlignment="Center" Margin="0,0,0,158" Height="25" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="134"/>
+                    <TextBox x:Name="searchUserField" Controls:TextBoxHelper.Watermark="Search" Height="25" Margin="0,0,135,154" TextWrapping="Wrap" VerticalAlignment="Bottom"/>
+                    <Button x:Name="button" Content="Search" Click="Button_OnClick" HorizontalContentAlignment="Center" Margin="0,0,1,154" Height="25" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="134"/>
                     <CheckBox x:Name="userCanManageUsers" Content="Manage Users" IsEnabled="False" Margin="0,0,115,133" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="99"/>
                     <CheckBox x:Name="userCanManageQuests" Content="Manage Quests" IsEnabled="False" HorizontalAlignment="Right" Margin="0,0,107,110" VerticalAlignment="Bottom"/>
                     <CheckBox x:Name="userCanManageService" Content="Manage Service" IsEnabled="False" HorizontalAlignment="Right" Margin="0,0,106,87" VerticalAlignment="Bottom"/>
@@ -67,23 +67,237 @@
                     <CheckBox x:Name="userCanWipeQuests" Content="Wipe Quests" IsEnabled="False" HorizontalAlignment="Right" Margin="0,0,10,64" VerticalAlignment="Bottom"/>
                     <CheckBox x:Name="userCanWipeGames" Content="Wipe Games" IsEnabled="False" HorizontalAlignment="Right" Margin="0,0,10,133" VerticalAlignment="Bottom"/>
                     <Label x:Name="label_Copy6" Content="Username" HorizontalAlignment="Left" Margin="10,0,0,126" VerticalAlignment="Bottom"/>
-                    <TextBox HorizontalAlignment="Left" TextAlignment="Left" IsReadOnly="True" Height="23" Margin="78,0,0,126" TextWrapping="Wrap" x:Name="userUsername"  VerticalAlignment="Bottom" Width="163"/>
+                    <TextBox TextAlignment="Left" IsReadOnly="True" Height="23" Margin="78,0,220,126" TextWrapping="Wrap" x:Name="userUsername"  VerticalAlignment="Bottom"/>
                     <Label x:Name="label_Copy7" Content="Email" HorizontalAlignment="Left" Margin="10,0,0,95" VerticalAlignment="Bottom"/>
-                    <TextBox HorizontalAlignment="Left" TextAlignment="Left" IsReadOnly="True" Height="23" Controls:TextBoxHelper.Watermark="Email" Margin="78,0,0,95" TextWrapping="Wrap" x:Name="userEmail"  VerticalAlignment="Bottom" Width="163"/>
+                    <TextBox TextAlignment="Left" IsReadOnly="True" Height="23" Controls:TextBoxHelper.Watermark="Email" Margin="78,0,220,95" TextWrapping="Wrap" x:Name="userEmail"  VerticalAlignment="Bottom"/>
                     <Label x:Name="label_Copy8" Content="Role" HorizontalAlignment="Left" Margin="10,0,0,2" VerticalAlignment="Bottom"/>
-                    <TextBox HorizontalAlignment="Left" TextAlignment="Center" Controls:TextBoxHelper.Watermark="Role" IsReadOnly="True" Height="23" Margin="78,0,0,2" TextWrapping="Wrap" x:Name="userRole"  VerticalAlignment="Bottom" Width="163"/>
+                    <TextBox TextAlignment="Center" Controls:TextBoxHelper.Watermark="Role" IsReadOnly="True" Height="23" Margin="78,0,220,2" TextWrapping="Wrap" x:Name="userRole"  VerticalAlignment="Bottom"/>
                     <Button x:Name="userDelete" Click="UserDelete_OnClick" Content="Delete" HorizontalAlignment="Right" Margin="0,0,5,5" VerticalAlignment="Bottom" Width="75"/>
                     <Button x:Name="userBan" Click="UserBan_OnClick" Content="Ban" HorizontalAlignment="Right" Margin="0,0,85,5" VerticalAlignment="Bottom" Width="75" Height="27"/>
                     <Label x:Name="label_Copy9" Content="Password" HorizontalAlignment="Left" Margin="10,0,0,64" VerticalAlignment="Bottom"/>
-                    <PasswordBox HorizontalAlignment="Left" Controls:TextBoxHelper.Watermark="Password"  Height="23" Margin="78,0,0,64" x:Name="userPassword"  VerticalAlignment="Bottom" Width="163"/>
+                    <PasswordBox Controls:TextBoxHelper.Watermark="Password"  Height="23" Margin="78,0,220,64" x:Name="userPassword"  VerticalAlignment="Bottom"/>
                     <Label x:Name="label_Copy10" Content="IMEI"  HorizontalAlignment="Left" Margin="10,0,0,33" VerticalAlignment="Bottom"/>
-                    <TextBox IsReadOnly="True" HorizontalAlignment="Left"  Controls:TextBoxHelper.Watermark="IMEI"  Height="23" Margin="78,0,0,33" x:Name="userIMEI"  VerticalAlignment="Bottom" Width="163"/>
+                    <TextBox IsReadOnly="True"  Controls:TextBoxHelper.Watermark="IMEI"  Height="23" Margin="78,0,220,33" x:Name="userIMEI"  VerticalAlignment="Bottom"/>
                     <CheckBox x:Name="userBanned" Content="Banned" IsEnabled="False" HorizontalAlignment="Right" Margin="0,0,150,41" VerticalAlignment="Bottom"/>
 
                 </Grid>
             </TabItem>
-            <TabItem Header="Quests">
-                <Grid Background="#FFE5E5E5"/>
+            <TabItem Header="Quests" HorizontalAlignment="Right" Width="93">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="200"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Row="0">
+                        <DataGrid x:Name="questGrid" MouseUp="Grid_OnMouseUp" ColumnHeaderStyle="{StaticResource MyColumnHeader}" ColumnWidth="Auto"  AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="#" IsReadOnly="True" Binding="{Binding id}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding name}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Location" IsReadOnly="True" Binding="{Binding location}"></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                    <Grid Row="1">
+                        <TextBox 
+                            x:Name="questName" 
+                            Controls:TextBoxHelper.Watermark="Name" 
+                            TextChanged="QuestValidationFields"
+                            HorizontalContentAlignment="Center" 
+                            Margin="10,2,10,2" />
+                    </Grid>
+                    <Grid Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Column="0" Grid.RowSpan="2" Margin="0,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="60"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="45"/>
+                                <RowDefinition Height="35"/>
+                            </Grid.RowDefinitions>
+                            <Grid Row="0">
+                                <TextBox 
+                                    x:Name="questContent" 
+                                     HorizontalContentAlignment="Center" 
+                                     VerticalContentAlignment="Center" 
+                                     Controls:TextBoxHelper.Watermark="Content" 
+                                     Controls:TextBoxHelper.UseFloatingWatermark="True" 
+                                     Margin="10,0,10,0" 
+                                     TextWrapping="Wrap" 
+                                     TextChanged="QuestValidationFields"/>
+                            </Grid>
+
+                            <Grid Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label 
+                                    x:Name="locationLabel" 
+                                    Content="Location" 
+                                    HorizontalContentAlignment="Center"
+                                    Margin="0" 
+                                    VerticalAlignment="Top" 
+                                    Height="25"
+                                    Grid.ColumnSpan="2"
+                                />
+                                <TextBox 
+                                    x:Name="questLat" 
+                                    Controls:TextBoxHelper.Watermark="Latitude" 
+                                    Height="25" 
+                                    Margin="10,25,5,0"
+                                    TextWrapping="Wrap" 
+                                    TextChanged="QuestValidationFields"
+                                    VerticalAlignment="Top" 
+                                    Grid.Column="0"/>
+                                <TextBox 
+                                    x:Name="questLng" 
+                                    Controls:TextBoxHelper.Watermark="Longitude" 
+                                    Height="25" 
+                                    Margin="5,25,10,0"
+                                    TextWrapping="Wrap" 
+                                    TextChanged="QuestValidationFields"
+                                    VerticalAlignment="Top" 
+                                    Grid.Column="1"/>
+                            </Grid>
+                            <Grid Row="2">
+                                <TextBox 
+                                    x:Name="questExp" 
+                                    Controls:TextBoxHelper.Watermark="Experience Points" 
+                                    Controls:TextBoxHelper.UseFloatingWatermark="True"
+                                    Margin="10,0,10,0" 
+                                    TextWrapping="Wrap" 
+                                    Height="40" 
+                                    TextChanged="QuestValidationFields"
+                                    VerticalAlignment="Top"/>
+                            </Grid>
+                            <Grid Row="3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button 
+                                    x:Name="questUpdate" 
+                                    Content="Update" 
+                                    Margin="5,0,5,0"
+                                    VerticalAlignment="Top"
+                                    Grid.Column="0" 
+                                    Height="25" IsEnabled="False" Click="questUpdate_Click"/>
+                                <Button 
+                                    x:Name="questDelete" 
+                                    Content="Delete" 
+                                    Margin="5,0,5,0"
+                                    VerticalAlignment="Top" Grid.Column="1" Height="25" IsEnabled="False" Click="questDelete_Click"/>
+                                <Button 
+                                    x:Name="questAdd" 
+                                    Content="Add" 
+                                    Margin="5,0,5,0" 
+                                    VerticalAlignment="Top" 
+                                    Grid.Column="2" 
+                                    Height="25" IsEnabled="False" Click="questAdd_Click"/>
+
+                            </Grid>
+
+
+
+
+                        </Grid>
+                        <Grid Column="1" Grid.RowSpan="2" Margin="0,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="60"/>
+                                <RowDefinition Height="11*"/>
+                                <RowDefinition Height="9*"/>
+
+                            </Grid.RowDefinitions>
+                            <Grid Row="0">
+                                <ListBox 
+                                    MouseUp="List_OnMouseUp"
+                                    x:Name="questChoices" 
+                                    Margin="10,0,10,0">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0">
+                                                <TextBlock Text="{Binding content}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Grid>
+                            <Grid Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox 
+                                    x:Name="questChoiceContent" 
+                                    Grid.Row="0"
+                                    Grid.ColumnSpan="3" 
+                                    Controls:TextBoxHelper.Watermark="Choice" 
+                                    Controls:TextBoxHelper.UseFloatingWatermark="True" 
+                                    HorizontalContentAlignment="Center" 
+                                    VerticalContentAlignment="Center" 
+                                    Margin="10,5,10,0" 
+                                    TextChanged="QuestChoiceContent_OnTextChanged"
+                                    TextWrapping="Wrap"/>
+                                <Button 
+                                    x:Name="questChoiceUpdate"  
+                                    Content="Update" 
+                                    Grid.Column="0"
+                                    Grid.Row="1"
+                                    Click="QuestChoiceUpdate_OnClick"
+                                    Margin="10,0,5,0" IsEnabled="False"/>
+                                <Button 
+                                    x:Name="questChoiceDelete"
+                                    Content="Delete" 
+                                    Grid.Column="1" 
+                                    Grid.Row="1"
+                                    Click="QuestChoiceDelete_OnClick"
+                                    Margin="5,0,5,0" IsEnabled="False"/>
+                                <Button 
+                                    x:Name="questChoiceAdd"  
+                                    Content="Add" 
+                                    Grid.Column="2" 
+                                    Grid.Row="1"
+                                    Margin="5,0,10,0" IsEnabled="False" Click="questChoiceAdd_Click"/>
+                            </Grid>
+                            <Grid Row="2">
+                                <StackPanel>
+                                    <Label 
+                                        x:Name="label1" 
+                                        Content="Correct Choice" 
+                                        HorizontalContentAlignment="Center" 
+                                        Margin="10,0,10,0" 
+                                        />
+                                    <ComboBox 
+                                        x:Name="questCorrectChoice" 
+                                        Margin="10,0,10,0"
+                                        DisplayMemberPath="content"
+                                        SelectedValuePath="content"
+                                        SelectionChanged="QuestCorrectChoice_OnSelectionChanged"
+                                        />
+
+                                </StackPanel>
+
+                            </Grid>
+                        </Grid>
+
+
+
+
+
+                    </Grid>
+                </Grid>
             </TabItem>
         </TabControl>
 

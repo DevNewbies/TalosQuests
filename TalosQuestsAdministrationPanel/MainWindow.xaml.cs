@@ -29,6 +29,8 @@ namespace TalosQuestsAdministrationPanel
         private ProgressDialogController MainDialogController = null;
         public MainWindow()
         {
+            questMode = QuestMode.Add;
+            questChoiceMode = QuestMode.Add;
             InitializeComponent();
             Timer timer = new Timer(1000);
             timer.AutoReset = true;
@@ -98,6 +100,153 @@ namespace TalosQuestsAdministrationPanel
 
             };
 
+            questGrid.SelectionMode = DataGridSelectionMode.Single;
+            questGrid.SelectionUnit = DataGridSelectionUnit.FullRow;
+            questGrid.CanUserAddRows = false;
+            questGrid.ItemsSource = TalosQuests.Instance.Quests;
+            questGrid.SelectionChanged += (sender, args) =>
+            {
+                if (questGrid.SelectedIndex >= 0)
+                {
+                    questMode = QuestMode.Update;
+                    questName.IsReadOnly = true;
+                    resetQuestFields();
+
+                    var quest = ((QuestModel)questGrid.SelectedItem);
+                    questName.Text = quest.name;
+                    questContent.Text = quest.content;
+                    Choices = quest.availableChoices;
+                    questChoices.ItemsSource = Choices;
+                    questCorrectChoice.ItemsSource = Choices;
+                    int index = 0;
+                    foreach (QuestChoice choice in Choices)
+                    {
+                        if (choice.content.Equals(quest.correctChoice.content))
+                        {
+                            questCorrectChoice.SelectedIndex = index;
+                        }
+                        index++;
+                    }
+                    questExp.Text = quest.exp + "";
+                    questLat.Text = quest.location.lat + "";
+                    questLng.Text = quest.location.lng + "";
+                }
+                else
+                {
+                    questMode = QuestMode.Add;
+                    questName.IsReadOnly = false;
+                    resetQuestFields();
+                }
+            };
+
+            questChoices.ItemsSource = Choices;
+            questCorrectChoice.ItemsSource = Choices;
+
+            questChoices.SelectionChanged += (sender, args) =>
+            {
+                if (questChoices.SelectedIndex >= 0)
+                {
+                    questChoiceMode = QuestMode.Update;
+                    questChoiceDelete.IsEnabled = true;
+                    questChoiceAdd.IsEnabled = false;
+                    questChoiceContent.Text = ((QuestChoice)questChoices.SelectedItem).content;
+
+                }
+                else
+                {
+                    questChoiceMode = QuestMode.Add;
+                    questChoiceDelete.IsEnabled = false;
+                    questChoiceAdd.IsEnabled = false;
+                    questChoiceUpdate.IsEnabled = false;
+                    questChoiceContent.Text = String.Empty;
+
+                }
+            };
+
+        }
+
+        private List<QuestChoice> Choices = new List<QuestChoice>();
+
+        public QuestModel getQuestModel()
+        {
+            if (validateQuest())
+            {
+                QuestModel model = new QuestModel();
+                model.content = questContent.Text;
+                model.exp = Int32.Parse(questExp.Text);
+                model.location = new LatLng() { lat = Double.Parse(questLat.Text), lng = Double.Parse(questLng.Text) };
+                model.name = questName.Text;
+                model.availableChoices = Choices;
+                model.correctChoice = (QuestChoice)questCorrectChoice.SelectedItem;
+                return model;
+            }
+            return null;
+        }
+
+        private void resetQuestFields()
+        {
+            Choices = new List<QuestChoice>();
+            questChoices.ItemsSource = Choices;
+            questName.Text = String.Empty;
+            questExp.Text = String.Empty;
+            questLat.Text = String.Empty;
+            questLng.Text = String.Empty;
+            questChoiceContent.Text = String.Empty;
+            questContent.Text = String.Empty;
+            questCorrectChoice.ItemsSource = Choices;
+        }
+
+        enum QuestMode
+        {
+            Add,
+            Update
+        }
+
+
+
+        private QuestMode questMode;
+        private QuestMode questChoiceMode;
+
+        private void QuestValidationFields(object sender, TextChangedEventArgs e)
+        {
+            validateQuest();
+        }
+
+        private Boolean validateQuest()
+        {
+            int intTmp = 0;
+            double doubleTmp = 0D;
+            var state = !String.IsNullOrEmpty(questContent.Text) &&
+                        !questChoices.Items.IsEmpty &&
+                        Int32.TryParse(questExp.Text, out intTmp) &&
+                        Double.TryParse(questLat.Text, out doubleTmp) &&
+                        Double.TryParse(questLng.Text, out doubleTmp) &&
+                        !String.IsNullOrEmpty(questName.Text) &&
+                        questCorrectChoice.SelectedIndex > -1;
+
+            if (state)
+            {
+
+                if (questMode == QuestMode.Add)
+                {
+                    questAdd.IsEnabled = true;
+                    questDelete.IsEnabled = false;
+                    questUpdate.IsEnabled = false;
+                }
+                else
+                {
+                    questAdd.IsEnabled = false;
+                    questDelete.IsEnabled = true;
+                    questUpdate.IsEnabled = true;
+                }
+            }
+            else
+            {
+                questAdd.IsEnabled = false;
+                questUpdate.IsEnabled = false;
+                questDelete.IsEnabled = questMode == QuestMode.Update;
+            }
+            return state;
         }
 
         private void clearUserTab()
@@ -121,14 +270,28 @@ namespace TalosQuestsAdministrationPanel
             userDelete.IsEnabled = false;
 
         }
-        private void UserGrid_OnMouseUp(object sender, MouseButtonEventArgs e)
+        private void Grid_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
+
+
             var grid = sender as DataGrid;
             if (grid?.SelectedItems == null || grid.SelectedItems.Count != 1) return;
             var dgr = grid.ItemContainerGenerator.ContainerFromItem(grid.SelectedItem) as DataGridRow;
             if (dgr != null && !dgr.IsMouseOver)
             {
                 ((DataGridRow)dgr).IsSelected = false;
+            }
+        }
+
+        private void List_OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+
+            var grid = sender as ListBox;
+            if (grid?.SelectedItems == null || grid.SelectedItems.Count != 1) return;
+            var dgr = grid.ItemContainerGenerator.ContainerFromItem(grid.SelectedItem) as ListBoxItem;
+            if (dgr != null && !dgr.IsMouseOver)
+            {
+                ((ListBoxItem)dgr).IsSelected = false;
             }
         }
 
@@ -255,6 +418,216 @@ namespace TalosQuestsAdministrationPanel
                     MainDialogController.SetCancelable(true);
                     MainDialogController.Canceled += (o, args) => MainDialogController.CloseAsync();
 
+                }
+            }));
+        }
+
+
+        private void QuestChoiceContent_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (questChoiceMode == QuestMode.Update && questChoices.SelectedIndex > -1)
+            {
+                questChoiceDelete.IsEnabled = true;
+                questChoiceAdd.IsEnabled = false;
+            }
+            if (!String.IsNullOrEmpty(questChoiceContent.Text))
+            {
+                if (questChoiceMode == QuestMode.Add)
+                {
+                    questChoiceAdd.IsEnabled = true;
+                    questChoiceUpdate.IsEnabled = false;
+                    questChoiceDelete.IsEnabled = false;
+                }
+                else
+                {
+                    questChoiceAdd.IsEnabled = false;
+                    questChoiceUpdate.IsEnabled = true;
+                }
+            }
+            else
+            {
+                if (questChoiceMode == QuestMode.Add)
+                {
+                    questChoiceAdd.IsEnabled = false;
+
+                }
+            }
+        }
+
+        private void questChoiceAdd_Click(object sender, RoutedEventArgs e)
+        {
+            if (questChoiceMode == QuestMode.Add)
+            {
+                if (!String.IsNullOrEmpty(questChoiceContent.Text))
+                {
+                    Choices.Add(new QuestChoice() { content = questChoiceContent.Text });
+                    questChoices.Items.Refresh();
+                    questCorrectChoice.Items.Refresh();
+                    questChoiceContent.Text = String.Empty;
+                    validateQuest();
+                }
+
+            }
+        }
+
+        private void QuestCorrectChoice_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            validateQuest();
+        }
+
+        private void QuestChoiceDelete_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (questChoiceMode == QuestMode.Update)
+            {
+                if (questChoices.SelectedIndex > -1)
+                {
+                    var choice = (QuestChoice)questChoices.SelectedItem;
+                    Choices.Remove(choice);
+                    questChoices.Items.Refresh();
+                    questCorrectChoice.Items.Refresh();
+                    questChoiceContent.Text = String.Empty;
+                    validateQuest();
+                }
+            }
+        }
+
+        private void QuestChoiceUpdate_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (questChoiceMode == QuestMode.Update)
+            {
+                if (questChoices.SelectedIndex > -1)
+                {
+                    var choice = (QuestChoice)questChoices.SelectedItem;
+                    choice.content = questChoiceContent.Text;
+                    questChoices.Items.Refresh();
+                    questCorrectChoice.Items.Refresh();
+                    if (questChoices.SelectedIndex == questCorrectChoice.SelectedIndex)
+                    {
+                        questCorrectChoice.SelectedIndex = -1;
+                        questCorrectChoice.SelectedIndex = questChoices.SelectedIndex;
+                    }
+                    questChoiceContent.Text = String.Empty;
+                    validateQuest();
+                }
+            }
+        }
+
+        private async void questAdd_Click(object sender, RoutedEventArgs e)
+        {
+            var temp = getQuestModel();
+            if (temp != null)
+            {
+
+                MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+                await Dispatcher.InvokeAsync(new Action(async () =>
+                {
+                    MainDialogController =
+                        await this.ShowProgressAsync("Adding Quest", "Please Wait...");
+                    MainDialogController.SetIndeterminate();
+                    try
+                    {
+                        var state = await TalosQuests.Instance.AddQuest(temp);
+                        await Task.Run(() =>
+                        {
+                            Dispatcher.Invoke(DispatcherPriority.Normal, new Action(async () =>
+                            {
+                                if (state)
+                                {
+                                    MainDialogController.SetMessage("Quest Added. Populating Quests...");
+                                    await TalosQuests.Instance.FetchInfo();
+                                    questGrid.ItemsSource = null;
+                                    questGrid.Items.Refresh();
+                                    questGrid.ItemsSource = TalosQuests.Instance.Quests;
+                                    questGrid.Items.Refresh();
+                                }
+                            }));
+                        });
+                        await MainDialogController.CloseAsync();
+                    }
+                    catch (TalosQuestsException exc)
+                    {
+                        MainDialogController.SetMessage("Error: \n" + exc.Message);
+                        MainDialogController.SetCancelable(true);
+                        MainDialogController.Canceled += (o, args) => MainDialogController.CloseAsync();
+                    }
+                }));
+            }
+        }
+
+        private async void questDelete_Click(object sender, RoutedEventArgs e)
+        {
+            MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+            await Dispatcher.InvokeAsync(new Action(async () =>
+            {
+                var quest = ((QuestModel)questGrid.SelectedItem);
+                MainDialogController =
+                    await this.ShowProgressAsync("Removing Quest", "Please Wait...");
+                MainDialogController.SetIndeterminate();
+                try
+                {
+
+                    var state = await TalosQuests.Instance.DeleteQuest(quest.id);
+                    await Task.Run(() =>
+                    {
+                        Dispatcher.Invoke(DispatcherPriority.Normal, new Action(async () =>
+                        {
+                            if (state)
+                            {
+                                MainDialogController.SetMessage("Quest Removed. Populating Quests...");
+                                await TalosQuests.Instance.FetchInfo();
+                                questGrid.ItemsSource = null;
+                                questGrid.Items.Refresh();
+                                questGrid.ItemsSource = TalosQuests.Instance.Quests;
+                                questGrid.Items.Refresh();
+                            }
+                        }));
+                    });
+                    await MainDialogController.CloseAsync();
+                }
+                catch (TalosQuestsException exc)
+                {
+                    MainDialogController.SetMessage("Error: \n" + exc.Message);
+                    MainDialogController.SetCancelable(true);
+                    MainDialogController.Canceled += (o, args) => MainDialogController.CloseAsync();
+                }
+            }));
+        }
+
+        private async void questUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+            await Dispatcher.InvokeAsync(new Action(async () =>
+            {
+                var quest = ((QuestModel)questGrid.SelectedItem);
+                MainDialogController =
+                    await this.ShowProgressAsync("Updating Quest", "Please Wait...");
+                MainDialogController.SetIndeterminate();
+                try
+                {
+
+                    var state = await TalosQuests.Instance.UpdateQuest(quest.id,getQuestModel());
+                    await Task.Run(() =>
+                    {
+                        Dispatcher.Invoke(DispatcherPriority.Normal, new Action(async () =>
+                        {
+                            if (state)
+                            {
+                                MainDialogController.SetMessage("Quest Updated. Populating Quests...");
+                                await TalosQuests.Instance.FetchInfo();
+                                questGrid.ItemsSource = null;
+                                questGrid.Items.Refresh();
+                                questGrid.ItemsSource = TalosQuests.Instance.Quests;
+                                questGrid.Items.Refresh();
+                            }
+                        }));
+                    });
+                    await MainDialogController.CloseAsync();
+                }
+                catch (TalosQuestsException exc)
+                {
+                    MainDialogController.SetMessage("Error: \n" + exc.Message);
+                    MainDialogController.SetCancelable(true);
+                    MainDialogController.Canceled += (o, args) => MainDialogController.CloseAsync();
                 }
             }));
         }

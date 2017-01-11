@@ -6,7 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using Newtonsoft.Json;
 using RestSharp;
+using RestSharp.Serializers;
 using TalosQuestsAdministrationPanel.Model;
 
 namespace TalosQuestsAdministrationPanel
@@ -30,7 +32,7 @@ namespace TalosQuestsAdministrationPanel
 
         public string RemoteAddr => _remoteAddr;
 
-        private readonly RestClient _client = new RestClient("http://"+Address+":"+Port);
+        private readonly RestClient _client = new RestClient("http://" + Address + ":" + Port);
         private string _token;
 
         public static readonly String Address = "127.0.0.1";
@@ -45,7 +47,7 @@ namespace TalosQuestsAdministrationPanel
         private string _version;
         private string _remoteAddr;
         private Timer _timer = new Timer();
-        
+
         public async Task<Boolean> Login(String username, String password)
         {
             try
@@ -86,8 +88,7 @@ namespace TalosQuestsAdministrationPanel
                 _timer.Stop();
                 _timer.Dispose();
             }
-            _timer = new Timer(1000);
-            _timer.AutoReset = true;
+            _timer = new Timer(1000) { AutoReset = true };
             _timer.Elapsed += (sender, args) =>
             {
                 _uptime += 1000;
@@ -111,12 +112,12 @@ namespace TalosQuestsAdministrationPanel
 
         public async Task<Boolean> SetBannedState(User user, Boolean ban)
         {
-            var request = new RestRequest("/Admin/User/SetBannedState/"+user.id, Method.GET);
+            var request = new RestRequest("/Admin/User/SetBannedState/" + user.id, Method.GET);
             request.AddParameter("token", _token);
             request.AddParameter("ban", ban);
-            
+
             var response = await _client.ExecuteTaskAsync<Response<String>>(request);
-            if (response.Data.state != 200) throw new TalosQuestsException(response.Data.message,response.Data.state);
+            if (response.Data.state != 200) throw new TalosQuestsException(response.Data.message, response.Data.state);
             user.banned = ban;
             return true;
         }
@@ -141,9 +142,48 @@ namespace TalosQuestsAdministrationPanel
             return true;
         }
 
+        public async Task<Boolean> AddQuest(QuestModel quest)
+        {
+            var request = new RestRequest("/Admin/Quest", Method.POST);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddParameter("token", _token, ParameterType.QueryString);
+            request.RequestFormat = DataFormat.Json;
+            request.AddJsonBody(quest);
+
+            var response = await _client.ExecuteTaskAsync<Response<QuestModel>>(request);
+            if (response.Data.state != 200) throw new TalosQuestsException(response.Data.message, response.Data.state);
+            return true;
+
+        }
+
+        public async Task<Boolean> UpdateQuest(long id, QuestModel quest)
+        {
+            var request = new RestRequest("/Admin/Quest/" + id, Method.PUT);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddParameter("token", _token, ParameterType.QueryString);
+            request.AddParameter("password", "_", ParameterType.QueryString);
+            request.RequestFormat = DataFormat.Json;
+            request.AddJsonBody(quest);
+
+            var response = await _client.ExecuteTaskAsync<Response<QuestModel>>(request);
+            if (response.Data.state != 200) throw new TalosQuestsException(response.Data.message, response.Data.state);
+            return true;
+        }
+
+        public async Task<Boolean> DeleteQuest(long id)
+        {
+            var request = new RestRequest("/Admin/Quest/" + id, Method.DELETE);
+            request.AddParameter("token", _token, ParameterType.QueryString);
+            request.AddParameter("password", "_", ParameterType.QueryString);
+
+            var response = await _client.ExecuteTaskAsync<Response<String>>(request);
+            if (response.Data.state != 200) throw new TalosQuestsException(response.Data.message, response.Data.state);
+            return true;
+        }
+
         private TalosQuests()
         {
-        
+
         }
     }
 
