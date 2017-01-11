@@ -102,10 +102,6 @@ public class QuestManagementController extends AdminController {
         if (!session.getUser().getAccess().getCanManageQuests())
             return Response.fail("Access Denied", HttpStatus.FORBIDDEN);
 
-        try {
-            return Response.success(questService.create(session.getUser(), model));
-        } catch (TalosQuestsException exc) {
-            return Response.fail(exc.getMessage(),500);
-        }
+        return Response.success(questService.create(session.getUser(), model));
     }
 }

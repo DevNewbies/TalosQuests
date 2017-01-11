@@ -18,15 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @Transactional
 public class UserManagementControllerTests extends AbstractControllerTest {
-   /*
-     mockMvc.perform(put("/User")
-                .param("token",testSession.getToken())
-                .content(mapToJson(testAuthRegisterModelCreatedWithSession))
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isForbidden())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    */
 
     @Test
     public void testListUsersWithInvalidToken() throws Exception {

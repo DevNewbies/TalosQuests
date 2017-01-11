@@ -54,6 +54,7 @@ public class AccessLevel {
         return name;
     }
 
+
     public void setName(String name) {
         this.name = name;
     }
@@ -69,6 +70,7 @@ public class AccessLevel {
     public Boolean getCanManageService() {
         return canManageService;
     }
+
 
     public void setCanManageService(Boolean canManageService) {
         this.canManageService = canManageService;
@@ -114,19 +116,4 @@ public class AccessLevel {
         this.canBanUsers = canBanUsers;
     }
 
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == null) {
-            return false;
-        }
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof AccessLevel)) {
-            return false;
-        }
-        AccessLevel obj = (AccessLevel) other;
-        return Objects.equals(other, obj);
-    }
 }
