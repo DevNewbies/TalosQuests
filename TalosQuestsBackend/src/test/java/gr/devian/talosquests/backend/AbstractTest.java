@@ -1,12 +1,10 @@
 package gr.devian.talosquests.backend;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.Factories.QuestFactory;
-import gr.devian.talosquests.backend.LocationProvider.LatLng;
+import gr.devian.talosquests.backend.Models.LatLng;
 import gr.devian.talosquests.backend.Models.*;
 import gr.devian.talosquests.backend.Repositories.GameRepository;
 import gr.devian.talosquests.backend.Repositories.QuestRepository;
@@ -23,9 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.servlet.DispatcherServlet;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -116,7 +112,7 @@ public abstract class AbstractTest {
 
 
     @Before
-    public void setUp() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserData, TalosQuestsException, JsonProcessingException {
+    public void setUp() throws TalosQuestsCredentialsNotMetRequirementsException, TalosQuestsInsufficientUserDataException, TalosQuestsException, JsonProcessingException {
 
         MockitoAnnotations.initMocks(this);
 
@@ -188,8 +184,8 @@ public abstract class AbstractTest {
         testQuestModelSerres5 = generateQuest(testLocationSerres6);
         testQuestModelThessaloniki1 = generateQuest(testLocationThessaloniki1);
 
-        testUserWithSession = userService.createUser(testAuthRegisterModelCreatedWithSession);
-        testUserWithoutSession = userService.createUser(testAuthRegisterModelCreatedWithoutSession);
+        testUserWithSession = userService.create(testAuthRegisterModelCreatedWithSession);
+        testUserWithoutSession = userService.create(testAuthRegisterModelCreatedWithoutSession);
 
         testSession = userService.createSession(testUserWithSession);
 

@@ -1,6 +1,5 @@
 package gr.devian.talosquests.backend.Repositories;
 
-import gr.devian.talosquests.backend.Models.Game;
 import gr.devian.talosquests.backend.Models.QuestModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

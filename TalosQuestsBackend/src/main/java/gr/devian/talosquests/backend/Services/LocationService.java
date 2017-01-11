@@ -2,16 +2,16 @@ package gr.devian.talosquests.backend.Services;
 
 import com.google.maps.DistanceMatrixApi;
 import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
 import com.google.maps.model.DistanceMatrix;
 import com.google.maps.model.DistanceMatrixElement;
 import com.google.maps.model.TravelMode;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationServiceUnavailableException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsLocationsNotAvailableException;
-import gr.devian.talosquests.backend.LocationProvider.*;
+import gr.devian.talosquests.backend.Models.Distance;
+import gr.devian.talosquests.backend.Models.Duration;
+import gr.devian.talosquests.backend.Models.LatLng;
+import gr.devian.talosquests.backend.Models.Location;
 import gr.devian.talosquests.backend.Models.Quest;
-import gr.devian.talosquests.backend.Models.QuestChoice;
-import gr.devian.talosquests.backend.Models.QuestModel;
 import gr.devian.talosquests.backend.Repositories.QuestRepository;
 import gr.devian.talosquests.backend.Utilities.Tuple;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * Created by Nikolas on 2/12/2016.
  */
 @Service
-public class LocationService {
+public final class LocationService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static Boolean enableService = true;

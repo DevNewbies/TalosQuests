@@ -1,4 +1,7 @@
-package gr.devian.talosquests.backend.LocationProvider;
+package gr.devian.talosquests.backend.Models;
+
+import com.fasterxml.jackson.annotation.JsonView;
+import gr.devian.talosquests.backend.Views.View;
 
 import java.io.Serializable;
 
@@ -9,7 +12,10 @@ import java.io.Serializable;
 
 public class LatLng implements Serializable {
 
+    @JsonView(View.Simple.class)
     private double lat;
+
+    @JsonView(View.Simple.class)
     private double lng;
 
     public LatLng(com.google.maps.model.LatLng latlng) {

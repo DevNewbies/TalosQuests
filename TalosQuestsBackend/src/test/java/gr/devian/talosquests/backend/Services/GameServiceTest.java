@@ -3,10 +3,10 @@ package gr.devian.talosquests.backend.Services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import gr.devian.talosquests.backend.AbstractServiceTest;
 import gr.devian.talosquests.backend.Exceptions.*;
-import gr.devian.talosquests.backend.LocationProvider.LatLng;
 import gr.devian.talosquests.backend.Models.Game;
 import gr.devian.talosquests.backend.Models.Quest;
 import gr.devian.talosquests.backend.Models.QuestChoice;
+import gr.devian.talosquests.backend.Models.User;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -99,9 +99,9 @@ public class GameServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testDeleteGameOnNullGame() {
+    public void testDeleteGameOnNullGame() throws TalosQuestsException {
         try {
-            gameService.delete(null);
+            gameService.delete((User)null);
             fail("Shouldn't continue");
         } catch (TalosQuestsNullArgumentException e) {
             assertTrue(true);
@@ -109,7 +109,7 @@ public class GameServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testDeleteGameSuccess() throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException {
+    public void testDeleteGameSuccess() throws TalosQuestsException {
         gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
         gameService.delete(testGameForUserWithSession);
         assertTrue(true);

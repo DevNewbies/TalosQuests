@@ -1,15 +1,23 @@
 package gr.devian.talosquests.backend.Models;
 
-import javax.persistence.Entity;
+import com.fasterxml.jackson.annotation.JsonView;
+import gr.devian.talosquests.backend.Views.View;
 
 /**
  * Created by Xrysa on 19/11/2016.
  */
 
 public class AuthRegisterModel {
+    @JsonView(View.Simple.class)
     private String userName;
+
+    @JsonView(View.Simple.class)
     private String passWord;
+
+    @JsonView(View.Simple.class)
     private String email;
+
+    @JsonView(View.Simple.class)
     private String imei;
 
     public AuthRegisterModel(){}

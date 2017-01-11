@@ -1,13 +1,9 @@
 package gr.devian.talosquests.backend.Utilities;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import gr.devian.talosquests.backend.LocationProvider.Duration;
 import gr.devian.talosquests.backend.Models.QuestChoice;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**

@@ -1,8 +1,8 @@
 package gr.devian.talosquests.backend.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gr.devian.talosquests.backend.LocationProvider.LatLng;
-import gr.devian.talosquests.backend.Utilities.LatLngConverter;
+import com.fasterxml.jackson.annotation.JsonView;
+import gr.devian.talosquests.backend.Views.View;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -19,24 +19,30 @@ import java.util.Collection;
 public class Game {
     @GeneratedValue
     @Id
-    private long id;
+    @JsonView(View.Extended.class)
+        private long id;
 
-    @JsonIgnore
-    @OneToOne
-    private User user;
+        @JsonIgnore
+        @OneToOne
+        private User user;
 
-    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Quest activeQuest;
+        @JsonView(View.Simple.class)
+        @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
+        private Quest activeQuest;
 
-    private int experiencePoints;
+        @JsonView(View.Simple.class)
+        private int experiencePoints;
 
-    private boolean active;
+        @JsonView(View.Simple.class)
+        private boolean active;
 
-    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Collection<Quest> completedQuests;
-    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Collection<Quest> incompleteQuests;
+        @JsonView(View.Extended.class)
+        @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
+        private Collection<Quest> completedQuests;
 
+        @JsonView(View.Extended.class)
+        @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
+        private Collection<Quest> incompleteQuests;
 
     public Game() {
         user = null;
