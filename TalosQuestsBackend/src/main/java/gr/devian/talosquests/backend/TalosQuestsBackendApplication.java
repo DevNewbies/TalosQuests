@@ -14,7 +14,6 @@ import java.util.Date;
 
 
 @SpringBootApplication
-@EnableWebMvc
 @EnableTransactionManagement
 public class TalosQuestsBackendApplication {
 	private static Calendar calendar = Calendar.getInstance();
