@@ -18,14 +18,12 @@ import java.util.Date;
 @EnableTransactionManagement
 public class TalosQuestsBackendApplication {
 	private static Calendar calendar = Calendar.getInstance();
-	private static long startTime;
+	private static long startTime = calendar.getTimeInMillis();
 	public static Long getStartTime() {
 		return startTime;
 	}
 	public static void main(String[] args) {
 		SpringApplication.run(TalosQuestsBackendApplication.class, args);
-		calendar.setTime(new Date());
-		startTime = calendar.getTimeInMillis();
 	}
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 	public DispatcherServlet dispatcherServlet() {
