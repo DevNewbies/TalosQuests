@@ -1,5 +1,6 @@
 // Init View
 var Observable = require("data/observable").Observable;
+var frameModule = require("ui/frame");
 var CurrentPage;
 
 var Status = "JustStarted";
@@ -60,19 +61,19 @@ function RunTrigger(IndexOf) {
 exports.RunTrigger = RunTrigger;
 
 function StartGameProcess() {
-	// topmost.navigate("views/startgame/startgame");
+	frameModule.topmost().navigate("views/maps/maps");
 }
 
 function MyAvatarProcess() {
-	// topmost.navigate("views/myavatar/myavatar");
+	// frameModule.topmost().navigate("views/myavatar/myavatar");
 }
 
 function AchievementsProcess() {
-	// topmost.navigate("views/achievements/achievements");
+	// frameModule.topmost().navigate("views/achievements/achievements");
 }
 
 function SettingsProcess() {
-	// topmost.navigate("views/settings/settings");
+	// frameModule.topmost().navigate("views/settings/settings");
 }
 
 function ExitProcess() {

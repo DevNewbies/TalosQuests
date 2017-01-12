@@ -6,7 +6,7 @@
 			<TextField text="{{ password }}" hint="Password" secure="true" />
 			<Button text="Sign in" class="link" tap="signIn" />
 			<Button text="Sign up" class="link" tap="register"/>
-			<Button text="fb" tap="fbSignIn" id="fButton"/>	
+			<Button text="fb" tap="fbSignIn" id="fButton"/>
 		</StackLayout>
 	<ActivityIndicator busy="{{ isLoading }}" row="1" col="1" rowSpan="1" colSpan="1"/>
 	</GridLayout>
