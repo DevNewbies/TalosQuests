@@ -1,7 +1,7 @@
-var createViewModel = require("./settings-view-model").createViewModel;
+var Observable = require("data/observable").Observable;
+var CurrentPage;
 
 function onNavigatingTo(args) {
-    var page = args.object;
-    page.bindingContext = createViewModel();
+    CurrentPage = args.object;
 }
 exports.onNavigatingTo = onNavigatingTo;
