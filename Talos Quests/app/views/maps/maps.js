@@ -20,9 +20,9 @@ function onNavigatingTo(args) {
 exports.onNavigatingTo = onNavigatingTo;
 
 function enableLocation(args) {
-    do {
-        GeoLocation.enableLocationRequest();
-    } while (!GeoLocation.isEnabled())
+    if(!GeoLocation.isEnabled()) {
+      GeoLocation.enableLocationRequest();
+    }
     trackLocation();
 }
 exports.enableLocation = enableLocation;
