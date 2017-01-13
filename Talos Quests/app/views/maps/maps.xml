@@ -1,8 +1,6 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" xmlns:maps="nativescript-google-maps-sdk" navigatingTo="onNavigatingTo">
   <StackLayout>
-    <maps:mapView latitude="{{ PosX }}"
-                  longitude="{{ PosY }}"
-                  zoom="15"
+    <maps:mapView zoom="15"
                   mapReady="mapIsReady"
     />
   </StackLayout>

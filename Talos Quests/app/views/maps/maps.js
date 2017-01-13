@@ -14,8 +14,10 @@ function onNavigatingTo(args) {
 }
 exports.onNavigatingTo = onNavigatingTo;
 
-function enableLocation(args) {
-    if(!GeoLocation.isEnabled()) {
+function enableLocation() {
+    if(GeoLocation.isEnabled()) {
+      // Do Nothing
+    } else {
       GeoLocation.enableLocationRequest();
     }
 }
