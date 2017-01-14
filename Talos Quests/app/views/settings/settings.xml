@@ -14,10 +14,5 @@
       <Switch checked="{{ MusicEnabled }}" />
     </StackLayout>
 
-    <StackLayout class="SwitchTheme"  orientation="horizontal">
-      <Label text="Battery Economy" />
-      <Switch checked="{{ BatteryEconomyEnabled }}" />
-    </StackLayout>
-
   </StackLayout>
 </Page>
