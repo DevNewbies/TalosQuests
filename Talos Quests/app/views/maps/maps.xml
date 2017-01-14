@@ -1,7 +1,54 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" xmlns:maps="nativescript-google-maps-sdk" navigatingTo="onNavigatingTo">
-  <StackLayout>
-    <maps:mapView zoom="15"
-                  mapReady="mapIsReady"
-    />
-  </StackLayout>
+    <TabView id="tabViewContainer" selectedIndexChanged="onSelectedIndexChanged">
+        <TabView.items>
+            <TabViewItem title="Map">
+                <TabViewItem.view>
+                    <StackLayout>
+                        <Button text="Find Me" ontap="findMe"/>
+                        <GridLayout >
+                            <maps:mapView markerInfoWindowTapped="onMarkerSelect" latitude="{{userLatitude}}" longitude="{{userLongitude}}" zoom="15" mapReady="mapIsReady"/>
+                        </GridLayout>
+                    </StackLayout>
+                </TabViewItem.view>
+            </TabViewItem>
+            <TabViewItem title="Tasks">
+                <TabViewItem.view>
+                    <ListView items="{{ source }}">
+                        <ListView.itemTemplate>
+                            <StackLayout>
+                                <Label text="{{ title }}" textWrap="true"/>
+                                <Label text="{{ description }}" textWrap="true"/>
+                                <Image src="{{ image }}" stretch="none"/>
+                            </StackLayout>
+                        </ListView.itemTemplate>
+                    </ListView>
+                </TabViewItem.view>
+            </TabViewItem>
+            <TabViewItem title="Settings">
+                <TabViewItem.view>
+                    <StackLayout>
+
+                        <StackLayout class="SwitchTheme" orientation="horizontal">
+                            <Label text="Sound Effects"/>
+                            <Switch checked="{{ SoundEffectsEnabled }}"/>
+                        </StackLayout>
+
+                        <StackLayout class="SwitchTheme" orientation="horizontal">
+                            <Label text="Music"/>
+                            <Switch checked="{{ MusicEnabled }}"/>
+                        </StackLayout>
+
+                    </StackLayout>
+                </TabViewItem.view>
+            </TabViewItem>
+            <TabViewItem title="Logout">
+                <TabViewItem.view>
+                    <StackLayout>
+                        <Button text="Logout"/>
+                    </StackLayout>
+                </TabViewItem.view>
+            </TabViewItem>
+        </TabView.items>
+    </TabView>
+
 </Page>
