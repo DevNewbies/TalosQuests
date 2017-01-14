@@ -1,1 +1,0 @@
-User can login and redirected to the main page.
