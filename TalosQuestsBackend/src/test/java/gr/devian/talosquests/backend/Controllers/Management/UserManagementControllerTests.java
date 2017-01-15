@@ -84,6 +84,16 @@ public class UserManagementControllerTests extends AbstractControllerTest {
                 .andReturn();
     }
 
+    @Test
+    public void testListUsersWithValidTokenWithPermissionsAndInvalidIdSearchStringSpecified() throws Exception {
+        testUserWithSession.setAccess(accessService.getByName("Root"));
+        mockMvc.perform(get("/Admin/User/"+Long.MAX_VALUE)
+                .param("token",testSession.getToken()))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andReturn();
+    }
+
 
     @Test
     public void testDeleteUsersWithInvalidToken() throws Exception {

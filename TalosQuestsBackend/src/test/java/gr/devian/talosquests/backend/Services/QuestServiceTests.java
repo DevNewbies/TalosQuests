@@ -147,9 +147,9 @@ public class QuestServiceTests extends AbstractServiceTest {
 
         Quest quest = questService.update(testUserWithSession, testQuestSerres2, questModel);
 
-        assertEquals(quest.getLocation(), testLocationAthens1);
-        assertEquals(quest.getName(), "temp");
-        assertEquals(quest.getContent(), "temp");
+        assertEquals(quest.getLocation(), questModel.getLocation());
+        assertEquals(quest.getName(), questModel.getName());
+        assertEquals(quest.getContent(), questModel.getContent());
     }
 
 

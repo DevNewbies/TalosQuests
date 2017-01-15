@@ -19,7 +19,7 @@ import java.util.Collection;
 public class Game {
     @GeneratedValue
     @Id
-    @JsonView(View.Extended.class)
+    @JsonView(View.Simple.class)
     private long id;
 
     @JsonIgnore

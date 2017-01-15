@@ -42,7 +42,7 @@ public abstract class AbstractTest {
     protected GameService gameService;
 
     @Autowired
-    protected  AccessService accessService;
+    protected AccessService accessService;
 
     @Autowired
     protected QuestService questService;
@@ -125,7 +125,7 @@ public abstract class AbstractTest {
 
         userService.wipe();
 
-        questRepository.deleteAllInBatch();
+        questService.wipe();
 
         passWordPassing = "Test123!@#";
         passWordFailing = "Test";
