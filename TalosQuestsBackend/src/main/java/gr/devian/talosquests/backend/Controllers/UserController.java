@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsAccessViolationException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsCredentialsNotMetRequirementsException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsException;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullArgumentException;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Models.User;
@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/User")
 public class UserController extends BaseController {
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<Object> GetUserById(@RequestParam(value = "token", required = true) String token) throws TalosQuestsNullSessionException {
-        Session session = userService.getSessionByToken(token);
+    public ResponseEntity<Object> GetUserById(@RequestParam(value = "token", required = true) String token) throws TalosQuestsNullArgumentException {
+        Session session = sessionService.getByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
 
@@ -36,7 +36,7 @@ public class UserController extends BaseController {
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     public ResponseEntity<Object> DeleteUserById(@RequestParam(value = "token", required = true) String token, @RequestParam(value = "password", required = true) String password) throws TalosQuestsException {
 
-        Session session = userService.getSessionByToken(token);
+        Session session = sessionService.getByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
 
@@ -57,7 +57,7 @@ public class UserController extends BaseController {
     @JsonView(View.Simple.class)
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> UpdateUserById(@RequestParam(value = "token", required = true) String token, @RequestParam(value = "password", required = true) String password, @RequestBody(required = true) AuthRegisterModel model) throws TalosQuestsException {
-        Session session = userService.getSessionByToken(token);
+        Session session = sessionService.getByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
 

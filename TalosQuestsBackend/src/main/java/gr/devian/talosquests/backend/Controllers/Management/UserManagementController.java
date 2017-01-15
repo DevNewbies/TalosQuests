@@ -23,7 +23,7 @@ public class UserManagementController extends AdminController {
             @PathVariable("param") Optional<String> param,
             @RequestParam(value = "token", required = true) String token)
             throws TalosQuestsException {
-        Session session = userService.getSessionByToken(token);
+        Session session = sessionService.getByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
 
@@ -52,7 +52,7 @@ public class UserManagementController extends AdminController {
             @PathVariable("param") Optional<Long> param,
             @RequestParam(value = "password") Optional<String> password,
             @RequestParam(value = "token", required = true) String token) throws TalosQuestsException {
-        Session session = userService.getSessionByToken(token);
+        Session session = sessionService.getByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
 
@@ -85,7 +85,7 @@ public class UserManagementController extends AdminController {
 
     @RequestMapping(value = {"/User/{param}"}, method = RequestMethod.PUT)
     public ResponseEntity<Object> EditUser(@PathVariable("param") Optional<Long> param, @RequestBody AuthRegisterModel model,@RequestParam(value = "token", required = true) String token) throws TalosQuestsException {
-        Session session = userService.getSessionByToken(token);
+        Session session = sessionService.getByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
 
@@ -101,7 +101,7 @@ public class UserManagementController extends AdminController {
 
     @RequestMapping(value = {"/User/SetBannedState/{param}"}, method = RequestMethod.GET)
     public ResponseEntity<Object> BanUser(@PathVariable("param") Long param,@RequestParam(value = "ban", required = true) Boolean ban,@RequestParam(value = "token", required = true) String token) throws TalosQuestsException {
-        Session session = userService.getSessionByToken(token);
+        Session session = sessionService.getByToken(token);
         if (session == null)
             return Response.fail("Token is not valid.", HttpStatus.UNAUTHORIZED);
 

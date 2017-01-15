@@ -1,109 +1,109 @@
 package gr.devian.talosquests.backend.Models;
 
-
 import com.fasterxml.jackson.annotation.JsonView;
-import gr.devian.talosquests.backend.Utilities.DurationConverter;
 import gr.devian.talosquests.backend.Utilities.LatLngConverter;
+import gr.devian.talosquests.backend.Utilities.QuestChoiceCollectionConverter;
+import gr.devian.talosquests.backend.Utilities.QuestChoiceConverter;
 import gr.devian.talosquests.backend.Views.View;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.util.ArrayList;
 
 /**
- * Created by Nikolas on 2/12/2016.
+ * Created by Nikolas on 15/12/2016.
  */
 
-@Entity
 @Component
+@Entity
 public class Quest {
     @GeneratedValue
+    @Column(name = "id", updatable = false, nullable = false)
     @Id
     @JsonView(View.Extended.class)
-    private long id;
+    private Long id;
 
     @JsonView(View.Simple.class)
-    private Date started = null;
+    private String name;
 
     @JsonView(View.Simple.class)
-    private Date completed = null;
-
-    @Convert(converter = DurationConverter.class)
-    @Column(columnDefinition = "TEXT")
-    private Duration duration = new Duration(0);
+    private String content;
 
     @JsonView(View.Simple.class)
-    private Boolean succeed = false;
+    private int exp;
 
-    @JsonView(View.Simple.class)
-    private Boolean active = false;
-
-    @JsonView(View.Simple.class)
     @Convert(converter = LatLngConverter.class)
-    private LatLng location = null;
-
     @JsonView(View.Simple.class)
-    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private QuestModel quest;
+    private LatLng location;
+
+    @Convert(converter = QuestChoiceConverter.class)
+    @JsonView(View.Internal.class)
+    private QuestChoice correctChoice;
+
+    @Column(columnDefinition = "TEXT")
+    @Convert(converter = QuestChoiceCollectionConverter.class)
+    @JsonView(View.Simple.class)
+    private ArrayList<QuestChoice> availableChoices;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public LatLng getLocation() {
         return location;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public int getExp() {
+        return exp;
+    }
+
+    public void setExp(int exp) {
+        this.exp = exp;
+    }
+
+    public QuestChoice getCorrectChoice() {
+        return correctChoice;
+    }
+
+
+    public Quest() {
+        availableChoices = new ArrayList<>();
+    }
+
+    public ArrayList<QuestChoice> getAvailableChoices() {
+        return availableChoices;
+    }
+
+    public void setAvailableChoices(ArrayList<QuestChoice> availableChoices) {
+        this.availableChoices = availableChoices;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public void setLocation(LatLng location) {
         this.location = location;
     }
 
-    public void start() {
-        this.started = new Date();
-        setActive(true);
-    }
-
-    public void complete(boolean state) {
-        if (getStarted() != null) {
-            this.completed = new Date();
-            this.duration.inSeconds = java.time.Duration.between(started.toInstant(), completed.toInstant()).getSeconds();
-            setSucceed(state);
-            setActive(false);
-        }
-    }
-
-
-    public void setSucceed(Boolean succeed) {
-        this.succeed = succeed;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
-    public QuestModel getQuest() {
-        return quest;
-    }
-
-    public void setQuest(QuestModel quest) {
-        this.quest = quest;
-    }
-
-    public Date getStarted() {
-        return started;
-    }
-
-    public Date getCompleted() {
-        return completed;
-    }
-
-    public Duration getDuration() {
-        return duration;
-    }
-
-
-    public Boolean getSucceed() {
-        return succeed;
-    }
-
-    public Boolean getActive() {
-        return active;
+    public void setCorrectChoice(QuestChoice correctChoice) {
+        this.correctChoice = correctChoice;
     }
 
 }

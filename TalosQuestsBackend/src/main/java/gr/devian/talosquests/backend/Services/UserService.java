@@ -8,6 +8,8 @@ import gr.devian.talosquests.backend.Repositories.AccessRepository;
 import gr.devian.talosquests.backend.Repositories.GameRepository;
 import gr.devian.talosquests.backend.Repositories.SessionRepository;
 import gr.devian.talosquests.backend.Repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,59 +29,19 @@ public class UserService {
     UserRepository userRepository;
 
     @Autowired
-    GameRepository gameRepository;
-
-    @Autowired
     GameService gameService;
 
     @Autowired
-    SessionRepository sessionRepository;
+    AccessService accessService;
 
     @Autowired
-    AccessRepository accessRepository;
+    SessionService sessionService;
 
-    @PostConstruct
-    public void init() {
-        if (!accessLevelsPresent) {
-
-            if (getAccessLevelByName("User") == null) {
-
-                AccessLevel accessLevel = new AccessLevel();
-                accessLevel.setName("User");
-                accessRepository.save(accessLevel);
-
-                accessLevel = new AccessLevel();
-                accessLevel.setName("Root");
-                accessLevel.setCanWipeQuests(true);
-                accessLevel.setCanWipeUsers(true);
-                accessLevel.setCanWipeGames(true);
-                accessLevel.setCanManageQuests(true);
-                accessLevel.setCanManageService(true);
-                accessLevel.setCanManageUsers(true);
-                accessLevel.setCanBanUsers(true);
-                accessRepository.save(accessLevel);
-
-                accessLevel = new AccessLevel();
-                accessLevel.setName("Admin");
-                accessLevel.setCanManageQuests(true);
-                accessLevel.setCanManageService(true);
-                accessLevel.setCanManageUsers(true);
-                accessLevel.setCanBanUsers(true);
-                accessRepository.save(accessLevel);
-
-            }
-            accessLevelsPresent = true;
-        }
-
-    }
-
-    static Boolean accessLevelsPresent = false;
 
     public final String userNameValidationPattern = "^[a-zA-Z0-9_\\-]{4,32}$";
     public final String passWordValidationPattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,32}$";
     public final String emailValidationPattern = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
     public final String imeiValidationPattern = "^\\d{15}$";
-
 
 
     public List<User> findAllUsers() {
@@ -143,7 +105,7 @@ public class UserService {
             throw new TalosQuestsCredentialsNotMetRequirementsException("userName", userNameValidationPattern);
 
         User user = new User(model.getUserName(), model.getPassWord(), model.getEmail(), model.getImei());
-        user.setAccess(getAccessLevelByName("User"));
+        user.setAccess(accessService.getByName("User"));
         userRepository.save(user);
 
         return user;
@@ -163,6 +125,7 @@ public class UserService {
 
         if (origin.equals(target) && !origin.getAccess().getCanManageOwnData())
             throw new TalosQuestsAccessViolationException("User has no permissions to edit own data.");
+
         if (!origin.equals(target) && !origin.getAccess().getCanManageUsers())
             throw new TalosQuestsAccessViolationException("User has no permissions to edit other user's data.");
 
@@ -202,18 +165,17 @@ public class UserService {
         if (!origin.equals(target) && !origin.getAccess().getCanManageUsers())
             throw new TalosQuestsAccessViolationException("User has no permissions to delete other user's data.");
 
-
-        if (getSessionByUser(target) != null) {
-            sessionRepository.deleteSessionByUser(target);
+        Session session = sessionService.getByUser(target);
+        if (session != null) {
+            sessionService.delete(session);
         }
 
-        ArrayList<Game> games = new ArrayList<Game>(target.getGames());
+        ArrayList<Game> games = new ArrayList<>(target.getGames());
         for (Game game : games) {
             gameService.delete(game);
         }
         target.getGames().clear();
-        target.setActiveGame(null);
-        userRepository.save(target);
+
         userRepository.delete(target);
 
         return target;
@@ -237,81 +199,11 @@ public class UserService {
         userRepository.save(targetUser);
     }
 
-    public Session getSessionByUser(User user) throws TalosQuestsNullSessionException {
-        if (user == null)
-            return null;
-
-        Session session = sessionRepository.findSessionByUser(user);
-
-        if (session == null)
-            return null;
-
-        return checkSessionState(session);
-    }
-
-    public Session getSessionByToken(String token) throws TalosQuestsNullSessionException {
-        Session session = sessionRepository.findSessionByToken(token);
-
-        if (session == null)
-            return null;
-
-        return checkSessionState(session);
-
-    }
-
-    public AccessLevel getAccessLevelByName(String name) {
-        if (name == null)
-            return null;
-
-        return accessRepository.findAccessLevelByName(name);
-    }
-
-    public void setAccessLevel(User user, AccessLevel accessLevel) throws TalosQuestsNullArgumentException {
+    public void save(User user) throws TalosQuestsNullArgumentException {
         if (user == null)
             throw new TalosQuestsNullArgumentException("user");
-        if (accessLevel == null)
-            throw new TalosQuestsNullArgumentException("accessLevel");
 
-        user.setAccess(accessLevel);
         userRepository.save(user);
-    }
-
-    public Session createSession(User user) throws TalosQuestsNullSessionException {
-        Session session = getSessionByUser(user);
-
-        if (session != null)
-            removeSession(session);
-
-        session = new Session(user);
-        sessionRepository.save(session);
-        return session;
-    }
-
-    public Session checkSessionState(Session session) throws TalosQuestsNullSessionException {
-        if (session == null)
-            throw new TalosQuestsNullSessionException();
-
-        if (session.getExpires().before(new Date()) || session.getUser().getBanned()) {
-            removeSession(session);
-            return null;
-        }
-
-        session.updateExpirationDate();
-        sessionRepository.save(session);
-        return session;
-
-    }
-
-    public void expireSession(Session session) {
-        session.expire();
-        sessionRepository.save(session);
-    }
-
-    public void removeSession(Session session) throws TalosQuestsNullSessionException {
-        if (session == null)
-            throw new TalosQuestsNullSessionException();
-
-        sessionRepository.delete(session);
     }
 
     public void setActiveLocation(User user, LatLng location) throws TalosQuestsNullArgumentException {
@@ -334,18 +226,9 @@ public class UserService {
     }
 
     public void wipe() throws TalosQuestsException {
-        sessionRepository.deleteAllInBatch();
-        for (User user : userRepository.findAll()) {
-            ArrayList<Game> games = new ArrayList<Game>(user.getGames());
-            for (Game game : games) {
-                gameService.delete(null, game);
-            }
-            user.getGames().clear();
-            user.setActiveGame(null);
-            userRepository.save(user);
-            userRepository.delete(user);
-        }
+        sessionService.wipe();
+        gameService.wipe();
+        userRepository.deleteAllInBatch();
+
     }
-
-
 }

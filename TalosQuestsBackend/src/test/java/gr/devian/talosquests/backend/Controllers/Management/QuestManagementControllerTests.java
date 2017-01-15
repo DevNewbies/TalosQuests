@@ -1,7 +1,7 @@
 package gr.devian.talosquests.backend.Controllers.Management;
 
 import gr.devian.talosquests.backend.AbstractControllerTest;
-import gr.devian.talosquests.backend.Models.QuestModel;
+import gr.devian.talosquests.backend.Models.Quest;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +42,7 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testListQuestsWithValidTokenWithPermissions() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(get("/Admin/Quest")
                 .param("token", testSession.getToken()))
                 .andExpect(status().isOk())
@@ -52,7 +52,7 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testListQuestsWithValidTokenWithPermissionsAndInvalidIdSpecified() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(get("/Admin/Quest/" + Long.MAX_VALUE)
                 .param("token", testSession.getToken()))
                 .andExpect(status().isNotFound())
@@ -62,8 +62,8 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testListQuestsWithValidTokenWithPermissionsAndValidIdSpecified() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
-        mockMvc.perform(get("/Admin/Quest/" + testQuestModelSerres1.getId())
+        testUserWithSession.setAccess(accessService.getByName("Root"));
+        mockMvc.perform(get("/Admin/Quest/" + testQuestSerres1.getId())
                 .param("token", testSession.getToken()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -95,7 +95,7 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testWipeQuestsWithValidTokenWithPermissionsWithoutPassword() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(delete("/Admin/Quest")
                 .param("token", testSession.getToken()))
                 .andExpect(status().isForbidden())
@@ -105,7 +105,7 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testWipeQuestsWithValidTokenWithPermissionsWithInvalidPassword() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(delete("/Admin/Quest")
                 .param("token", testSession.getToken())
                 .param("password", "invalid"))
@@ -116,7 +116,7 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testWipeQuestsWithValidTokenWithPermissionsWithValidPassword() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(delete("/Admin/Quest")
                 .param("token", testSession.getToken())
                 .param("password", passWordPassing))
@@ -127,7 +127,7 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testWipeQuestsWithValidTokenWithPermissionsWithValidPasswordButNoWipePermission() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Admin"));
+        testUserWithSession.setAccess(accessService.getByName("Admin"));
         mockMvc.perform(delete("/Admin/Quest")
                 .param("token", testSession.getToken())
                 .param("password", passWordPassing))
@@ -138,7 +138,7 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testDeleteQuestWithValidTokenWithPermissionsAndInvalidIdSpecified() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(delete("/Admin/Quest/" + Long.MAX_VALUE)
                 .param("token", testSession.getToken()))
                 .andExpect(status().isNotFound())
@@ -148,8 +148,8 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testDeleteQuestsWithValidTokenWithPermissionsAndValidIdSpecified() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
-        mockMvc.perform(delete("/Admin/Quest/" + testQuestModelSerres1.getId())
+        testUserWithSession.setAccess(accessService.getByName("Root"));
+        mockMvc.perform(delete("/Admin/Quest/" + testQuestSerres1.getId())
                 .param("token", testSession.getToken()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -158,17 +158,17 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testUpdateQuestsWithInvalidToken() throws Exception {
-        QuestModel questModel = new QuestModel();
-        questModel.setContent("temp");
-        questModel.setAvailableChoices(testQuestModelSerres2.getAvailableChoices());
-        questModel.setCorrectChoice(testQuestModelSerres2.getCorrectChoice());
-        questModel.setLocation(testLocationAthens1);
-        questModel.setName("temp");
-        questModel.setExp(testQuestModelSerres2.getExp());
+        Quest quest = new Quest();
+        quest.setContent("temp");
+        quest.setAvailableChoices(testQuestSerres2.getAvailableChoices());
+        quest.setCorrectChoice(testQuestSerres2.getCorrectChoice());
+        quest.setLocation(testLocationAthens1);
+        quest.setName("temp");
+        quest.setExp(testQuestSerres2.getExp());
 
         mockMvc.perform(put("/Admin/Quest/" + Long.MAX_VALUE)
                 .param("token", "invalid")
-                .content(mapToJson(questModel))
+                .content(mapToJson(quest))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -178,17 +178,17 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testUpdateQuestsWithValidTokenButNoPermissions() throws Exception {
-        QuestModel questModel = new QuestModel();
-        questModel.setContent("temp");
-        questModel.setAvailableChoices(testQuestModelSerres2.getAvailableChoices());
-        questModel.setCorrectChoice(testQuestModelSerres2.getCorrectChoice());
-        questModel.setLocation(testLocationAthens1);
-        questModel.setName("temp");
-        questModel.setExp(testQuestModelSerres2.getExp());
+        Quest quest = new Quest();
+        quest.setContent("temp");
+        quest.setAvailableChoices(testQuestSerres2.getAvailableChoices());
+        quest.setCorrectChoice(testQuestSerres2.getCorrectChoice());
+        quest.setLocation(testLocationAthens1);
+        quest.setName("temp");
+        quest.setExp(testQuestSerres2.getExp());
 
         mockMvc.perform(put("/Admin/Quest/" + Long.MAX_VALUE)
                 .param("token", testSession.getToken())
-                .content(mapToJson(questModel))
+                .content(mapToJson(quest))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isForbidden())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -198,17 +198,17 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testUpdateQuestsWithValidTokenWithPermissionsWithInvalidId() throws Exception {
-        QuestModel questModel = new QuestModel();
-        questModel.setContent("temp");
-        questModel.setAvailableChoices(testQuestModelSerres2.getAvailableChoices());
-        questModel.setCorrectChoice(testQuestModelSerres2.getCorrectChoice());
-        questModel.setLocation(testLocationAthens1);
-        questModel.setName("temp");
-        questModel.setExp(testQuestModelSerres2.getExp());
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        Quest quest = new Quest();
+        quest.setContent("temp");
+        quest.setAvailableChoices(testQuestSerres2.getAvailableChoices());
+        quest.setCorrectChoice(testQuestSerres2.getCorrectChoice());
+        quest.setLocation(testLocationAthens1);
+        quest.setName("temp");
+        quest.setExp(testQuestSerres2.getExp());
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(put("/Admin/Quest/" + Long.MAX_VALUE)
                 .param("token", testSession.getToken())
-                .content(mapToJson(questModel))
+                .content(mapToJson(quest))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -218,17 +218,17 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testUpdateQuestsWithValidTokenWithPermissionsWithValidId() throws Exception {
-        QuestModel questModel = new QuestModel();
-        questModel.setContent("temp");
-        questModel.setAvailableChoices(testQuestModelSerres2.getAvailableChoices());
-        questModel.setCorrectChoice(testQuestModelSerres2.getCorrectChoice());
-        questModel.setLocation(testLocationAthens1);
-        questModel.setName("temp");
-        questModel.setExp(testQuestModelSerres2.getExp());
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
-        mockMvc.perform(put("/Admin/Quest/" + testQuestModelSerres2.getId())
+        Quest quest = new Quest();
+        quest.setContent("temp");
+        quest.setAvailableChoices(testQuestSerres2.getAvailableChoices());
+        quest.setCorrectChoice(testQuestSerres2.getCorrectChoice());
+        quest.setLocation(testLocationAthens1);
+        quest.setName("temp");
+        quest.setExp(testQuestSerres2.getExp());
+        testUserWithSession.setAccess(accessService.getByName("Root"));
+        mockMvc.perform(put("/Admin/Quest/" + testQuestSerres2.getId())
                 .param("token", testSession.getToken())
-                .content(mapToJson(questModel))
+                .content(mapToJson(quest))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -239,17 +239,17 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testCreateQuestsWithInvalidToken() throws Exception {
-        QuestModel questModel = new QuestModel();
-        questModel.setContent("temp");
-        questModel.setAvailableChoices(testQuestModelSerres2.getAvailableChoices());
-        questModel.setCorrectChoice(testQuestModelSerres2.getCorrectChoice());
-        questModel.setLocation(testLocationAthens1);
-        questModel.setName("temp");
-        questModel.setExp(testQuestModelSerres2.getExp());
+        Quest quest = new Quest();
+        quest.setContent("temp");
+        quest.setAvailableChoices(testQuestSerres2.getAvailableChoices());
+        quest.setCorrectChoice(testQuestSerres2.getCorrectChoice());
+        quest.setLocation(testLocationAthens1);
+        quest.setName("temp");
+        quest.setExp(testQuestSerres2.getExp());
 
         mockMvc.perform(post("/Admin/Quest")
                 .param("token", "invalid")
-                .content(mapToJson(questModel))
+                .content(mapToJson(quest))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -259,17 +259,17 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testCreateQuestsWithValidTokenButNoPermissions() throws Exception {
-        QuestModel questModel = new QuestModel();
-        questModel.setContent("temp");
-        questModel.setAvailableChoices(testQuestModelSerres2.getAvailableChoices());
-        questModel.setCorrectChoice(testQuestModelSerres2.getCorrectChoice());
-        questModel.setLocation(testLocationAthens1);
-        questModel.setName("temp");
-        questModel.setExp(testQuestModelSerres2.getExp());
+        Quest quest = new Quest();
+        quest.setContent("temp");
+        quest.setAvailableChoices(testQuestSerres2.getAvailableChoices());
+        quest.setCorrectChoice(testQuestSerres2.getCorrectChoice());
+        quest.setLocation(testLocationAthens1);
+        quest.setName("temp");
+        quest.setExp(testQuestSerres2.getExp());
 
         mockMvc.perform(post("/Admin/Quest")
                 .param("token", testSession.getToken())
-                .content(mapToJson(questModel))
+                .content(mapToJson(quest))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isForbidden())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -279,17 +279,17 @@ public class QuestManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testCreateQuestsWithValidTokenWithPermissionsWithInvalidId() throws Exception {
-        QuestModel questModel = new QuestModel();
-        questModel.setContent("temp");
-        questModel.setAvailableChoices(testQuestModelSerres2.getAvailableChoices());
-        questModel.setCorrectChoice(testQuestModelSerres2.getCorrectChoice());
-        questModel.setLocation(testLocationAthens1);
-        questModel.setName("temp");
-        questModel.setExp(testQuestModelSerres2.getExp());
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        Quest quest = new Quest();
+        quest.setContent("temp");
+        quest.setAvailableChoices(testQuestSerres2.getAvailableChoices());
+        quest.setCorrectChoice(testQuestSerres2.getCorrectChoice());
+        quest.setLocation(testLocationAthens1);
+        quest.setName("temp");
+        quest.setExp(testQuestSerres2.getExp());
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(post("/Admin/Quest")
                 .param("token", testSession.getToken())
-                .content(mapToJson(questModel))
+                .content(mapToJson(quest))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

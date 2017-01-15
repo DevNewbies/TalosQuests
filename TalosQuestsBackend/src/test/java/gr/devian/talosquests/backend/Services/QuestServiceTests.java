@@ -4,11 +4,13 @@ import gr.devian.talosquests.backend.AbstractServiceTest;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsAccessViolationException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullArgumentException;
+import gr.devian.talosquests.backend.Models.UserQuest;
 import gr.devian.talosquests.backend.Models.Quest;
-import gr.devian.talosquests.backend.Models.QuestModel;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.*;
 
 /**
@@ -29,167 +31,177 @@ public class QuestServiceTests extends AbstractServiceTest {
 
     @Test
     public void testGetQuestByIdWhenIdIsCorrect() {
-        assertNotNull(questService.getQuestById(((Quest) testGameForUserWithSession.getIncompleteQuests().toArray()[0]).getQuest().getId()));
+        assertNotNull(questService.getQuestById(((UserQuest) testGameForUserWithSession.getIncompleteUserQuests().toArray()[0]).getQuest().getId()));
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testCreateQuestWhenOriginUserIsNull() throws TalosQuestsException {
-        try {
-            questService.create(null, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+        questService.create(null, null);
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testCreateQuestWhenModelIsNull() throws TalosQuestsException {
-        try {
-            questService.create(testUserWithSession, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+        questService.create(testUserWithSession, null);
     }
 
-    @Test
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testCreateQuestWhenOriginUserHasNoPermissionOfManagingQuests() throws TalosQuestsException {
-        try {
-            questService.create(testUserWithSession, testQuestModelSerres2);
-            fail();
-        } catch (TalosQuestsAccessViolationException exc) {
-            assertTrue(true);
-        }
+        questService.create(testUserWithSession, testQuestSerres2);
     }
 
     @Test
     public void testCreateQuestWhenOriginUserHasPermissionOfManagingQuests() throws TalosQuestsException {
         testUserWithSession.getAccess().setCanManageQuests(true);
-        QuestModel quest = questService.create(testUserWithSession, testQuestModelSerres2);
+        Quest quest = questService.create(testUserWithSession, testQuestSerres2);
         assertNotNull(quest);
     }
 
 
-    @Test
-    public void testDeleteQuestWhenOriginUserIsNull() throws TalosQuestsException {
-        try {
-            questService.delete(null, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testDeleteQuestByQuestWhenOriginUserIsNull() throws TalosQuestsException {
+        questService.delete(null, (Quest)null);
+    }
+
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testDeleteQuestByQuestWhenModelIsNull() throws TalosQuestsException {
+        questService.delete(testUserWithSession, (Quest)null);
+    }
+
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testDeleteQuestByIdWhenOriginUserIsNull() throws TalosQuestsException {
+        questService.delete(null, (Long)null);
+    }
+
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testDeleteQuestByIdWhenModelIsNull() throws TalosQuestsException {
+        questService.delete(testUserWithSession, (Long)null);
+    }
+
+    @Test(expected = TalosQuestsAccessViolationException.class)
+    public void testDeleteQuestByIdWhenOriginUserHasNoPermissionOfManagingQuests() throws TalosQuestsException {
+        questService.delete(testUserWithSession, testQuestSerres2.getId());
+    }
+
+    @Test(expected = TalosQuestsAccessViolationException.class)
+    public void testDeleteQuestByQuestWhenOriginUserHasNoPermissionOfManagingQuests() throws TalosQuestsException {
+        questService.delete(testUserWithSession, testQuestSerres2);
     }
 
     @Test
-    public void testDeleteQuestWhenModelIsNull() throws TalosQuestsException {
-        try {
-            questService.delete(testUserWithSession, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
-    }
-
-    @Test
-    public void testDeleteQuestWhenOriginUserHasNoPermissionOfManagingQuests() throws TalosQuestsException {
-        try {
-            questService.delete(testUserWithSession, testQuestModelSerres2);
-            fail();
-        } catch (TalosQuestsAccessViolationException exc) {
-            assertTrue(true);
-        }
-    }
-
-    @Test
-    public void testDeleteQuestWhenOriginUserHasPermissionOfManagingQuests() throws TalosQuestsException {
+    public void testDeleteQuestByQuestWhenOriginUserHasPermissionOfManagingQuests() throws TalosQuestsException {
         testUserWithSession.getAccess().setCanManageQuests(true);
         gameService.getNextQuest(testGameForUserWithSession);
-        for (Quest quest : testGameForUserWithSession.getIncompleteQuests()) {
-            if (quest.getQuest().equals(testQuestModelSerres3))
-                testGameForUserWithSession.setActiveQuest(quest);
+        for (UserQuest userQuest : testGameForUserWithSession.getIncompleteUserQuests()) {
+            if (userQuest.getQuest().equals(testQuestSerres3))
+                testGameForUserWithSession.setActiveUserQuest(userQuest);
         }
-        questService.delete(testUserWithSession, testQuestModelSerres3);
+        questService.delete(testUserWithSession, testQuestSerres3);
+
+        assertTrue(true);
+    }
+
+    @Test
+    public void testDeleteQuestByIdWhenOriginUserHasPermissionOfManagingQuests() throws TalosQuestsException {
+        testUserWithSession.getAccess().setCanManageQuests(true);
+        gameService.getNextQuest(testGameForUserWithSession);
+        for (UserQuest userQuest : testGameForUserWithSession.getIncompleteUserQuests()) {
+            if (userQuest.getQuest().equals(testQuestSerres3))
+                testGameForUserWithSession.setActiveUserQuest(userQuest);
+        }
+        questService.delete(testUserWithSession, testQuestSerres3.getId());
 
         assertTrue(true);
     }
 
 
-    @Test
-    public void testUpdateQuestWhenOriginUserIsNull() throws TalosQuestsException {
-        try {
-            questService.update(null, null, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testUpdateQuestByQuestWhenOriginUserIsNull() throws TalosQuestsException {
+        questService.update(null, (Quest)null, null);
+    }
+
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testUpdateQuestByQuestWhenOriginModelIsNull() throws TalosQuestsException {
+        questService.update(testUserWithSession, (Quest)null, null);
+    }
+
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testUpdateQuestByQuestWhenNewModelIsNull() throws TalosQuestsException {
+        questService.update(testUserWithSession, testQuestSerres3, null);
+    }
+
+    @Test(expected = TalosQuestsAccessViolationException.class)
+    public void testUpdateQuestByQuestWhenOriginUserHasNoPermissionOfManagingQuests() throws TalosQuestsException {
+        questService.update(testUserWithSession, testQuestSerres2, testQuestSerres2);
     }
 
     @Test
-    public void testUpdateQuestWhenOriginModelIsNull() throws TalosQuestsException {
-        try {
-            questService.update(testUserWithSession, null, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
-    }
-
-    @Test
-    public void testUpdateQuestWhenNewModelIsNull() throws TalosQuestsException {
-        try {
-            questService.update(testUserWithSession, testQuestModelSerres3, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
-    }
-
-    @Test
-    public void testUpdateQuestWhenOriginUserHasNoPermissionOfManagingQuests() throws TalosQuestsException {
-        try {
-            questService.update(testUserWithSession, testQuestModelSerres2, testQuestModelSerres2);
-            fail();
-        } catch (TalosQuestsAccessViolationException exc) {
-            assertTrue(true);
-        }
-    }
-
-    @Test
-    public void testUpdateQuestWhenOriginUserHasPermissionOfManagingQuests() throws TalosQuestsException {
+    public void testUpdateQuestByQuestWhenOriginUserHasPermissionOfManagingQuests() throws TalosQuestsException {
         testUserWithSession.getAccess().setCanManageQuests(true);
-        QuestModel questModel = new QuestModel();
+        Quest questModel = new Quest();
         questModel.setContent("temp");
-        questModel.setAvailableChoices(testQuestModelSerres2.getAvailableChoices());
-        questModel.setCorrectChoice(testQuestModelSerres2.getCorrectChoice());
+        questModel.setAvailableChoices(testQuestSerres2.getAvailableChoices());
+        questModel.setCorrectChoice(testQuestSerres2.getCorrectChoice());
         questModel.setLocation(testLocationAthens1);
         questModel.setName("temp");
-        questModel.setExp(testQuestModelSerres2.getExp());
+        questModel.setExp(testQuestSerres2.getExp());
 
-        QuestModel quest = questService.update(testUserWithSession, testQuestModelSerres2, questModel);
+        Quest quest = questService.update(testUserWithSession, testQuestSerres2, questModel);
 
         assertEquals(quest.getLocation(), testLocationAthens1);
         assertEquals(quest.getName(), "temp");
         assertEquals(quest.getContent(), "temp");
     }
 
-    @Test
-    public void testWipeQuestWhenOriginUserlIsNull() throws TalosQuestsException {
-        try {
-            questService.wipe(null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+
+
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testUpdateQuestByIdWhenOriginUserIsNull() throws TalosQuestsException {
+        questService.update(null, (Long)null, null);
+    }
+
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testUpdateQuestByIdWhenOriginModelIsNull() throws TalosQuestsException {
+        questService.update(testUserWithSession, (Long)null, null);
+    }
+
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testUpdateQuestByIdWhenNewModelIsNull() throws TalosQuestsException {
+        questService.update(testUserWithSession, testQuestSerres3.getId(), null);
+    }
+
+    @Test(expected = TalosQuestsAccessViolationException.class)
+    public void testUpdateQuestByIdWhenOriginUserHasNoPermissionOfManagingQuests() throws TalosQuestsException {
+        questService.update(testUserWithSession, testQuestSerres2.getId(), testQuestSerres2);
     }
 
     @Test
+    public void testUpdateQuestByIdWhenOriginUserHasPermissionOfManagingQuests() throws TalosQuestsException {
+        testUserWithSession.getAccess().setCanManageQuests(true);
+        Quest questModel = new Quest();
+        questModel.setContent("temp");
+        questModel.setAvailableChoices(testQuestSerres2.getAvailableChoices());
+        questModel.setCorrectChoice(testQuestSerres2.getCorrectChoice());
+        questModel.setLocation(testLocationAthens1);
+        questModel.setName("temp");
+        questModel.setExp(testQuestSerres2.getExp());
+
+        Quest quest = questService.update(testUserWithSession, testQuestSerres2.getId(), questModel);
+
+        assertEquals(quest.getLocation(), testLocationAthens1);
+        assertEquals(quest.getName(), "temp");
+        assertEquals(quest.getContent(), "temp");
+    }
+
+
+
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testWipeQuestWhenOriginUserlIsNull() throws TalosQuestsException {
+        questService.wipe(null);
+    }
+
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testWipeQuestWhenOriginUserHasNoPermissionOfWipingQuests() throws TalosQuestsException {
-        try {
-            questService.wipe(testUserWithSession);
-            fail();
-        } catch (TalosQuestsAccessViolationException exc) {
-            assertTrue(true);
-        }
+        questService.wipe(testUserWithSession);
     }
 
     @Test
@@ -198,5 +210,10 @@ public class QuestServiceTests extends AbstractServiceTest {
         testUserWithSession.getAccess().setCanManageQuests(true);
         questService.wipe(testUserWithSession);
 
+    }
+
+    @Test
+    public void testGetAllQuests() {
+        assertThat(questService.getAllQuests(),hasSize(greaterThan(0)));
     }
 }

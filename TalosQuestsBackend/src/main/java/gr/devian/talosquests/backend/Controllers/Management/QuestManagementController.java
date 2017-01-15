@@ -1,7 +1,7 @@
 package gr.devian.talosquests.backend.Controllers.Management;
 
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsException;
-import gr.devian.talosquests.backend.Models.QuestModel;
+import gr.devian.talosquests.backend.Models.Quest;
 import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Utilities.Response;
 import gr.devian.talosquests.backend.Views.View;
@@ -22,7 +22,7 @@ public class QuestManagementController extends AdminController {
     public ResponseEntity<Object> viewQuestInfo(
             @PathVariable("param") Optional<Long> param,
             @RequestParam(value = "token", required = true) String token) throws TalosQuestsException {
-        Session session = userService.getSessionByToken(token);
+        Session session = sessionService.getByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
 
@@ -30,9 +30,9 @@ public class QuestManagementController extends AdminController {
             return Response.fail("Access Denied", HttpStatus.FORBIDDEN);
 
         if (!param.isPresent()) {
-            return Response.success(questService.listQuests(), View.Internal.class);
+            return Response.success(questService.getAllQuests(), View.Internal.class);
         } else {
-            QuestModel quest = questService.getQuestById(param.get());
+            Quest quest = questService.getQuestById(param.get());
             if (quest == null)
                 return Response.fail("Quest not found.", 404);
             return Response.success(quest, View.Internal.class);
@@ -44,7 +44,7 @@ public class QuestManagementController extends AdminController {
             @PathVariable("param") Optional<Long> param,
             @RequestParam(value = "password", required = false) Optional<String> password,
             @RequestParam(value = "token", required = true) String token) throws TalosQuestsException {
-        Session session = userService.getSessionByToken(token);
+        Session session = sessionService.getByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
 
@@ -64,7 +64,7 @@ public class QuestManagementController extends AdminController {
             questService.wipe(session.getUser());
             return Response.success("Success.");
         } else {
-            QuestModel quest = questService.getQuestById(param.get());
+            Quest quest = questService.getQuestById(param.get());
             if (quest == null)
                 return Response.fail("Quest not found.", 404);
             questService.delete(session.getUser(), quest);
@@ -76,15 +76,15 @@ public class QuestManagementController extends AdminController {
     public ResponseEntity<Object> editQuestInfo(
             @PathVariable("param") Long param,
             @RequestParam(value = "token", required = true) String token,
-            @RequestBody QuestModel model) throws TalosQuestsException {
-        Session session = userService.getSessionByToken(token);
+            @RequestBody Quest model) throws TalosQuestsException {
+        Session session = sessionService.getByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
 
         if (!session.getUser().getAccess().getCanManageQuests())
             return Response.fail("Access Denied", HttpStatus.FORBIDDEN);
 
-        QuestModel quest = questService.getQuestById(param);
+        Quest quest = questService.getQuestById(param);
         if (quest == null)
             return Response.fail("Quest not found.", 404);
 
@@ -94,8 +94,8 @@ public class QuestManagementController extends AdminController {
     @RequestMapping(value = {""}, method = RequestMethod.POST)
     public ResponseEntity<Object> addQuest(
             @RequestParam(value = "token", required = true) String token,
-            @RequestBody QuestModel model) throws TalosQuestsException {
-        Session session = userService.getSessionByToken(token);
+            @RequestBody Quest model) throws TalosQuestsException {
+        Session session = sessionService.getByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);
 

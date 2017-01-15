@@ -20,37 +20,37 @@ public class Game {
     @GeneratedValue
     @Id
     @JsonView(View.Extended.class)
-        private long id;
+    private long id;
 
-        @JsonIgnore
-        @OneToOne
-        private User user;
+    @JsonIgnore
+    @OneToOne
+    private User user;
 
-        @JsonView(View.Simple.class)
-        @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
-        private Quest activeQuest;
+    @JsonView(View.Simple.class)
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private UserQuest activeUserQuest;
 
-        @JsonView(View.Simple.class)
-        private int experiencePoints;
+    @JsonView(View.Simple.class)
+    private int experiencePoints;
 
-        @JsonView(View.Simple.class)
-        private boolean active;
+    @JsonView(View.Simple.class)
+    private boolean active;
 
-        @JsonView(View.Extended.class)
-        @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
-        private Collection<Quest> completedQuests;
+    @JsonView(View.Extended.class)
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Collection<UserQuest> completedUserQuests;
 
-        @JsonView(View.Extended.class)
-        @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
-        private Collection<Quest> incompleteQuests;
+    @JsonView(View.Extended.class)
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Collection<UserQuest> incompleteUserQuests;
 
     public Game() {
         user = null;
-        activeQuest = null;
+        activeUserQuest = null;
         experiencePoints = 0;
         active = false;
-        completedQuests = new ArrayList<>();
-        incompleteQuests = new ArrayList<>();
+        completedUserQuests = new ArrayList<>();
+        incompleteUserQuests = new ArrayList<>();
     }
 
     public long getId() {
@@ -69,12 +69,12 @@ public class Game {
         this.active = active;
     }
 
-    public Collection<Quest> getCompletedQuests() {
-        return completedQuests;
+    public Collection<UserQuest> getCompletedUserQuests() {
+        return completedUserQuests;
     }
 
-    public Collection<Quest> getIncompleteQuests() {
-        return incompleteQuests;
+    public Collection<UserQuest> getIncompleteUserQuests() {
+        return incompleteUserQuests;
     }
 
     public LatLng getCurrentUserLocation() {
@@ -86,20 +86,20 @@ public class Game {
             this.getUser().setLastLocation(currentUserLocation);
     }
 
-    public void setIncompleteQuests(ArrayList<Quest> incompleteQuests) {
-        this.incompleteQuests = incompleteQuests;
+    public void setIncompleteUserQuests(ArrayList<UserQuest> incompleteUserQuests) {
+        this.incompleteUserQuests = incompleteUserQuests;
     }
 
-    public Quest getActiveQuest() {
-        return activeQuest;
+    public UserQuest getActiveUserQuest() {
+        return activeUserQuest;
     }
 
     public int getExperiencePoints() {
         return experiencePoints;
     }
 
-    public void setActiveQuest(Quest activeQuest) {
-        this.activeQuest = activeQuest;
+    public void setActiveUserQuest(UserQuest activeUserQuest) {
+        this.activeUserQuest = activeUserQuest;
     }
 
     public void setUser(User user) {

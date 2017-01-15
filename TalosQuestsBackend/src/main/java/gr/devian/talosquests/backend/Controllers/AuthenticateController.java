@@ -1,8 +1,7 @@
 package gr.devian.talosquests.backend.Controllers;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.google.common.base.Strings;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullSessionException;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullArgumentException;
 import gr.devian.talosquests.backend.Models.AuthRegisterModel;
 import gr.devian.talosquests.backend.Models.Session;
 import gr.devian.talosquests.backend.Models.User;
@@ -21,9 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/Auth")
-public class AuthController extends BaseController {
+public class AuthenticateController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> Authenticate(@RequestBody AuthRegisterModel userModel) throws TalosQuestsNullSessionException {
+    public ResponseEntity<Object> Authenticate(@RequestBody AuthRegisterModel userModel) throws TalosQuestsNullArgumentException {
 
         if ((Strings.isNullOrEmpty(userModel.getUserName()) && Strings.isNullOrEmpty(userModel.getEmail())) || Strings.isNullOrEmpty(userModel.getPassWord()))
             return Response.fail("Insufficient Credentials.", HttpStatus.BAD_REQUEST);
@@ -42,13 +41,13 @@ public class AuthController extends BaseController {
 
         if (!user.getPassWord().equals(hashedPass))
             return Response.fail("Incorrect User Credentials.", HttpStatus.UNAUTHORIZED);
-        Session session = userService.getSessionByUser(user);
+        Session session = sessionService.getByUser(user);
 
         if (user.getBanned())
             return Response.fail("User is banned.", HttpStatus.FORBIDDEN);
 
         if (session == null)
-            session = userService.createSession(user);
+            session = sessionService.create(user);
 
         return Response.success(session, View.Simple.class, "Authenticated.");
 

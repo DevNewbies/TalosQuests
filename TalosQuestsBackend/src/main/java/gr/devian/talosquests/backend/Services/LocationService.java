@@ -11,7 +11,7 @@ import gr.devian.talosquests.backend.Models.Distance;
 import gr.devian.talosquests.backend.Models.Duration;
 import gr.devian.talosquests.backend.Models.LatLng;
 import gr.devian.talosquests.backend.Models.Location;
-import gr.devian.talosquests.backend.Models.Quest;
+import gr.devian.talosquests.backend.Models.UserQuest;
 import gr.devian.talosquests.backend.Repositories.QuestRepository;
 import gr.devian.talosquests.backend.Utilities.Tuple;
 import org.slf4j.Logger;
@@ -94,17 +94,17 @@ public class LocationService {
         }
     }
     */
-    public HashMap<Quest, Location> getQuestDistances(LatLng origin, List<Quest> quests) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
+    public HashMap<UserQuest, Location> getQuestDistances(LatLng origin, List<UserQuest> userQuests) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
         try {
             if (!enableService)
                 throw new TalosQuestsLocationServiceUnavailableException();
-            if (quests.size() <= 0)
+            if (userQuests.size() <= 0)
                 throw new TalosQuestsLocationsNotAvailableException();
-            HashMap<Quest, Location> mapQuqestDirDur = new HashMap<>();
-            String[] destinationsStr = new String[quests.size()];
+            HashMap<UserQuest, Location> mapQuqestDirDur = new HashMap<>();
+            String[] destinationsStr = new String[userQuests.size()];
             int i = 0;
-            for (Quest quest : quests) {
-                destinationsStr[i] = quest.getLocation().toString();
+            for (UserQuest userQuest : userQuests) {
+                destinationsStr[i] = userQuest.getLocation().toString();
                 i++;
             }
 
@@ -114,7 +114,7 @@ public class LocationService {
             for (DistanceMatrixElement element : dMatrix.rows[0].elements) {
                 Distance dist = new Distance(element.distance);
                 Duration dur = new Duration(element.duration);
-                mapQuqestDirDur.put(quests.get(i), new Location(dur, dist));
+                mapQuqestDirDur.put(userQuests.get(i), new Location(dur, dist));
                 i++;
             }
             return mapQuqestDirDur;
@@ -126,36 +126,36 @@ public class LocationService {
         }
     }
 
-    public ArrayList<Quest> getQuestsInRadius(LatLng origin, ArrayList<Quest> availableQuests, int radiusInMeters) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
-        ArrayList<Quest> quests = getQuestDistances(origin, availableQuests)
+    public ArrayList<UserQuest> getQuestsInRadius(LatLng origin, ArrayList<UserQuest> availableUserQuests, int radiusInMeters) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
+        ArrayList<UserQuest> userQuests = getQuestDistances(origin, availableUserQuests)
                 .entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().getDistance().inMeters <= radiusInMeters)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toCollection(ArrayList::new));
-        if (quests.size() <= 0)
+        if (userQuests.size() <= 0)
             throw new TalosQuestsLocationsNotAvailableException();
-        return quests;
+        return userQuests;
     }
 
-    public Tuple<Quest, Location> getClosestQuestDistance(LatLng origin, ArrayList<Quest> availableQuests) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
+    public Tuple<UserQuest, Location> getClosestQuestDistance(LatLng origin, ArrayList<UserQuest> availableUserQuests) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
         long min = Long.MAX_VALUE;
         Location minLocation = null;
-        Quest minQuest = null;
+        UserQuest minUserQuest = null;
 
-        for (Map.Entry<Quest, Location> entry : getQuestDistances(origin, availableQuests).entrySet()) {
+        for (Map.Entry<UserQuest, Location> entry : getQuestDistances(origin, availableUserQuests).entrySet()) {
             if (entry.getValue().getDistance().inMeters < min) {
                 min = entry.getValue().getDistance().inMeters;
-                minQuest = entry.getKey();
+                minUserQuest = entry.getKey();
                 minLocation = entry.getValue();
             } else if (entry.getValue().getDistance().inMeters == min) {
                 if (entry.getValue().getDuration().inSeconds < minLocation.getDuration().inSeconds) {
                     min = entry.getValue().getDistance().inMeters;
-                    minQuest = entry.getKey();
+                    minUserQuest = entry.getKey();
                     minLocation = entry.getValue();
                 }
             }
         }
-        return new Tuple<>(minQuest, minLocation);
+        return new Tuple<>(minUserQuest, minLocation);
     }
 }
