@@ -9,15 +9,14 @@ import gr.devian.talosquests.backend.Models.User;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.*;
 
 /**
  * Created by Nikolas on 15/1/2017.
  */
 @Transactional
-public class SessionServiceTests  extends AbstractServiceTest {
+public class SessionServiceTests extends AbstractServiceTest {
 
     @Test(expected = TalosQuestsNullArgumentException.class)
     public void testCreateSessionWhenUserIsNull() throws TalosQuestsNullArgumentException {
@@ -50,6 +49,38 @@ public class SessionServiceTests  extends AbstractServiceTest {
     public void testGetSessionByUserWhenExpired() throws TalosQuestsNullArgumentException {
         sessionService.expire(testSession);
         Session session = sessionService.getByUser(testUserWithSession);
+
+        assertNull(session);
+    }
+
+
+    @Test
+    public void testGetSessionByIdWhenIdIsNull() throws TalosQuestsNullArgumentException {
+        Session session = sessionService.getById(null);
+
+        assertNull("Failure - Expected null", session);
+    }
+
+    @Test
+    public void testGetSessionByIdWhenIdIsValid() throws TalosQuestsNullArgumentException {
+        Session session = sessionService.getById(testSession.getSessionId());
+        assertNotNull("Failure - Expected not null", session);
+
+        assertEquals("Failure - Session Ids not Equals", session.getSessionId(), testSession.getSessionId());
+
+    }
+
+    @Test
+    public void testGetSessionByIdWhenExpired() throws TalosQuestsNullArgumentException {
+        sessionService.expire(testSession);
+        Session session = sessionService.getById(testSession.getSessionId());
+
+        assertNull(session);
+    }
+
+    @Test
+    public void testGetSessionByIdWhenIdIsInvalid() throws TalosQuestsNullArgumentException {
+        Session session = sessionService.getById(Long.MAX_VALUE);
 
         assertNull(session);
     }
@@ -107,12 +138,12 @@ public class SessionServiceTests  extends AbstractServiceTest {
         sessionService.delete((Session) null);
     }
 
-    @Test (expected = TalosQuestsNullArgumentException.class)
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testWipeWhenUserIsNull() throws TalosQuestsException {
         sessionService.wipe(null);
     }
 
-    @Test (expected = TalosQuestsAccessViolationException.class)
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testWipeWhenUserIsValidButHasNoPermissionToWipe() throws TalosQuestsException {
         sessionService.wipe(testUserWithSession);
     }
@@ -121,5 +152,10 @@ public class SessionServiceTests  extends AbstractServiceTest {
     public void testWipeWhenUserIsValidWithPermission() throws TalosQuestsException {
         accessService.setUserAccessLevel(testUserWithSession, "Admin");
         sessionService.wipe(testUserWithSession);
+    }
+
+    @Test
+    public void testGetAllSessions() {
+        assertThat(sessionService.getAllSessions(), hasSize(1));
     }
 }

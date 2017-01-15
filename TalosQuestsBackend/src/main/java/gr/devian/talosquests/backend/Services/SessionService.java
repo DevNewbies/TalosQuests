@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Nikolas on 15/1/2017.
@@ -19,6 +20,10 @@ public class SessionService {
 
     @Autowired
     private SessionRepository sessionRepository;
+
+    public List<Session> getAllSessions() {
+        return sessionRepository.findAll();
+    }
 
     public Session getByUser(User user) throws TalosQuestsNullArgumentException {
         if (user == null)
@@ -40,6 +45,18 @@ public class SessionService {
 
         return checkState(session);
 
+    }
+
+    public Session getById(Long id) throws TalosQuestsNullArgumentException {
+        if (id == null)
+            return null;
+
+        Session session = sessionRepository.findOne(id);
+
+        if (session == null)
+            return null;
+
+        return checkState(session);
     }
 
     public void delete(User user) throws TalosQuestsNullArgumentException {
