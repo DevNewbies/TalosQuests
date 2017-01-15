@@ -30,7 +30,7 @@ public class GameFactory {
 
         questFactory.setLocation(userLocation);
 
-        game.setIncompleteQuests(questFactory.getQuestsInArea());
+        game.setIncompleteUserQuests(questFactory.getQuestsInArea());
 
         return game;
     }

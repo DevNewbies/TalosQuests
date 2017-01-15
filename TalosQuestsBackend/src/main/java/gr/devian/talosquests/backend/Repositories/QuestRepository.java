@@ -1,6 +1,6 @@
 package gr.devian.talosquests.backend.Repositories;
 
-import gr.devian.talosquests.backend.Models.QuestModel;
+import gr.devian.talosquests.backend.Models.Quest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 @Repository
-public interface QuestRepository extends JpaRepository<QuestModel,Long> {
+public interface QuestRepository extends JpaRepository<Quest,Long> {
 
 }

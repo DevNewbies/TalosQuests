@@ -37,6 +37,8 @@ public class AccessLevel {
     private Boolean canWipeQuests = false;
     @JsonView(View.Simple.class)
     private Boolean canBanUsers = false;
+    @JsonView(View.Simple.class)
+    private Boolean canWipeSessions = false;
 
     public Long getId() {
         return id;
@@ -116,4 +118,11 @@ public class AccessLevel {
         this.canBanUsers = canBanUsers;
     }
 
+    public Boolean getCanWipeSessions() {
+        return canWipeSessions;
+    }
+
+    public void setCanWipeSessions(Boolean canWipeSessions) {
+        this.canWipeSessions = canWipeSessions;
+    }
 }

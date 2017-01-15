@@ -120,60 +120,6 @@ public class UserServiceTests extends AbstractServiceTest {
         assertEquals(users.size(), 2);
     }
 
-    @Test
-    public void testGetSessionByUserWhenUserIsNull() throws TalosQuestsNullSessionException {
-        Session session = userService.getSessionByUser(null);
-
-        assertNull("Failure - Expected null", session);
-    }
-
-    @Test
-    public void testGetSessionByUserWhenUserDoesntHaveSession() throws TalosQuestsNullSessionException {
-        Session session = userService.getSessionByUser(testUserWithoutSession);
-        assertNull("Failure - Expected null", session);
-    }
-
-    @Test
-    public void testGetSessionByUserWhenUserHasSession() throws TalosQuestsNullSessionException {
-        Session session = userService.getSessionByUser(testUserWithSession);
-        assertNotNull("Failure - Expected not null", session);
-
-        assertEquals("Failure - Session Ids not Equals", session.getSessionId(), testSession.getSessionId());
-
-    }
-
-    @Test
-    public void testGetSessionByUserWhenExpired() throws TalosQuestsNullSessionException {
-        userService.expireSession(testSession);
-        Session session = userService.getSessionByUser(testUserWithSession);
-
-        assertNull(session);
-    }
-
-    @Test
-    public void testGetSessionByTokenWhenTokenIsNull() throws TalosQuestsNullSessionException {
-
-        Session session = userService.getSessionByToken(null);
-
-        assertNull("Failure - Expected null", session);
-    }
-
-    @Test
-    public void testGetSessionByTokenWhenTokenIsNotValid() throws TalosQuestsNullSessionException {
-        Session session = userService.getSessionByToken("testToken");
-        assertNull("Failure - Expected null", session);
-    }
-
-    @Test
-    public void testGetSessionByTokenWhenTokenIsValid() throws TalosQuestsNullSessionException {
-        Session session = userService.getSessionByToken(testSession.getToken());
-        assertNotNull("Failure - Expected Not null", session);
-    }
-
-    @Test(expected = TalosQuestsNullSessionException.class)
-    public void testRemoveSessionWhenNullGiven() throws TalosQuestsNullSessionException {
-        userService.removeSession(null);
-    }
 
     @Test
     public void testGetUserByEmailWhenEmailIsValid() {
@@ -284,12 +230,6 @@ public class UserServiceTests extends AbstractServiceTest {
 
     }
 
-    /*@Test
-    public void testRemoveUserWhenUserIsNull() {
-        userService.delete(null);
-        verify(userService,times(1)).delete(null);
-    }*/
-
     @Test(expected = TalosQuestsInsufficientUserDataException.class)
     public void testUpdateUserOnNullModel() throws TalosQuestsException {
         userService.update(testUserWithSession, null);
@@ -335,46 +275,26 @@ public class UserServiceTests extends AbstractServiceTest {
 
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testUpdateUserFromOtherUserWhenOriginIsNull() throws TalosQuestsException {
-        try {
-            userService.update(null, testUserWithSession, new AuthRegisterModel());
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+        userService.update(null, testUserWithSession, new AuthRegisterModel());
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testUpdateUserFromOtherUserWhenTargetIsNull() throws TalosQuestsException {
-        try {
-            userService.update(testUserWithSession, null, new AuthRegisterModel());
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+        userService.update(testUserWithSession, null, new AuthRegisterModel());
     }
 
-    @Test
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testUpdateUserFromOtherUserWhenOriginIsTargetButHasNoAccessToChangeData() throws TalosQuestsException {
-        try {
-            testUserWithSession.getAccess().setCanManageOwnData(false);
-            userService.update(testUserWithSession, testUserWithSession, new AuthRegisterModel());
-            fail();
-        } catch (TalosQuestsAccessViolationException exc) {
-            assertTrue(true);
-        }
+        testUserWithSession.getAccess().setCanManageOwnData(false);
+        userService.update(testUserWithSession, testUserWithSession, new AuthRegisterModel());
     }
 
-    @Test
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testUpdateUserFromOtherUserWhenOriginIsNotTargetAndHasNoAccessToChangeData() throws TalosQuestsException {
-        try {
-            testUserWithSession.getAccess().setCanManageUsers(false);
-            userService.update(testUserWithSession, testUserWithoutSession, new AuthRegisterModel());
-            fail();
-        } catch (TalosQuestsAccessViolationException exc) {
-            assertTrue(true);
-        }
+        testUserWithSession.getAccess().setCanManageUsers(false);
+        userService.update(testUserWithSession, testUserWithoutSession, new AuthRegisterModel());
     }
 
     @Test
@@ -391,161 +311,80 @@ public class UserServiceTests extends AbstractServiceTest {
     }
 
 
-    @Test
-    public void testCheckSessionStateOnNullSession() {
-        try {
-            userService.checkSessionState(null);
-            fail();
-        } catch (TalosQuestsNullSessionException e) {
-            assertTrue(true);
-        }
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testSetActiveLocationOnNullUser() throws TalosQuestsNullArgumentException {
+        userService.setActiveLocation(null, null);
     }
 
-    @Test
-    public void testCheckSessionStateOnExpiredSession() throws TalosQuestsNullSessionException {
-        testSession.expire();
-        assertNull(userService.checkSessionState(testSession));
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testSetActiveLocationOnNullLocation() throws TalosQuestsNullArgumentException {
+        userService.setActiveLocation(testUserWithSession, null);
     }
 
-    @Test
-    public void testCheckSessionStateOnValidSession() throws TalosQuestsNullSessionException {
-        assertNotNull(userService.checkSessionState(testSession));
-    }
-
-    @Test
-    public void testSetActiveLocationOnNullUser() {
-        try {
-            userService.setActiveLocation(null, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException e) {
-            assertTrue(true);
-        }
-    }
-
-    @Test
-    public void testSetActiveLocationOnNullLocation() {
-        try {
-            userService.setActiveLocation(testUserWithSession, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException e) {
-            assertTrue(true);
-        }
-    }
-
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testRemoveUserWhenUserIsNull() throws TalosQuestsException {
-        try {
-            userService.delete(null);
-            fail();
-        } catch (TalosQuestsNullArgumentException e) {
-            assertTrue(true);
-        }
+        userService.delete(null);
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testRemoveUserWhenOriginIsNull() throws TalosQuestsException {
-        try {
-            userService.delete(null, testUserWithoutSession);
-            fail();
-        } catch (TalosQuestsNullArgumentException e) {
-            assertTrue(true);
-        }
+        userService.delete(null, testUserWithoutSession);
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testRemoveUserWhenTargetIsNull() throws TalosQuestsException {
-        try {
-            userService.delete(testUserWithoutSession, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException e) {
-            assertTrue(true);
-        }
+        userService.delete(testUserWithoutSession, null);
     }
 
-    @Test
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testRemoveUserWhenOriginIsTargetButHasNoPermissionToManageOwnData() throws TalosQuestsException {
-        try {
-            testUserWithoutSession.getAccess().setCanManageOwnData(false);
-            userService.delete(testUserWithoutSession, testUserWithoutSession);
-            fail();
-        } catch (TalosQuestsAccessViolationException e) {
-            assertTrue(true);
-        }
+        testUserWithoutSession.getAccess().setCanManageOwnData(false);
+        userService.delete(testUserWithoutSession, testUserWithoutSession);
     }
 
-    @Test
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testRemoveUserWhenOriginIsNotTargetAndHasNoPermissionToManageOtherUsersData() throws TalosQuestsException {
-        try {
-            testUserWithoutSession.getAccess().setCanManageUsers(false);
-            userService.delete(testUserWithoutSession, testUserWithSession);
-            fail();
-        } catch (TalosQuestsAccessViolationException e) {
-            assertTrue(true);
-        }
+        testUserWithoutSession.getAccess().setCanManageUsers(false);
+        userService.delete(testUserWithoutSession, testUserWithSession);
     }
 
     @Test
     public void testRemoveUserWhenOriginIsNotTargetAndHasPermissionToManageOtherUsers() throws TalosQuestsException {
-        userService.createSession(testUserWithoutSession);
+        sessionService.create(testUserWithoutSession);
         testUserWithSession.getAccess().setCanManageUsers(true);
         userService.delete(testUserWithSession, testUserWithoutSession);
     }
 
     @Test
-    public void testCreateSessionWhenSessionAlreadyExists() throws TalosQuestsNullSessionException {
-        Session session = userService.getSessionByUser(testUserWithSession);
-        assertNotEquals(userService.createSession(testUserWithSession), session);
+    public void testCreateSessionWhenSessionAlreadyExists() throws TalosQuestsNullArgumentException {
+        Session session = sessionService.getByUser(testUserWithSession);
+        assertNotEquals(sessionService.create(testUserWithSession), session);
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testSetBannedStateWhenOriginIsNull() throws TalosQuestsException {
-        try {
-            userService.setBannedState(null, testUserWithoutSession, true);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+        userService.setBannedState(null, testUserWithoutSession, true);
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testSetBannedStateWhenTargetIsNull() throws TalosQuestsException {
-        try {
-            userService.setBannedState(testUserWithSession, null, true);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+        userService.setBannedState(testUserWithSession, null, true);
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testSetBannedStateWhenBanIsNull() throws TalosQuestsException {
-        try {
-            userService.setBannedState(testUserWithSession, testUserWithoutSession, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+        userService.setBannedState(testUserWithSession, testUserWithoutSession, null);
     }
 
-    @Test
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testSetBannedStateWhenOriginHasNoPermissionBanningUsers() throws TalosQuestsException {
-        try {
-            userService.setBannedState(testUserWithSession, testUserWithoutSession, true);
-            fail();
-        } catch (TalosQuestsAccessViolationException exc) {
-            assertTrue(true);
-        }
+        userService.setBannedState(testUserWithSession, testUserWithoutSession, true);
     }
 
-    @Test
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testSetBannedStateWhenOriginIsTarget() throws TalosQuestsException {
-        try {
-            testUserWithSession.getAccess().setCanBanUsers(true);
-            userService.setBannedState(testUserWithSession, testUserWithSession, true);
-            fail();
-        } catch (TalosQuestsAccessViolationException exc) {
-            assertTrue(true);
-        }
+        testUserWithSession.getAccess().setCanBanUsers(true);
+        userService.setBannedState(testUserWithSession, testUserWithSession, true);
     }
 
     @Test
@@ -555,68 +394,30 @@ public class UserServiceTests extends AbstractServiceTest {
         assertTrue(testUserWithoutSession.getBanned());
     }
 
-    @Test
-    public void testGetAccessLevelByNameWhenNameIsNull() {
-        assertNull(userService.getAccessLevelByName(null));
-    }
 
-    @Test
-    public void testGetAccessLevelByNameWhenNameNotInDatabase() {
-        assertNull(userService.getAccessLevelByName(""));
-    }
-
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testWipeUsersWhenUserIsNull() throws TalosQuestsException {
-        try {
-            userService.wipe(null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+        userService.wipe(null);
     }
 
-    @Test
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testWipeUsersWhenUserHasNoAccess() throws TalosQuestsException {
-        try {
-            userService.wipe(testUserWithSession);
-            fail();
-        } catch (TalosQuestsAccessViolationException exc) {
-            assertTrue(true);
-        }
+        userService.wipe(testUserWithSession);
     }
 
     @Test
     public void testWipeUsersWhenUserHasAccess() throws TalosQuestsException {
-
         testUserWithSession.getAccess().setCanWipeUsers(true);
         userService.wipe(testUserWithSession);
+    }
 
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testSaveUserWhenUserIsNull() throws TalosQuestsNullArgumentException {
+        userService.save(null);
     }
 
     @Test
-    public void testSetAccessLevelWhenTargetIsNull() throws TalosQuestsException {
-        try {
-            userService.setAccessLevel(null, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+    public void testSaveUserWhenUserIsValid() throws TalosQuestsNullArgumentException {
+        userService.save(testUserWithSession);
     }
-
-    @Test
-    public void testSetAccessLevelWhenAccessLevelIsNull() throws TalosQuestsException {
-        try {
-            userService.setAccessLevel(testUserWithSession, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
-    }
-
-    @Test
-    public void testSetAccessLevelSuccess() throws TalosQuestsException {
-        userService.setAccessLevel(testUserWithSession, userService.getAccessLevelByName("Admin"));
-        assertEquals(testUserWithSession.getAccess().getCanBanUsers(), true);
-    }
-
 }

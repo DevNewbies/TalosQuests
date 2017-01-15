@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by Nikolas on 4/12/2016.
  */
 @Transactional
-public class AuthControllerTests extends AbstractControllerTest {
+public class AuthenticateControllerTests extends AbstractControllerTest {
 
 
     @Test
@@ -93,7 +93,7 @@ public class AuthControllerTests extends AbstractControllerTest {
 
     @Test
     public void AuthorizedOnCorrectCredentialsWithEmailPasswordWithExpiredSession() throws Exception {
-        Session session = userService.getSessionByUser(testUserWithSession);
+        Session session = sessionService.getByUser(testUserWithSession);
         session.expire();
         testAuthRegisterModelCreatedWithSession.setUserName("");
         mockMvc.perform(post("/Auth")

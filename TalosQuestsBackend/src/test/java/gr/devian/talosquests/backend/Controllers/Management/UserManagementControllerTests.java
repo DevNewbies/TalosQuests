@@ -43,7 +43,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testListUsersWithValidTokenWithPermissions() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(get("/Admin/User")
                 .param("token",testSession.getToken()))
                 .andExpect(status().isOk())
@@ -54,7 +54,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testListUsersWithValidTokenWithPermissionsAndUserSearchStringSpecified() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(get("/Admin/User/"+"withSession")
                 .param("token",testSession.getToken()))
                 .andExpect(status().isOk())
@@ -65,7 +65,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testListUsersWithValidTokenWithPermissionsAndEmailSearchStringSpecified() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(get("/Admin/User/"+"@test")
                 .param("token",testSession.getToken()))
                 .andExpect(status().isOk())
@@ -76,7 +76,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testListUsersWithValidTokenWithPermissionsAndIdSearchStringSpecified() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(get("/Admin/User/"+testUserWithSession.getId())
                 .param("token",testSession.getToken()))
                 .andExpect(status().isOk())
@@ -98,7 +98,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testWipeUsersWithValidTokenAndPasswordButNoPermissions() throws Exception {
-        userService.setAccessLevel(testUserWithSession,userService.getAccessLevelByName("Admin"));
+        accessService.setUserAccessLevel(testUserWithSession,accessService.getByName("Admin"));
         assertTrue(testUserWithSession.getAccess().getCanBanUsers());
         mockMvc.perform(delete("/Admin/User")
                 .param("token",testSession.getToken())
@@ -122,7 +122,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testWipeUsersWithValidTokenWithPermissionsWithoutPassword() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(delete("/Admin/User")
                 .param("token",testSession.getToken()))
                 .andExpect(status().isForbidden())
@@ -132,7 +132,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testWipeUsersWithValidTokenWithPermissionsWithIncorrectPassword() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(delete("/Admin/User")
                 .param("token",testSession.getToken())
                 .param("password","invalid"))
@@ -143,7 +143,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testWipeUsersWithValidTokenWithPermissionsWithCorrectPassword() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(delete("/Admin/User")
                 .param("token",testSession.getToken())
                 .param("password",passWordPassing))
@@ -154,7 +154,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testDeleteUserWithValidTokenWithPermissionsWithInvalidUserId() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(delete("/Admin/User/"+Long.MAX_VALUE)
                 .param("token",testSession.getToken()))
                 .andExpect(status().isNotFound())
@@ -164,7 +164,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testDeleteUserWithValidTokenWithPermissionsWithOwnUserId() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(delete("/Admin/User/"+testUserWithSession.getId())
                 .param("token",testSession.getToken()))
                 .andExpect(status().isForbidden())
@@ -174,7 +174,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testDeleteUserWithValidTokenWithPermissionsWithValidUserId() throws Exception {
-        testUserWithSession.setAccess(userService.getAccessLevelByName("Root"));
+        testUserWithSession.setAccess(accessService.getByName("Root"));
         mockMvc.perform(delete("/Admin/User/"+testUserWithoutSession.getId())
                 .param("token",testSession.getToken()))
                 .andExpect(status().isOk())
@@ -206,7 +206,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testUpdateUserWithValidTokenWithPermissionsWithInvalidUserId() throws Exception {
-        userService.setAccessLevel(testUserWithSession, userService.getAccessLevelByName("Root"));
+        accessService.setUserAccessLevel(testUserWithSession, accessService.getByName("Root"));
         mockMvc.perform(put("/Admin/User/"+Long.MAX_VALUE)
                 .param("token",testSession.getToken())
                 .content(mapToJson(new AuthRegisterModel()))
@@ -218,7 +218,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testUpdateUserWithValidTokenWithPermissionsWithValidUserId() throws Exception {
-        userService.setAccessLevel(testUserWithSession, userService.getAccessLevelByName("Root"));
+        accessService.setUserAccessLevel(testUserWithSession, accessService.getByName("Root"));
         mockMvc.perform(put("/Admin/User/"+testUserWithoutSession.getId())
                 .param("token",testSession.getToken())
                 .content(mapToJson(new AuthRegisterModel()))
@@ -250,7 +250,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testSetBanStateWithValidTokenWithPermissionsWithInvalidId() throws Exception {
-        userService.setAccessLevel(testUserWithSession, userService.getAccessLevelByName("Root"));
+        accessService.setUserAccessLevel(testUserWithSession, accessService.getByName("Root"));
         mockMvc.perform(get("/Admin/User/SetBannedState/"+Long.MAX_VALUE)
                 .param("token",testSession.getToken())
                 .param("ban","true"))
@@ -261,7 +261,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testSetBanStateWithValidTokenWithPermissionsWithOwnId() throws Exception {
-        userService.setAccessLevel(testUserWithSession, userService.getAccessLevelByName("Root"));
+        accessService.setUserAccessLevel(testUserWithSession, accessService.getByName("Root"));
         mockMvc.perform(get("/Admin/User/SetBannedState/"+testUserWithSession.getId())
                 .param("token",testSession.getToken())
                 .param("ban","true"))
@@ -272,7 +272,7 @@ public class UserManagementControllerTests extends AbstractControllerTest {
 
     @Test
     public void testSetBanStateWithValidTokenWithPermissionsWithValidId() throws Exception {
-        userService.setAccessLevel(testUserWithSession, userService.getAccessLevelByName("Root"));
+        accessService.setUserAccessLevel(testUserWithSession, accessService.getByName("Root"));
         mockMvc.perform(get("/Admin/User/SetBannedState/"+testUserWithoutSession.getId())
                 .param("token",testSession.getToken())
                 .param("ban","true"))

@@ -132,7 +132,7 @@ public class QuestControllerTests extends AbstractControllerTest {
     @Test
     public void testActiveGetNextQuestWithValidTokenAndActiveGameSetButNoMoreQuestsAvailable() throws Exception {
 
-        testGameForUserWithSession.getIncompleteQuests().clear();
+        testGameForUserWithSession.getIncompleteUserQuests().clear();
         gameRepository.save(testGameForUserWithSession);
         gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
 

@@ -1,17 +1,11 @@
 package gr.devian.talosquests.backend.Controllers;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import gr.devian.talosquests.backend.Models.ServiceInfo;
-import gr.devian.talosquests.backend.Services.GameService;
-import gr.devian.talosquests.backend.Services.LocationService;
-import gr.devian.talosquests.backend.Services.QuestService;
-import gr.devian.talosquests.backend.Services.UserService;
-import gr.devian.talosquests.backend.Views.View;
+import gr.devian.talosquests.backend.Services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -25,16 +19,19 @@ public abstract class BaseController {
     protected GameService gameService;
 
     @Autowired
+    protected SessionService sessionService;
+
+    @Autowired
     protected LocationService locationService;
 
     @Autowired
     protected QuestService questService;
 
-    @Autowired(required = true)
-    protected HttpServletRequest request;
-
     @Autowired
     protected ServiceInfo serviceInfo;
+
+    @Autowired
+    protected HttpServletRequest request;
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 

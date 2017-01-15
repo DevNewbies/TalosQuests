@@ -6,14 +6,8 @@ import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.Factories.QuestFactory;
 import gr.devian.talosquests.backend.Models.LatLng;
 import gr.devian.talosquests.backend.Models.*;
-import gr.devian.talosquests.backend.Repositories.GameRepository;
-import gr.devian.talosquests.backend.Repositories.QuestRepository;
-import gr.devian.talosquests.backend.Repositories.UserQuestRepository;
-import gr.devian.talosquests.backend.Repositories.UserRepository;
-import gr.devian.talosquests.backend.Services.GameService;
-import gr.devian.talosquests.backend.Services.LocationService;
-import gr.devian.talosquests.backend.Services.QuestService;
-import gr.devian.talosquests.backend.Services.UserService;
+import gr.devian.talosquests.backend.Repositories.*;
+import gr.devian.talosquests.backend.Services.*;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -48,7 +42,16 @@ public abstract class AbstractTest {
     protected GameService gameService;
 
     @Autowired
+    protected  AccessService accessService;
+
+    @Autowired
     protected QuestService questService;
+
+    @Autowired
+    protected SessionService sessionService;
+
+    @Autowired
+    protected AccessRepository accessRepository;
 
     @Autowired
     protected UserQuestRepository userQuestRepository;
@@ -93,12 +96,12 @@ public abstract class AbstractTest {
     protected LatLng testLocationInvalid;
     protected LatLng testLocationAthens1;
 
-    protected QuestModel testQuestModelSerres1;
-    protected QuestModel testQuestModelSerres2;
-    protected QuestModel testQuestModelSerres3;
-    protected QuestModel testQuestModelSerres4;
-    protected QuestModel testQuestModelSerres5;
-    protected QuestModel testQuestModelThessaloniki1;
+    protected Quest testQuestSerres1;
+    protected Quest testQuestSerres2;
+    protected Quest testQuestSerres3;
+    protected Quest testQuestSerres4;
+    protected Quest testQuestSerres5;
+    protected Quest testQuestThessaloniki1;
 
 
     protected Session testSession;
@@ -181,17 +184,17 @@ public abstract class AbstractTest {
         testLocationInvalid = new LatLng();
 
 
-        testQuestModelSerres1 = generateQuest(testLocationSerres2);
-        testQuestModelSerres2 = generateQuest(testLocationSerres3);
-        testQuestModelSerres3 = generateQuest(testLocationSerres4);
-        testQuestModelSerres4 = generateQuest(testLocationSerres5);
-        testQuestModelSerres5 = generateQuest(testLocationSerres6);
-        testQuestModelThessaloniki1 = generateQuest(testLocationThessaloniki1);
+        testQuestSerres1 = generateQuest(testLocationSerres2);
+        testQuestSerres2 = generateQuest(testLocationSerres3);
+        testQuestSerres3 = generateQuest(testLocationSerres4);
+        testQuestSerres4 = generateQuest(testLocationSerres5);
+        testQuestSerres5 = generateQuest(testLocationSerres6);
+        testQuestThessaloniki1 = generateQuest(testLocationThessaloniki1);
 
         testUserWithSession = userService.create(testAuthRegisterModelCreatedWithSession);
         testUserWithoutSession = userService.create(testAuthRegisterModelCreatedWithoutSession);
 
-        testSession = userService.createSession(testUserWithSession);
+        testSession = sessionService.create(testUserWithSession);
 
         testGameForUserWithSession = createMockedGame(testUserWithSession);
         testGameForUserWithoutSession = createMockedGame(testUserWithoutSession);
@@ -200,7 +203,7 @@ public abstract class AbstractTest {
 
         testGameForUserWithSession = mockedGameService.create(testUserWithSession);
         testGameForUserWithoutSession = mockedGameService.create(testUserWithoutSession);
-
+        LocationService.enableService = true;
     }
 
     private Game createMockedGame(User user) throws TalosQuestsLocationServiceUnavailableException, TalosQuestsNullArgumentException, TalosQuestsLocationsNotAvailableException {
@@ -209,25 +212,25 @@ public abstract class AbstractTest {
 
         userService.setActiveLocation(user,userLatLng);
 
-        ArrayList<Quest> quests = new ArrayList<>();
+        ArrayList<UserQuest> userQuests = new ArrayList<>();
 
-        for (QuestModel q : questRepository.findAll()) {
-            Quest t = new Quest();
+        for (Quest q : questRepository.findAll()) {
+            UserQuest t = new UserQuest();
             t.setLocation(q.getLocation());
             t.setQuest(q);
-            quests.add(t);
+            userQuests.add(t);
         }
 
-        ArrayList<Quest> quests2 = new ArrayList<>();
+        ArrayList<UserQuest> quests2 = new ArrayList<>();
 
-        quests2.add(quests.get(0));
-        quests2.add(quests.get(1));
-        quests2.add(quests.get(2));
-        quests2.add(quests.get(3));
-        userQuestRepository.save(quests.get(4));
+        quests2.add(userQuests.get(0));
+        quests2.add(userQuests.get(1));
+        quests2.add(userQuests.get(2));
+        quests2.add(userQuests.get(3));
+        userQuestRepository.save(userQuests.get(4));
 
-        when(questFactory.fetchQuestsFromDatabase()).thenReturn(quests);
-        when(locationService.getQuestsInRadius(userLatLng, quests, 10000)).thenReturn(quests2);
+        when(questFactory.fetchQuestsFromDatabase()).thenReturn(userQuests);
+        when(locationService.getQuestsInRadius(userLatLng, userQuests, 10000)).thenReturn(quests2);
 
         game = new Game();
         game.setUser(user);
@@ -236,10 +239,10 @@ public abstract class AbstractTest {
 
         questFactory.setLocation(userLatLng);
 
-        game.setIncompleteQuests(locationService.getQuestsInRadius(userLatLng, quests, 10000));
-        game.getCompletedQuests().add(quests.get(2));
-        for (Quest quest : game.getIncompleteQuests()) {
-            userQuestRepository.save(quest);
+        game.setIncompleteUserQuests(locationService.getQuestsInRadius(userLatLng, userQuests, 10000));
+        game.getCompletedUserQuests().add(userQuests.get(2));
+        for (UserQuest userQuest : game.getIncompleteUserQuests()) {
+            userQuestRepository.save(userQuest);
         }
 
         gameRepository.save(game);
@@ -249,8 +252,8 @@ public abstract class AbstractTest {
         return game;
     }
 
-    protected QuestModel generateQuest(LatLng location) {
-        QuestModel q = new QuestModel();
+    protected Quest generateQuest(LatLng location) {
+        Quest q = new Quest();
         q.setLocation(location);
         q.setContent(new BigInteger(130, random).toString(50));
         q.setName(new BigInteger(130, random).toString(5));

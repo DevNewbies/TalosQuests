@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gr.devian.talosquests.backend.AbstractServiceTest;
 import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.Models.Game;
-import gr.devian.talosquests.backend.Models.Quest;
+import gr.devian.talosquests.backend.Models.UserQuest;
 import gr.devian.talosquests.backend.Models.QuestChoice;
 import gr.devian.talosquests.backend.Models.User;
 import org.junit.Test;
@@ -28,117 +28,66 @@ public class GameServiceTests extends AbstractServiceTest {
             userService.setActiveLocation(testUserWithoutSession, testLocationSerres1);
             testGameForUserWithSession = gameService.create(testUserWithoutSession);
             assertNotNull(testGameForUserWithSession);
-            assertEquals(testGameForUserWithSession.getIncompleteQuests().size(), 5);
+            assertEquals(testGameForUserWithSession.getIncompleteUserQuests().size(), 5);
 
         } catch (TalosQuestsLocationServiceUnavailableException e) {
             assumeTrue(true);
         }
     }
 
-    @Test
+
+
+    @Test(expected = TalosQuestsLocationsNotAvailableException.class)
     public void testCreateGameWhenNoQuestsAreAvailableOnUsersArea() throws TalosQuestsException, JsonProcessingException {
-        try {
-            userService.setActiveLocation(testUserWithoutSession, testLocationAthens1);
-            testGameForUserWithSession = gameService.create(testUserWithoutSession);
-            logger.warn(mapToJson(testGameForUserWithSession));
-            fail();
-        } catch (TalosQuestsLocationsNotAvailableException e) {
-            assertTrue(true);
-        }
+        userService.setActiveLocation(testUserWithoutSession, testLocationAthens1);
+        testGameForUserWithSession = gameService.create(testUserWithoutSession);
     }
 
-    @Test
+    @Test(expected = TalosQuestsLocationsNotAvailableException.class)
     public void testCreateGameWhenNoQuestsAreAvailableOnDatabase() throws TalosQuestsException {
         gameService.wipe();
         questRepository.deleteAll();
-        try {
-            userService.setActiveLocation(testUserWithoutSession, testLocationAthens1);
-            testGameForUserWithSession = gameService.create(testUserWithoutSession);
-            fail();
-        } catch (TalosQuestsLocationsNotAvailableException e) {
-            assertTrue(true);
-        }
+
+        userService.setActiveLocation(testUserWithoutSession, testLocationAthens1);
+        testGameForUserWithSession = gameService.create(testUserWithoutSession);
     }
 
-    @Test
+    @Test(expected = TalosQuestsLocationServiceUnavailableException.class)
     public void testCreateGameOnCorrectLocationWhenLocationServiceIsUnavailable() throws TalosQuestsException {
         LocationService.enableService = false;
-        try {
-            userService.setActiveLocation(testUserWithoutSession, testLocationSerres1);
-            testGameForUserWithSession = gameService.create(testUserWithoutSession);
-            fail();
-
-        } catch (TalosQuestsLocationServiceUnavailableException e) {
-            assertTrue(true);
-
-        }
-        LocationService.enableService = true;
+        userService.setActiveLocation(testUserWithoutSession, testLocationSerres1);
+        testGameForUserWithSession = gameService.create(testUserWithoutSession);
     }
 
-    @Test
+    @Test(expected = TalosQuestsLocationNotProvidedException.class)
     public void testCreateGameOnNullLocation() throws TalosQuestsException {
         testUserWithSession.setLastLocation(null);
-
-        Game bla = null;
-        try {
-            bla = gameService.create(testUserWithSession);
-            fail("Shouldn't continue");
-        } catch (TalosQuestsLocationNotProvidedException e) {
-            assertTrue(true);
-        }
-        assertNull(bla);
+        gameService.create(testUserWithSession);
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testCreateGameOnNullUser() throws TalosQuestsException {
-        Game bla = null;
-        try {
-            bla = gameService.create(null);
-            fail("Shouldn't continue");
-        } catch (TalosQuestsNullArgumentException e) {
-            assertTrue(true);
-        }
-        assertNull(bla);
+        gameService.create(null);
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testDeleteGameOnNullGame() throws TalosQuestsException {
-        try {
-            gameService.delete((User) null);
-            fail("Shouldn't continue");
-        } catch (TalosQuestsNullArgumentException e) {
-            assertTrue(true);
-        }
+        gameService.delete((User) null);
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testDeleteWhenOriginIsNull() throws TalosQuestsException {
-        try {
-            gameService.delete(null, testUserWithSession);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+        gameService.delete(null, testUserWithSession);
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testDeleteWhenTargetIsNull() throws TalosQuestsException {
-        try {
-            gameService.delete(testUserWithSession, (User) null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+        gameService.delete(testUserWithSession, (User) null);
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testDeleteWhenGameIsNull() throws TalosQuestsException {
-        try {
-            gameService.delete(testUserWithSession, (Game) null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+        gameService.delete(testUserWithSession, (Game) null);
     }
 
     @Test
@@ -147,26 +96,15 @@ public class GameServiceTests extends AbstractServiceTest {
         assertEquals(testUserWithSession.getGames().size(), 0);
     }
 
-    @Test
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testDeleteSuccessWhenOriginHasNoPremissionDeleteOtherUsersData() throws TalosQuestsException {
-        try {
-            gameService.delete(testUserWithSession, testUserWithoutSession);
-            fail();
-        } catch (TalosQuestsAccessViolationException e) {
-            assertTrue(true);
-        }
+        gameService.delete(testUserWithSession, testUserWithoutSession);
     }
 
-    @Test
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testDeleteSuccessWhenOriginHasNoPremissionDeleteOwnData() throws TalosQuestsException {
         testUserWithSession.getAccess().setCanManageOwnData(false);
-        try {
-            gameService.delete(testUserWithSession, testUserWithSession);
-
-            fail();
-        } catch (TalosQuestsAccessViolationException e) {
-            assertTrue(true);
-        }
+        gameService.delete(testUserWithSession, testUserWithSession);
     }
 
     @Test
@@ -182,34 +120,19 @@ public class GameServiceTests extends AbstractServiceTest {
         assertTrue(true);
     }
 
-    @Test
-    public void testSetActiveGameOnNullGame() throws TalosQuestsAccessViolationException {
-        try {
-            gameService.setActiveGame(testUserWithSession, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException e) {
-            assertTrue(true);
-        }
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testSetActiveGameOnNullGame() throws TalosQuestsAccessViolationException, TalosQuestsNullArgumentException {
+        gameService.setActiveGame(testUserWithSession, null);
     }
 
-    @Test
-    public void testSetActiveGameOnNullUser() throws TalosQuestsAccessViolationException {
-        try {
-            gameService.setActiveGame(null, testGameForUserWithSession);
-            fail();
-        } catch (TalosQuestsNullArgumentException e) {
-            assertTrue(true);
-        }
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testSetActiveGameOnNullUser() throws TalosQuestsAccessViolationException, TalosQuestsNullArgumentException {
+        gameService.setActiveGame(null, testGameForUserWithSession);
     }
 
-    @Test
-    public void testSetActiveGameOnWrongUser() throws TalosQuestsNullArgumentException {
-        try {
-            gameService.setActiveGame(testUserWithoutSession, testGameForUserWithSession);
-            fail();
-        } catch (TalosQuestsAccessViolationException e) {
-            assertTrue(true);
-        }
+    @Test(expected = TalosQuestsAccessViolationException.class)
+    public void testSetActiveGameOnWrongUser() throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException {
+        gameService.setActiveGame(testUserWithoutSession, testGameForUserWithSession);
     }
 
     @Test
@@ -233,14 +156,19 @@ public class GameServiceTests extends AbstractServiceTest {
         assertNotNull(gameService.getGameById(testGameForUserWithSession.getId()));
     }
 
-    @Test
-    public void testLoadOnNullId() {
-        try {
-            gameService.load(testUserWithSession, null);
-            fail();
-        } catch (TalosQuestsException e) {
-            assertTrue(true);
-        }
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testLoadOnNullId() throws TalosQuestsException {
+        gameService.load(testUserWithSession, null);
+    }
+
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testLoadOnNullUser() throws TalosQuestsException {
+        gameService.load(null, null);
+    }
+
+    @Test(expected = TalosQuestsException.class)
+    public void testLoadOnInvalidId() throws TalosQuestsException {
+        gameService.load(testUserWithSession, Long.MAX_VALUE);
     }
 
     @Test
@@ -249,14 +177,9 @@ public class GameServiceTests extends AbstractServiceTest {
         assertEquals(testUserWithSession.getActiveGame(), testGameForUserWithSession);
     }
 
-    @Test
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testLoadOnCorrectIdAndIncorrectUser() throws TalosQuestsException {
-        try {
-            gameService.load(testUserWithoutSession, testGameForUserWithSession.getId());
-            fail();
-        } catch (TalosQuestsAccessViolationException e) {
-            assertTrue(true);
-        }
+        gameService.load(testUserWithoutSession, testGameForUserWithSession.getId());
     }
 
     @Test
@@ -309,7 +232,7 @@ public class GameServiceTests extends AbstractServiceTest {
 
     @Test
     public void testSubmitQuestWhenGameAndQuesChoiceArePresentButGameHasNotAnyActiveQuest() {
-        testGameForUserWithSession.setActiveQuest(null);
+        testGameForUserWithSession.setActiveUserQuest(null);
         assertFalse(gameService.submitQuestAnswer(testGameForUserWithSession, new QuestChoice()));
     }
 
@@ -318,29 +241,17 @@ public class GameServiceTests extends AbstractServiceTest {
         gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
         gameService.getNextQuest(testGameForUserWithSession);
 
-        assertTrue(gameService.submitQuestAnswer(testGameForUserWithSession, testGameForUserWithSession.getActiveQuest().getQuest().getCorrectChoice()));
+        assertTrue(gameService.submitQuestAnswer(testGameForUserWithSession, testGameForUserWithSession.getActiveUserQuest().getQuest().getCorrectChoice()));
     }
 
-    @Test
-    public void testFinishQuestWhenGameIsNull() {
-        try {
-            gameService.finishQuest(null, true);
-            fail();
-        } catch (TalosQuestsNullArgumentException e) {
-            assertTrue(true);
-        }
-
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testFinishQuestWhenGameIsNull() throws TalosQuestsNullArgumentException {
+        gameService.finishQuest(null, true);
     }
 
-    @Test
-    public void testFinishQuestWhenStateIsNull() {
-        try {
-            gameService.finishQuest(testGameForUserWithSession, null);
-            fail();
-        } catch (TalosQuestsNullArgumentException e) {
-            assertTrue(true);
-        }
-
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testFinishQuestWhenStateIsNull() throws TalosQuestsNullArgumentException {
+        gameService.finishQuest(testGameForUserWithSession, null);
     }
 
     @Test
@@ -349,15 +260,15 @@ public class GameServiceTests extends AbstractServiceTest {
         gameService.setActiveGame(testUserWithSession, testGameForUserWithSession);
         gameService.getNextQuest(testGameForUserWithSession);
 
-        Quest quest = testGameForUserWithSession.getActiveQuest();
+        UserQuest userQuest = testGameForUserWithSession.getActiveUserQuest();
 
         gameService.finishQuest(testGameForUserWithSession, true);
 
-        assertTrue(testGameForUserWithSession.getCompletedQuests().contains(quest));
-        assertFalse(testGameForUserWithSession.getIncompleteQuests().contains(quest));
-        assertFalse(quest.getActive());
-        assertNull(testGameForUserWithSession.getActiveQuest());
-        assertTrue(quest.getSucceed());
+        assertTrue(testGameForUserWithSession.getCompletedUserQuests().contains(userQuest));
+        assertFalse(testGameForUserWithSession.getIncompleteUserQuests().contains(userQuest));
+        assertFalse(userQuest.getActive());
+        assertNull(testGameForUserWithSession.getActiveUserQuest());
+        assertTrue(userQuest.getSucceed());
     }
 
     @Test
@@ -372,80 +283,60 @@ public class GameServiceTests extends AbstractServiceTest {
 
     @Test
     public void testCheckGameStateWhenIncompleteQuestsIsEmpty() {
-        testGameForUserWithSession.getIncompleteQuests().clear();
+        testGameForUserWithSession.getIncompleteUserQuests().clear();
         assertTrue(gameService.checkGameState(testGameForUserWithSession));
     }
 
-    @Test
-    public void testGetNextQuestWhenGameIsNull() throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
-        try {
-            gameService.getNextQuest(null);
-            fail();
-        } catch (TalosQuestsNullArgumentException e) {
-            assertTrue(true);
-        }
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testGetNextQuestWhenGameIsNull() throws TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException, TalosQuestsNullArgumentException {
+        gameService.getNextQuest(null);
     }
 
     @Test
     public void testGetNextQuestWhenActiveQuestIsNull() throws TalosQuestsNullArgumentException, TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
-        assertNull(testGameForUserWithSession.getActiveQuest());
+        assertNull(testGameForUserWithSession.getActiveUserQuest());
 
-        Quest quest = gameService.getNextQuest(testGameForUserWithSession);
+        UserQuest userQuest = gameService.getNextQuest(testGameForUserWithSession);
 
-        assertNotNull(testGameForUserWithSession.getActiveQuest());
+        assertNotNull(testGameForUserWithSession.getActiveUserQuest());
     }
 
     @Test
     public void testGetNextQuestWhenActiveQuestIsNotNull() throws TalosQuestsNullArgumentException, TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
         gameService.getNextQuest(testGameForUserWithSession);
 
-        Quest quest1 = testGameForUserWithSession.getActiveQuest();
-        assertNotNull(quest1);
+        UserQuest userQuest1 = testGameForUserWithSession.getActiveUserQuest();
+        assertNotNull(userQuest1);
 
         gameService.getNextQuest(testGameForUserWithSession);
 
-        assertNotNull(testGameForUserWithSession.getActiveQuest());
+        assertNotNull(testGameForUserWithSession.getActiveUserQuest());
 
-        assertNotEquals(testGameForUserWithSession.getActiveQuest(), quest1);
+        assertNotEquals(testGameForUserWithSession.getActiveUserQuest(), userQuest1);
 
     }
 
-    @Test
+    @Test(expected = TalosQuestsLocationsNotAvailableException.class)
     public void testGetNextQuestWhenNoMoreQuestsAreAvailable() throws TalosQuestsNullArgumentException, TalosQuestsLocationServiceUnavailableException, TalosQuestsLocationsNotAvailableException {
-        testGameForUserWithSession.getIncompleteQuests().clear();
-        try {
-            gameService.getNextQuest(testGameForUserWithSession);
-            fail();
-        } catch (TalosQuestsLocationsNotAvailableException exc) {
-            assertTrue(true);
-        }
+        testGameForUserWithSession.getIncompleteUserQuests().clear();
+        gameService.getNextQuest(testGameForUserWithSession);
     }
 
 
     @Test
-    public void testWipeMustClearDatabase() {
+    public void testWipeMustClearDatabase() throws TalosQuestsNullArgumentException {
         gameService.wipe();
         assertEquals(gameService.getAllGames().size(), 0);
     }
 
-    @Test
+    @Test(expected = TalosQuestsAccessViolationException.class)
     public void testWipeWhenUserHasNoAccess() throws TalosQuestsException {
-        try {
-            gameService.wipe(testUserWithSession);
-            fail();
-        } catch (TalosQuestsAccessViolationException exc) {
-            assertTrue(true);
-        }
+        gameService.wipe(testUserWithSession);
     }
 
-    @Test
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testWipeWhenUserIsNull() throws TalosQuestsException {
-        try {
-            gameService.wipe(null);
-            fail();
-        } catch (TalosQuestsNullArgumentException exc) {
-            assertTrue(true);
-        }
+        gameService.wipe(null);
     }
 
     @Test
@@ -454,6 +345,11 @@ public class GameServiceTests extends AbstractServiceTest {
         testUserWithSession.getAccess().setCanWipeGames(true);
         gameService.wipe(testUserWithSession);
         assertTrue(true);
+    }
+
+    @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testSaveWhenGameIsNull() throws TalosQuestsNullArgumentException {
+        gameService.save(null);
     }
 
 }
