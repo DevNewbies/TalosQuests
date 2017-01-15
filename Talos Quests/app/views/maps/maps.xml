@@ -11,13 +11,14 @@
                     </StackLayout>
                 </TabViewItem.view>
             </TabViewItem>
-            <TabViewItem title="Tasks">
+            <TabViewItem title="Quest Info">
                 <TabViewItem.view>
-                    <ListView items="{{ source }}">
+                    <ListView items="{{ QuestInfo }}">
                         <ListView.itemTemplate>
                             <StackLayout>
-                                <Label text="{{ TaskTitle }}" textWrap="true"/>
-                                <Label text="{{ TaskDone }}" textWrap="true"/>
+                                <Label text="{{ QuestTitle }}" textWrap="true"/>
+                                <Label text="{{ QuestDesc }}" textWrap="true"/>
+                                <Label text="{{ QuestDone }}" textWrap="true"/>
                             </StackLayout>
                         </ListView.itemTemplate>
                     </ListView>

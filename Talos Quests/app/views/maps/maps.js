@@ -65,41 +65,45 @@ function trackLocation() {
 }
 exports.trackLocation = trackLocation;
 
-function findMe() {
+function updateUserMarker() {
+  var UserMarker = new mapsModule.Marker();
+  mapView.findMarker(function(marker) {
+      if (marker.userData.index == 1) {
+          mapView.removeMarker(marker);
+      }
+  });
+  UserMarker.position = mapsModule.Position.positionFromLatLng(userLocation.userLatitude, userLocation.userLongitude);
+  UserMarker.title = "My Location";
+  UserMarker.userData = {
+      index: 1
+  };
+  mapView.addMarker(UserMarker);
+
+  var UserCircle = new mapsModule.Circle();
+  mapView.removeAllCircles();
+  UserCircle.center = mapsModule.Position.positionFromLatLng(userLocation.userLatitude, userLocation.userLongitude);
+  UserCircle.visible = true;
+  UserCircle.radius = 50;
+  UserCircle.fillColor = new Color('#99ff8800');
+  UserCircle.strokeColor = new Color('#99ff0000');
+  UserCircle.strokeWidth = 2;
+  mapView.addCircle(UserCircle);
+}
+exports.updateUserMarker = updateUserMarker;
+
+function findMe(args) {
     if (userLocation.userLocated) {
         mapLocation.mapLatitude = userLocation.userLatitude;
         mapLocation.mapLongitude = userLocation.userLongitude;
         mapLocation.mapZoom = 17;
-
-        var UserMarker = new mapsModule.Marker();
-        mapView.findMarker(function(marker) {
-            if (marker.userData.index == 1) {
-                mapView.removeMarker(marker);
-            }
-        });
-        UserMarker.position = mapsModule.Position.positionFromLatLng(userLocation.userLatitude, userLocation.userLongitude);
-        UserMarker.title = "My Location";
-        UserMarker.userData = {
-            index: 1
-        };
-        mapView.addMarker(UserMarker);
-
-        var UserCircle = new mapsModule.Circle();
-        mapView.removeAllCircles();
-        UserCircle.center = mapsModule.Position.positionFromLatLng(userLocation.userLatitude, userLocation.userLongitude);
-        UserCircle.visible = true;
-        UserCircle.radius = 50;
-        UserCircle.fillColor = new Color('#99ff8800');
-        UserCircle.strokeColor = new Color('#99ff0000');
-        UserCircle.strokeWidth = 2;
-        mapView.addCircle(UserCircle);
+        updateUserMarker();
     }
 }
 exports.findMe = findMe;
 
 function changeTab(args) {
     if (userLocation.userLocated) {
-        findMe();
+        updateUserMarker();
     }
 }
 exports.changeTab = changeTab;
