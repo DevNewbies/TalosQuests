@@ -54,9 +54,11 @@ public class UserController extends BaseController {
 
     }
 
-    @JsonView(View.Simple.class)
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> UpdateUserById(@RequestParam(value = "token", required = true) String token, @RequestParam(value = "password", required = true) String password, @RequestBody(required = true) AuthRegisterModel model) throws TalosQuestsException {
+    public ResponseEntity<Object> UpdateUserById(
+            @RequestParam(value = "token", required = true) String token,
+            @RequestParam(value = "password", required = true) String password,
+            @RequestBody(required = true) AuthRegisterModel model) throws TalosQuestsException {
         Session session = sessionService.getByToken(token);
         if (session == null)
             return Response.fail("Token is not valid", HttpStatus.UNAUTHORIZED);

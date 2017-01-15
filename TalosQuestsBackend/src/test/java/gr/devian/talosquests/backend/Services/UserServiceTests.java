@@ -306,7 +306,7 @@ public class UserServiceTests extends AbstractServiceTest {
         model.setImei("012345678912345");
         model.setEmail("test@test.gr");
         User user = userService.update(testUserWithSession, testUserWithoutSession, model);
-        assertEquals(user.getEmail(), "test@test.gr");
+        assertEquals(user.getEmail(), model.getEmail());
 
     }
 
