@@ -4,3 +4,9 @@
     horizontal-align: center;
     text-align: center;
 }
+
+.findMeButton {
+  background-color: black;
+  font-size: 16px;
+  height: 36px;
+}

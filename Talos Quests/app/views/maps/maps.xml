@@ -1,12 +1,12 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" xmlns:maps="nativescript-google-maps-sdk" navigatingTo="onNavigatingTo">
-    <TabView id="tabViewContainer" selectedIndexChanged="onSelectedIndexChanged">
+    <TabView selectedIndexChanged="changeTab">
         <TabView.items>
             <TabViewItem title="Map">
                 <TabViewItem.view>
                     <StackLayout>
-                        <Button text="Find Me" ontap="findMe"/>
+                        <Button text="Find Me" class="findMeButton" ontap="findMe"/>
                         <GridLayout >
-                            <maps:mapView markerInfoWindowTapped="onMarkerSelect" latitude="{{userLatitude}}" longitude="{{userLongitude}}" zoom="15" mapReady="mapIsReady"/>
+                            <maps:mapView zoom="15" mapReady="mapIsReady"/>
                         </GridLayout>
                     </StackLayout>
                 </TabViewItem.view>
