@@ -6,7 +6,7 @@
                     <StackLayout>
                         <Button text="Find Me" class="findMeButton" ontap="findMe"/>
                         <GridLayout >
-                            <maps:mapView zoom="15" mapReady="mapIsReady"/>
+                            <maps:mapView mapReady="mapIsReady"/>
                         </GridLayout>
                     </StackLayout>
                 </TabViewItem.view>
@@ -16,9 +16,8 @@
                     <ListView items="{{ source }}">
                         <ListView.itemTemplate>
                             <StackLayout>
-                                <Label text="{{ title }}" textWrap="true"/>
-                                <Label text="{{ description }}" textWrap="true"/>
-                                <Image src="{{ image }}" stretch="none"/>
+                                <Label text="{{ TaskTitle }}" textWrap="true"/>
+                                <Label text="{{ TaskDone }}" textWrap="true"/>
                             </StackLayout>
                         </ListView.itemTemplate>
                     </ListView>
@@ -38,13 +37,10 @@
                             <Switch checked="{{ MusicEnabled }}"/>
                         </StackLayout>
 
-                    </StackLayout>
-                </TabViewItem.view>
-            </TabViewItem>
-            <TabViewItem title="Logout">
-                <TabViewItem.view>
-                    <StackLayout>
-                        <Button text="Logout"/>
+                        <StackLayout class="SwitchTheme" orientation="horizontal">
+                          <Button text="Logout"/>
+                        </StackLayout>
+
                     </StackLayout>
                 </TabViewItem.view>
             </TabViewItem>
