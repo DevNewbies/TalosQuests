@@ -39,7 +39,7 @@
                         </StackLayout>
 
                         <StackLayout class="SwitchTheme" orientation="horizontal">
-                            <Button text="Logout"/>
+                            <Button text="Log Out" ontap="logOut"/>
                         </StackLayout>
 
                     </StackLayout>

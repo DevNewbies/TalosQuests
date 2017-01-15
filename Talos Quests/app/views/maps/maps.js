@@ -2,7 +2,9 @@
 var Observable = require("data/observable").Observable;
 var GeoLocation = require("nativescript-geolocation");
 var mapsModule = require("nativescript-google-maps-sdk");
+var cookies = require("../../shared/view-models/cookies");
 var Color = require("color").Color;
+var frameModule = require("ui/frame");
 var disabledLocation = false;
 var CurrentPage;
 var mapView;
@@ -14,9 +16,9 @@ var userLocation = new Observable({
 });
 
 var mapLocation = new Observable({
-  mapLatitude: 0,
-  mapLongitude: 0,
-  mapZoom: 1
+    mapLatitude: 0,
+    mapLongitude: 0,
+    mapZoom: 1
 });
 
 // Unit Functions
@@ -65,45 +67,47 @@ function trackLocation() {
 }
 exports.trackLocation = trackLocation;
 
-function updateUserMarker() {
-  var UserMarker = new mapsModule.Marker();
-  mapView.findMarker(function(marker) {
-      if (marker.userData.index == 1) {
-          mapView.removeMarker(marker);
-      }
-  });
-  UserMarker.position = mapsModule.Position.positionFromLatLng(userLocation.userLatitude, userLocation.userLongitude);
-  UserMarker.title = "My Location";
-  UserMarker.userData = {
-      index: 1
-  };
-  mapView.addMarker(UserMarker);
-
-  var UserCircle = new mapsModule.Circle();
-  mapView.removeAllCircles();
-  UserCircle.center = mapsModule.Position.positionFromLatLng(userLocation.userLatitude, userLocation.userLongitude);
-  UserCircle.visible = true;
-  UserCircle.radius = 50;
-  UserCircle.fillColor = new Color('#99ff8800');
-  UserCircle.strokeColor = new Color('#99ff0000');
-  UserCircle.strokeWidth = 2;
-  mapView.addCircle(UserCircle);
-}
-exports.updateUserMarker = updateUserMarker;
-
-function findMe(args) {
+function findMe() {
     if (userLocation.userLocated) {
         mapLocation.mapLatitude = userLocation.userLatitude;
         mapLocation.mapLongitude = userLocation.userLongitude;
         mapLocation.mapZoom = 17;
-        updateUserMarker();
+
+        var UserMarker = new mapsModule.Marker();
+        mapView.findMarker(function(marker) {
+            if (marker.userData.index == 1) {
+                mapView.removeMarker(marker);
+            }
+        });
+        UserMarker.position = mapsModule.Position.positionFromLatLng(userLocation.userLatitude, userLocation.userLongitude);
+        UserMarker.title = "My Location";
+        UserMarker.userData = {
+            index: 1
+        };
+        mapView.addMarker(UserMarker);
+
+        var UserCircle = new mapsModule.Circle();
+        mapView.removeAllCircles();
+        UserCircle.center = mapsModule.Position.positionFromLatLng(userLocation.userLatitude, userLocation.userLongitude);
+        UserCircle.visible = true;
+        UserCircle.radius = 50;
+        UserCircle.fillColor = new Color('#99ff8800');
+        UserCircle.strokeColor = new Color('#99ff0000');
+        UserCircle.strokeWidth = 2;
+        mapView.addCircle(UserCircle);
     }
 }
 exports.findMe = findMe;
 
 function changeTab(args) {
     if (userLocation.userLocated) {
-        updateUserMarker();
+        findMe();
     }
 }
 exports.changeTab = changeTab;
+
+function logOut(args) {
+    cookies.deleteCookie();
+    frameModule.topmost().navigate("views/login/login");
+}
+exports.logOut = logOut;
