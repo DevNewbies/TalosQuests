@@ -28,7 +28,7 @@
                     <Label x:Name="label_Copy2" Content="Client Address" HorizontalAlignment="Right" Margin="0,41,138,0" VerticalAlignment="Top"/>
                     <TextBox HorizontalAlignment="Right" TextAlignment="Center" IsReadOnly="True" Height="23" Margin="0,41,10,0" TextWrapping="Wrap" x:Name="clientAddress"  VerticalAlignment="Top" Width="123"/>
                     <Separator Height="10" Margin="10,72,10,0" VerticalAlignment="Top" Background="Black"/>
-                    <Rectangle VerticalAlignment="Stretch" Width="1" Margin="230,10,229,10" Stroke="Black" />
+                    <Rectangle VerticalAlignment="Stretch" Width="1" Margin="230,82,229,152" Stroke="Black" />
                     <Label x:Name="label_Copy3" Content="Username" HorizontalAlignment="Left" Margin="10,82,0,0" VerticalAlignment="Top"/>
                     <TextBox HorizontalAlignment="Left" TextAlignment="Center" IsReadOnly="True" Height="23" Margin="104,82,0,0" TextWrapping="Wrap" x:Name="clientUsername"  VerticalAlignment="Top" Width="120"/>
                     <Label x:Name="label_Copy4" Content="Email" HorizontalAlignment="Left" Margin="10,113,0,0" VerticalAlignment="Top"/>
@@ -43,6 +43,11 @@
                     <CheckBox x:Name="clientCanWipeUsers" Content="Wipe Users" IsEnabled="False" HorizontalAlignment="Right" Margin="0,128,26,0" VerticalAlignment="Top"/>
                     <CheckBox x:Name="clientCanWipeQuests" Content="Wipe Quests" IsEnabled="False" HorizontalAlignment="Right" Margin="0,151,19,0" VerticalAlignment="Top"/>
                     <CheckBox x:Name="clientCanWipeGames" Content="Wipe Games" IsEnabled="False" HorizontalAlignment="Right" Margin="0,82,19,0" VerticalAlignment="Top"/>
+                    <CheckBox x:Name="clientCanWipeSessions" Content="Wipe Sessions" IsEnabled="False" HorizontalAlignment="Right" Margin="0,174,124,0" VerticalAlignment="Top"/>
+                    <Separator Height="10" Margin="10,197,10,0" VerticalAlignment="Top" Background="Black"/>
+                    <Button x:Name="wipeUsers" Content="Wipe Users" HorizontalAlignment="Right" Margin="0,207,281,0" VerticalAlignment="Top" Width="90" Click="wipeUsers_Click"/>
+                    <Button x:Name="wipeQuests" Content="Wipe Quests" Margin="0,207,186,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="90" Click="wipeQuests_Click"/>
+                    <Button x:Name="wipeSessions" Content="Wipe Sessions" Margin="0,207,92,0" VerticalAlignment="Top" RenderTransformOrigin="0.52,0.593" HorizontalAlignment="Right" Width="89" Click="wipeSessions_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Users">
@@ -65,6 +70,7 @@
                     <CheckBox x:Name="userCanBanUsers" Content="Ban Users" IsEnabled="False" HorizontalAlignment="Right" Margin="0,0,25,110" VerticalAlignment="Bottom"/>
                     <CheckBox x:Name="userCanWipeUsers" Content="Wipe Users" IsEnabled="False" HorizontalAlignment="Right" Margin="0,0,17,87" VerticalAlignment="Bottom"/>
                     <CheckBox x:Name="userCanWipeQuests" Content="Wipe Quests" IsEnabled="False" HorizontalAlignment="Right" Margin="0,0,10,64" VerticalAlignment="Bottom"/>
+                    <CheckBox x:Name="userCanWipeSessions" Content="Wipe Sessions" IsEnabled="False" HorizontalAlignment="Right" Margin="0,0,2,41" VerticalAlignment="Bottom"/>
                     <CheckBox x:Name="userCanWipeGames" Content="Wipe Games" IsEnabled="False" HorizontalAlignment="Right" Margin="0,0,10,133" VerticalAlignment="Bottom"/>
                     <Label x:Name="label_Copy6" Content="Username" HorizontalAlignment="Left" Margin="10,0,0,126" VerticalAlignment="Bottom"/>
                     <TextBox TextAlignment="Left" IsReadOnly="True" Height="23" Margin="78,0,220,126" TextWrapping="Wrap" x:Name="userUsername"  VerticalAlignment="Bottom"/>

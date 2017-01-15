@@ -114,9 +114,9 @@
     <Compile Include="Model\Game.cs" />
     <Compile Include="Model\LatLng.cs" />
     <Compile Include="Model\Location.cs" />
-    <Compile Include="Model\Quest.cs" />
+    <Compile Include="Model\UserQuest.cs" />
     <Compile Include="Model\QuestChoice.cs" />
-    <Compile Include="Model\QuestModel.cs" />
+    <Compile Include="Model\Quest.cs" />
     <Compile Include="Model\Response.cs" />
     <Compile Include="Model\Session.cs" />
     <Compile Include="Model\User.cs" />

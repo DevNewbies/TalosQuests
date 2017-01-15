@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Documents;
 using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Serializers;
@@ -22,7 +24,7 @@ namespace TalosQuestsAdministrationPanel
 
         public User User => _user;
 
-        public List<QuestModel> Quests => _quests;
+        public List<Quest> Quests => _quests;
 
         public List<User> Users => _users;
 
@@ -35,23 +37,25 @@ namespace TalosQuestsAdministrationPanel
         private readonly RestClient _client = new RestClient("http://" + Address + ":" + Port);
         private string _token;
 
-        public static readonly String Address = "127.0.0.1";
-        public static readonly int Port = 8080;
+        public static readonly String Address = "service.talosquests.devian.gr";
+        public static readonly int Port = 80;
 
         private Session _session;
         private User _user;
-        private List<QuestModel> _quests;
+        private List<Quest> _quests;
         private List<User> _users;
 
         private long _uptime;
         private string _version;
         private string _remoteAddr;
         private Timer _timer = new Timer();
+        private string _password;
 
         public async Task<Boolean> Login(String username, String password)
         {
             try
             {
+                this._password = password;
                 var request = new RestRequest("/Auth", Method.POST);
                 request.AddJsonBody(new AuthRegisterModel() { userName = username, passWord = password });
 
@@ -79,6 +83,8 @@ namespace TalosQuestsAdministrationPanel
         {
 
             var request = new RestRequest("/", Method.GET);
+
+
             var response3 = await _client.ExecuteTaskAsync<Response<ServiceInfo>>(request);
             _version = response3.Data.response.version;
             _uptime = response3.Data.response.uptimeMilliseconds;
@@ -105,7 +111,7 @@ namespace TalosQuestsAdministrationPanel
             request = new RestRequest("/Admin/Quest", Method.GET);
             request.AddParameter("token", _token);
 
-            var response2 = await _client.ExecuteTaskAsync<Response<List<QuestModel>>>(request);
+            var response2 = await _client.ExecuteTaskAsync<Response<List<Quest>>>(request);
             _quests = response2.Data.response;
 
         }
@@ -142,7 +148,7 @@ namespace TalosQuestsAdministrationPanel
             return true;
         }
 
-        public async Task<Boolean> AddQuest(QuestModel quest)
+        public async Task<Boolean> AddQuest(Quest quest)
         {
             var request = new RestRequest("/Admin/Quest", Method.POST);
             request.AddHeader("Content-Type", "application/json");
@@ -150,13 +156,13 @@ namespace TalosQuestsAdministrationPanel
             request.RequestFormat = DataFormat.Json;
             request.AddJsonBody(quest);
 
-            var response = await _client.ExecuteTaskAsync<Response<QuestModel>>(request);
+            var response = await _client.ExecuteTaskAsync<Response<Quest>>(request);
             if (response.Data.state != 200) throw new TalosQuestsException(response.Data.message, response.Data.state);
             return true;
 
         }
 
-        public async Task<Boolean> UpdateQuest(long id, QuestModel quest)
+        public async Task<Boolean> UpdateQuest(long id, Quest quest)
         {
             var request = new RestRequest("/Admin/Quest/" + id, Method.PUT);
             request.AddHeader("Content-Type", "application/json");
@@ -165,7 +171,7 @@ namespace TalosQuestsAdministrationPanel
             request.RequestFormat = DataFormat.Json;
             request.AddJsonBody(quest);
 
-            var response = await _client.ExecuteTaskAsync<Response<QuestModel>>(request);
+            var response = await _client.ExecuteTaskAsync<Response<Quest>>(request);
             if (response.Data.state != 200) throw new TalosQuestsException(response.Data.message, response.Data.state);
             return true;
         }
@@ -176,6 +182,37 @@ namespace TalosQuestsAdministrationPanel
             request.AddParameter("token", _token, ParameterType.QueryString);
             request.AddParameter("password", "_", ParameterType.QueryString);
 
+            var response = await _client.ExecuteTaskAsync<Response<String>>(request);
+            if (response.Data.state != 200) throw new TalosQuestsException(response.Data.message, response.Data.state);
+            return true;
+        }
+
+        public async Task<Boolean> WipeQuests()
+        {
+            var request = new RestRequest("/Admin/Quest", Method.DELETE);
+            request.AddParameter("token", _token, ParameterType.QueryString);
+            request.AddParameter("password", _password, ParameterType.QueryString);
+            var response = await _client.ExecuteTaskAsync<Response<String>>(request);
+            if (response.Data.state != 200) throw new TalosQuestsException(response.Data.message, response.Data.state);
+            return true;
+        }
+
+        public async Task<Boolean> WipeUsers()
+        {
+            var request = new RestRequest("/Admin/User", Method.DELETE);
+            request.AddParameter("token", _token, ParameterType.QueryString);
+            request.AddParameter("password", _password, ParameterType.QueryString);
+            var response = await _client.ExecuteTaskAsync<Response<String>>(request);
+            if (response.Data.state != 200) throw new TalosQuestsException(response.Data.message, response.Data.state);
+            return true;
+        }
+
+    
+        public async Task<Boolean> WipeSessions()
+        {
+            var request = new RestRequest("/Admin/Session", Method.DELETE);
+            request.AddParameter("token", _token, ParameterType.QueryString);
+            request.AddParameter("password", _password, ParameterType.QueryString);
             var response = await _client.ExecuteTaskAsync<Response<String>>(request);
             if (response.Data.state != 200) throw new TalosQuestsException(response.Data.message, response.Data.state);
             return true;
