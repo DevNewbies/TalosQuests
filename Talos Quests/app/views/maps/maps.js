@@ -7,17 +7,23 @@ var disabledLocation = false;
 var CurrentPage;
 var mapView;
 
-var UserLocation = new Observable({
-    userLatitude: 11.00000,
-    userLongitude: 11.00000,
-    userZoom: 17,
+var userLocation = new Observable({
+    userLatitude: 0,
+    userLongitude: 0,
     userLocated: false
+});
+
+var mapLocation = new Observable({
+  mapLatitude: 0,
+  mapLongitude: 0,
+  mapZoom: 1
 });
 
 // Unit Functions
 function onNavigatingTo(args) {
     CurrentPage = args.object;
-    CurrentPage.bindingContext = UserLocation;
+    CurrentPage.bindingContext = userLocation;
+    CurrentPage.bindingContext = mapLocation;
     enableLocation();
 }
 exports.onNavigatingTo = onNavigatingTo;
@@ -42,11 +48,9 @@ function trackLocation() {
     watchId = GeoLocation.watchLocation(
         function(loc) {
             if (loc) {
-                console.log("Received location: " + loc.latitude + " " + loc.longitude);
-                CurrentPage.userLatitude = loc.latitude;
-                CurrentPage.userlongitude = loc.longitude;
-                CurrentPage.userZoom = 17;
-                CurrentPage.userLocated = true;
+                userLocation.userLatitude = loc.latitude;
+                userLocation.userLongitude = loc.longitude;
+                userLocation.userLocated = true;
                 findMe();
             }
         },
@@ -62,11 +66,10 @@ function trackLocation() {
 exports.trackLocation = trackLocation;
 
 function findMe() {
-    if (CurrentPage.userLocated == true) {
-        mapView.latitude = CurrentPage.userLatitude;
-        mapView.longitude = CurrentPage.userlongitude;
-        mapView.zoom = CurrentPage.userZoom;
-
+    if (userLocation.userLocated) {
+        mapLocation.mapLatitude = userLocation.userLatitude;
+        mapLocation.mapLongitude = userLocation.userLongitude;
+        mapLocation.mapZoom = 17;
 
         var UserMarker = new mapsModule.Marker();
         mapView.findMarker(function(marker) {
@@ -74,8 +77,7 @@ function findMe() {
                 mapView.removeMarker(marker);
             }
         });
-
-        UserMarker.position = mapsModule.Position.positionFromLatLng(CurrentPage.userLatitude, CurrentPage.userlongitude);
+        UserMarker.position = mapsModule.Position.positionFromLatLng(userLocation.userLatitude, userLocation.userLongitude);
         UserMarker.title = "My Location";
         UserMarker.userData = {
             index: 1
@@ -84,8 +86,7 @@ function findMe() {
 
         var UserCircle = new mapsModule.Circle();
         mapView.removeAllCircles();
-
-        UserCircle.center = mapsModule.Position.positionFromLatLng(CurrentPage.userLatitude, CurrentPage.userlongitude);
+        UserCircle.center = mapsModule.Position.positionFromLatLng(userLocation.userLatitude, userLocation.userLongitude);
         UserCircle.visible = true;
         UserCircle.radius = 50;
         UserCircle.fillColor = new Color('#99ff8800');
@@ -97,7 +98,7 @@ function findMe() {
 exports.findMe = findMe;
 
 function changeTab(args) {
-    if (CurrentPage.userLocated == true) {
+    if (userLocation.userLocated) {
         findMe();
     }
 }

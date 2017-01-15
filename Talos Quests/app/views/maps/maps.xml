@@ -6,7 +6,7 @@
                     <StackLayout>
                         <Button text="Find Me" class="findMeButton" ontap="findMe"/>
                         <GridLayout >
-                            <maps:mapView mapReady="mapIsReady"/>
+                            <maps:mapView latitude="{{ mapLatitude }}" longitude="{{ mapLongitude }}" zoom="{{ mapZoom }}" mapReady="mapIsReady"/>
                         </GridLayout>
                     </StackLayout>
                 </TabViewItem.view>
@@ -38,7 +38,7 @@
                         </StackLayout>
 
                         <StackLayout class="SwitchTheme" orientation="horizontal">
-                          <Button text="Logout"/>
+                            <Button text="Logout"/>
                         </StackLayout>
 
                     </StackLayout>
