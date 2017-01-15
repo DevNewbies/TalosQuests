@@ -11,10 +11,10 @@ namespace TalosQuestsAdministrationPanel.Model
     {
         public long id { get; set; }
         public User user { get; set; }
-        public Quest activeQuest { get; set; }
+        public UserQuest activeQuest { get; set; }
         public int experiencePoints { get; set; }
         public Boolean active { get; set; }
-        public List<Quest> completedQuests { get; set; }
-        public List<Quest> incompleteQuests { get; set; }
+        public List<UserQuest> completedQuests { get; set; }
+        public List<UserQuest> incompleteQuests { get; set; }
     }
 }

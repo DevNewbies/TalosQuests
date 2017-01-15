@@ -58,6 +58,7 @@ namespace TalosQuestsAdministrationPanel
             clientCanManageQuests.IsChecked = TalosQuests.Instance.User.access.canManageQuests;
             clientCanWipeQuests.IsChecked = TalosQuests.Instance.User.access.canWipeQuests;
             clientCanWipeGames.IsChecked = TalosQuests.Instance.User.access.canWipeGames;
+            clientCanWipeSessions.IsChecked = TalosQuests.Instance.User.access.canWipeSessions;
 
             userGrid.SelectionMode = DataGridSelectionMode.Single;
             userGrid.SelectionUnit = DataGridSelectionUnit.FullRow;
@@ -83,7 +84,11 @@ namespace TalosQuestsAdministrationPanel
                     userCanWipeGames.IsChecked = usr.access.canWipeGames;
                     userCanWipeQuests.IsChecked = usr.access.canWipeQuests;
                     userCanWipeUsers.IsChecked = usr.access.canWipeUsers;
+                    userCanWipeSessions.IsChecked = usr.access.canWipeSessions;
                     userBanned.IsChecked = usr.banned;
+                    wipeUsers.IsEnabled = usr.access.canWipeUsers;
+                    wipeQuests.IsEnabled = usr.access.canWipeQuests;
+                    wipeSessions.IsEnabled = usr.access.canWipeSessions;
 
                     userBan.Content = usr.banned ? "Unban" : "Ban";
 
@@ -112,7 +117,7 @@ namespace TalosQuestsAdministrationPanel
                     questName.IsReadOnly = true;
                     resetQuestFields();
 
-                    var quest = ((QuestModel)questGrid.SelectedItem);
+                    var quest = ((Quest)questGrid.SelectedItem);
                     questName.Text = quest.name;
                     questContent.Text = quest.content;
                     Choices = quest.availableChoices;
@@ -167,14 +172,14 @@ namespace TalosQuestsAdministrationPanel
 
         private List<QuestChoice> Choices = new List<QuestChoice>();
 
-        public QuestModel getQuestModel()
+        public Quest getQuestModel()
         {
             if (validateQuest())
             {
-                QuestModel model = new QuestModel();
+                Quest model = new Quest();
                 model.content = questContent.Text;
                 model.exp = Int32.Parse(questExp.Text);
-                model.location = new LatLng() { lat = Double.Parse(questLat.Text), lng = Double.Parse(questLng.Text) };
+                model.location = new LatLng() { lat = Double.Parse(questLat.Text.Replace(".",",")), lng = Double.Parse(questLng.Text.Replace(".", ",")) };
                 model.name = questName.Text;
                 model.availableChoices = Choices;
                 model.correctChoice = (QuestChoice)questCorrectChoice.SelectedItem;
@@ -266,6 +271,7 @@ namespace TalosQuestsAdministrationPanel
             userCanWipeGames.IsChecked = false;
             userCanWipeQuests.IsChecked = false;
             userCanWipeUsers.IsChecked = false;
+            userCanWipeSessions.IsChecked = false;
             userBan.IsEnabled = false;
             userDelete.IsEnabled = false;
 
@@ -559,7 +565,7 @@ namespace TalosQuestsAdministrationPanel
             MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
             await Dispatcher.InvokeAsync(new Action(async () =>
             {
-                var quest = ((QuestModel)questGrid.SelectedItem);
+                var quest = ((Quest)questGrid.SelectedItem);
                 MainDialogController =
                     await this.ShowProgressAsync("Removing Quest", "Please Wait...");
                 MainDialogController.SetIndeterminate();
@@ -598,7 +604,7 @@ namespace TalosQuestsAdministrationPanel
             MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
             await Dispatcher.InvokeAsync(new Action(async () =>
             {
-                var quest = ((QuestModel)questGrid.SelectedItem);
+                var quest = ((Quest)questGrid.SelectedItem);
                 MainDialogController =
                     await this.ShowProgressAsync("Updating Quest", "Please Wait...");
                 MainDialogController.SetIndeterminate();
@@ -618,6 +624,110 @@ namespace TalosQuestsAdministrationPanel
                                 questGrid.Items.Refresh();
                                 questGrid.ItemsSource = TalosQuests.Instance.Quests;
                                 questGrid.Items.Refresh();
+                            }
+                        }));
+                    });
+                    await MainDialogController.CloseAsync();
+                }
+                catch (TalosQuestsException exc)
+                {
+                    MainDialogController.SetMessage("Error: \n" + exc.Message);
+                    MainDialogController.SetCancelable(true);
+                    MainDialogController.Canceled += (o, args) => MainDialogController.CloseAsync();
+                }
+            }));
+        }
+
+        private async void wipeUsers_Click(object sender, RoutedEventArgs e)
+        {
+            MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+            await Dispatcher.InvokeAsync(new Action(async () =>
+            {
+                MainDialogController =
+                    await this.ShowProgressAsync("Wiping Users", "Please Wait...");
+                MainDialogController.SetIndeterminate();
+                try
+                {
+
+                    var state = await TalosQuests.Instance.WipeUsers();
+                    await Task.Run(() =>
+                    {
+                        Dispatcher.Invoke(DispatcherPriority.Normal, new Action(async () =>
+                        {
+                            if (state)
+                            {
+                                MainDialogController.SetMessage("Users Wiped.");
+                                await TalosQuests.Instance.FetchInfo();
+                                TalosQuests.Instance.Users.Clear();
+                                userGrid.Items.Refresh();
+                            }
+                        }));
+                    });
+                    await MainDialogController.CloseAsync();
+                }
+                catch (TalosQuestsException exc)
+                {
+                    MainDialogController.SetMessage("Error: \n" + exc.Message);
+                    MainDialogController.SetCancelable(true);
+                    MainDialogController.Canceled += (o, args) => MainDialogController.CloseAsync();
+                }
+            }));
+        }
+
+        private async void wipeSessions_Click(object sender, RoutedEventArgs e)
+        {
+            MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+            await Dispatcher.InvokeAsync(new Action(async () =>
+            {
+                MainDialogController =
+                    await this.ShowProgressAsync("Wiping Sessions", "Please Wait...");
+                MainDialogController.SetIndeterminate();
+                try
+                {
+
+                    var state = await TalosQuests.Instance.WipeSessions();
+                    await Task.Run(() =>
+                    {
+                        Dispatcher.Invoke(DispatcherPriority.Normal, new Action(async () =>
+                        {
+                            if (state)
+                            {
+                                MainDialogController.SetMessage("Sessions Wiped.");
+                                await TalosQuests.Instance.FetchInfo();
+                            }
+                        }));
+                    });
+                    await MainDialogController.CloseAsync();
+                }
+                catch (TalosQuestsException exc)
+                {
+                    MainDialogController.SetMessage("Error: \n" + exc.Message);
+                    MainDialogController.SetCancelable(true);
+                    MainDialogController.Canceled += (o, args) => MainDialogController.CloseAsync();
+                }
+            }));
+        }
+
+        private async void wipeQuests_Click(object sender, RoutedEventArgs e)
+        {
+            MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+            await Dispatcher.InvokeAsync(new Action(async () =>
+            {
+                MainDialogController =
+                    await this.ShowProgressAsync("Wiping Quests", "Please Wait...");
+                MainDialogController.SetIndeterminate();
+                try
+                {
+
+                    var state = await TalosQuests.Instance.WipeQuests();
+                    await Task.Run(() =>
+                    {
+                        Dispatcher.Invoke(DispatcherPriority.Normal, new Action(async () =>
+                        {
+                            if (state)
+                            {
+                                MainDialogController.SetMessage("Quests Wiped.");
+                                await TalosQuests.Instance.FetchInfo();
                             }
                         }));
                     });

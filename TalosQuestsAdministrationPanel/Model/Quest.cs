@@ -10,16 +10,15 @@ namespace TalosQuestsAdministrationPanel.Model
     {
         public long id { get; set; }
 
-        public DateTime started { get; set; }
-        public DateTime completed { get; set; }
-
-        public Duration duration { get; set; }
-        public Boolean succeed { get; set; }
-
-        public Boolean active { get; set; }
+        public String name { get; set; }
+        public String content { get; set; }
+        public int exp { get; set; }
 
         public LatLng location { get; set; }
 
-        public QuestModel quest { get; set; }
+
+        public QuestChoice correctChoice { get; set; }
+
+        public List<QuestChoice> availableChoices { get; set; }
     }
 }
