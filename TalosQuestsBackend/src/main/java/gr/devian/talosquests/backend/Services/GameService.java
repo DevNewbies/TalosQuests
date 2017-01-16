@@ -60,20 +60,6 @@ public class GameService {
     }
 
     public void delete(Game game) throws TalosQuestsException {
-        delete(game.getUser(), game);
-    }
-
-    public void delete(User originUser, Game game) throws TalosQuestsException {
-        if (game == null)
-            throw new TalosQuestsNullArgumentException("Game");
-
-        if (originUser != null) {
-            if (originUser.equals(game.getUser()) && !originUser.getAccess().getCanManageOwnData())
-                throw new TalosQuestsAccessViolationException("User has no access deleting own game");
-            if (!originUser.equals(game.getUser()) && !originUser.getAccess().getCanManageUsers())
-                throw new TalosQuestsAccessViolationException("User has no access deleting other user's game");
-        }
-
         ArrayList<UserQuest> userQuests = new ArrayList<UserQuest>(game.getCompletedUserQuests());
         game.getCompletedUserQuests().clear();
         for (UserQuest userQuest : userQuests) {
@@ -106,6 +92,23 @@ public class GameService {
         userService.save(user);
 
         gameRepository.delete(game);
+    }
+
+    public void delete(User originUser, Game game) throws TalosQuestsException {
+
+        if (originUser == null)
+            throw new TalosQuestsNullArgumentException("originUser");
+
+        if (game == null)
+            throw new TalosQuestsNullArgumentException("game");
+
+        if (originUser.equals(game.getUser()) && !originUser.getAccess().getCanManageOwnData())
+            throw new TalosQuestsAccessViolationException("User has no access deleting own game");
+
+        if (!originUser.equals(game.getUser()) && !originUser.getAccess().getCanManageUsers())
+            throw new TalosQuestsAccessViolationException("User has no access deleting other user's game");
+
+        delete(game);
 
     }
 

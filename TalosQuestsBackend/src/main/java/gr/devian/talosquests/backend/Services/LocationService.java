@@ -2,6 +2,8 @@ package gr.devian.talosquests.backend.Services;
 
 import com.google.maps.DistanceMatrixApi;
 import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.GeocodingApiRequest;
 import com.google.maps.model.DistanceMatrix;
 import com.google.maps.model.DistanceMatrixElement;
 import com.google.maps.model.TravelMode;
@@ -55,6 +57,16 @@ public class LocationService {
 
     public LocationService() {
 
+    }
+
+    public Boolean verifyLatLng(LatLng location) throws TalosQuestsLocationServiceUnavailableException {
+        try {
+            if (!enableService)
+                throw new TalosQuestsLocationServiceUnavailableException();
+            return GeocodingApi.reverseGeocode(GeoAPIHandler, LatLng.getLatLng(location)).await().length > 0;
+        } catch (Exception e) {
+            throw new TalosQuestsLocationServiceUnavailableException();
+        }
     }
 
     /*
