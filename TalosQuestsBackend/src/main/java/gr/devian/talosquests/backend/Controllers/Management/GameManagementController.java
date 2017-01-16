@@ -60,7 +60,7 @@ public class GameManagementController extends AdminController {
             return Response.fail("User with this id doesn't exists",404);
 
         if (!gameId.isPresent()) {
-            return Response.success(user.getGames(), View.Simple.class, 200);
+            return Response.success(user.getGames(), View.Extended.class, 200);
         } else {
             Game game = gameService.getGameById(gameId.get());
 
