@@ -53,7 +53,7 @@ QUnit.test("Update Cookie !", function(assert) {
 	var cookie = require("../shared/view-models/cookies");
 	var date = new Date();
     date.setTime(date.getTime() + 68789795342123);
-	cookie.saveCookie("bqo3b6rv18t203a5hnfckglace" + "|" + date).then(function(data){
+	cookie.saveCookie("j2ndrnkikh8mgn74mdab7l9kco" + "|" + date).then(function(data){
 		assert.equal(data,true,"Create Cookie while there is already one!");
 		done();
 	});
