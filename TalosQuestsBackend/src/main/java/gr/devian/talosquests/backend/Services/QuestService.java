@@ -1,7 +1,6 @@
 package gr.devian.talosquests.backend.Services;
 
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsAccessViolationException;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullArgumentException;
+import gr.devian.talosquests.backend.Exceptions.*;
 import gr.devian.talosquests.backend.Models.Game;
 import gr.devian.talosquests.backend.Models.UserQuest;
 import gr.devian.talosquests.backend.Models.Quest;
@@ -27,6 +26,9 @@ public class QuestService {
     private UserQuestRepository userQuestRepository;
 
     @Autowired
+    private LocationService locationService;
+
+    @Autowired
     private GameService gameService;
 
     public List<Quest> getAllQuests() {
@@ -39,7 +41,7 @@ public class QuestService {
         return questRepository.findOne(id);
     }
 
-    public Quest create(User originUser, Quest model) throws TalosQuestsAccessViolationException, TalosQuestsNullArgumentException {
+    public Quest create(User originUser, Quest model) throws TalosQuestsException {
         if (originUser == null)
             throw new TalosQuestsNullArgumentException("originUser");
         if (model == null)
@@ -50,7 +52,10 @@ public class QuestService {
 
         model.setId(null);
 
-        return questRepository.save(model);
+        if (locationService.verifyLatLng(model.getLocation()))
+            return questRepository.save(model);
+        else
+            throw new TalosQuestsInvalidLocationException();
 
     }
 

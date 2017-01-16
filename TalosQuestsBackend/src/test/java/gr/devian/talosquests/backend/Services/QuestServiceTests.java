@@ -1,9 +1,9 @@
 package gr.devian.talosquests.backend.Services;
 
 import gr.devian.talosquests.backend.AbstractServiceTest;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsAccessViolationException;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsException;
-import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullArgumentException;
+import gr.devian.talosquests.backend.Exceptions.*;
+import gr.devian.talosquests.backend.Models.LatLng;
+import gr.devian.talosquests.backend.Models.Location;
 import gr.devian.talosquests.backend.Models.UserQuest;
 import gr.devian.talosquests.backend.Models.Quest;
 import org.junit.Test;
@@ -46,6 +46,20 @@ public class QuestServiceTests extends AbstractServiceTest {
 
     @Test(expected = TalosQuestsAccessViolationException.class)
     public void testCreateQuestWhenOriginUserHasNoPermissionOfManagingQuests() throws TalosQuestsException {
+        questService.create(testUserWithSession, testQuestSerres2);
+    }
+
+    @Test(expected = TalosQuestsInvalidLocationException.class)
+    public void testCreateQuestWhenOriginUserHasPermissionsOfManagingQuestsButLocationModelContainsInvalidLatitudeAndLongitude() throws TalosQuestsException {
+        testQuestSerres2.setLocation(new LatLng(0D,0D));
+        testUserWithSession.getAccess().setCanManageQuests(true);
+        questService.create(testUserWithSession, testQuestSerres2);
+    }
+
+    @Test(expected = TalosQuestsLocationServiceUnavailableException.class)
+    public void testCreateQuestWhenOriginUserHasPermissionsOfManagingQuestsButLocationModelContainsValidLatitudeAndLongitudeButLocationServiceIsUnavailable() throws TalosQuestsException {
+        LocationService.enableService = false;
+        testUserWithSession.getAccess().setCanManageQuests(true);
         questService.create(testUserWithSession, testQuestSerres2);
     }
 

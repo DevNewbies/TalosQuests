@@ -1,5 +1,7 @@
 package gr.devian.talosquests.backend.Services;
 
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsAccessViolationException;
+import gr.devian.talosquests.backend.Exceptions.TalosQuestsDuplicateEntryException;
 import gr.devian.talosquests.backend.Exceptions.TalosQuestsNullArgumentException;
 import gr.devian.talosquests.backend.Models.AccessLevel;
 import gr.devian.talosquests.backend.Models.User;
@@ -34,11 +36,12 @@ public class AccessService {
             accessLevel.setCanWipeQuests(true);
             accessLevel.setCanWipeUsers(true);
             accessLevel.setCanWipeGames(true);
+            accessLevel.setCanWipeSessions(true);
             accessLevel.setCanManageQuests(true);
             accessLevel.setCanManageService(true);
             accessLevel.setCanManageUsers(true);
+            accessLevel.setCanManageGames(true);
             accessLevel.setCanBanUsers(true);
-            accessLevel.setCanWipeSessions(true);
             accessRepository.save(accessLevel);
 
             accessLevel = new AccessLevel();
@@ -46,12 +49,65 @@ public class AccessService {
             accessLevel.setCanManageQuests(true);
             accessLevel.setCanManageService(true);
             accessLevel.setCanManageUsers(true);
+            accessLevel.setCanManageGames(true);
             accessLevel.setCanBanUsers(true);
             accessLevel.setCanWipeSessions(true);
             accessRepository.save(accessLevel);
         }
     }
 
+    public AccessLevel create(User originUser, AccessLevel level) throws TalosQuestsDuplicateEntryException, TalosQuestsNullArgumentException, TalosQuestsAccessViolationException {
+        if (originUser == null)
+            throw new TalosQuestsNullArgumentException("originUser");
+
+        if (!originUser.getAccess().getCanManageService())
+            throw new TalosQuestsAccessViolationException();
+
+        return create(level);
+    }
+
+    public AccessLevel create(AccessLevel level) throws TalosQuestsDuplicateEntryException, TalosQuestsNullArgumentException {
+        if (level == null)
+            throw new TalosQuestsNullArgumentException("level");
+
+        if (getByName(level.getName()) != null)
+            throw new TalosQuestsDuplicateEntryException("name");
+
+        level.setId(null);
+
+        return accessRepository.save(level);
+    }
+
+    public void delete(User originUser, String name) throws TalosQuestsNullArgumentException, TalosQuestsAccessViolationException {
+        if (name == null)
+            throw new TalosQuestsNullArgumentException("name");
+
+        delete(originUser,getByName(name));
+    }
+
+    public void delete(User originUser, AccessLevel level) throws TalosQuestsAccessViolationException, TalosQuestsNullArgumentException {
+        if (originUser == null)
+            throw new TalosQuestsNullArgumentException("originUser");
+
+        if (!originUser.getAccess().getCanManageService())
+            throw new TalosQuestsAccessViolationException();
+
+        delete(level);
+    }
+
+    public void delete(AccessLevel level) throws TalosQuestsNullArgumentException {
+        if (level == null)
+            throw new TalosQuestsNullArgumentException("level");
+
+        for (User user : userService.getAllUsers()) {
+            if (user.getAccess().equals(level)) {
+                user.setAccess(null);
+            }
+            userService.save(user);
+        }
+
+        accessRepository.delete(level);
+    }
 
     public AccessLevel getByName(String name) {
         if (name == null)

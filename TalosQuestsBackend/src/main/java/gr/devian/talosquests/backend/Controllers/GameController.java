@@ -58,7 +58,7 @@ public class GameController extends BaseController {
             if (!user.getGames().contains(game))
                 return Response.fail("Game not found.", 404);
             try {
-                gameService.delete(game);
+                gameService.delete(session.getUser(), game);
                 return Response.success("Deleted.");
             } catch (TalosQuestsAccessViolationException exc) {
                 return Response.fail(exc.getMessage(), HttpStatus.FORBIDDEN);

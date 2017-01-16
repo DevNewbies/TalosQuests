@@ -39,90 +39,80 @@ public class AccessLevel {
     private Boolean canBanUsers = false;
     @JsonView(View.Simple.class)
     private Boolean canWipeSessions = false;
+    @JsonView(View.Simple.class)
+    private Boolean canManageGames = false;
 
-    public Long getId() {
-        return id;
-    }
-    
-    public Boolean getCanWipeQuests() {
-        return canWipeQuests;
-    }
-
-    public void setCanWipeQuests(Boolean canWipeQuests) {
-        this.canWipeQuests = canWipeQuests;
-    }
 
     public String getName() {
         return name;
+    }
+    public Long getId() {
+        return id;
+    }
+
+    public Boolean getCanManageOwnData() {
+        return canManageOwnData;
+    }
+    public Boolean getCanManageService() {
+        return canManageService;
+    }
+    public Boolean getCanManageUsers() {
+        return canManageUsers;
+    }
+    public Boolean getCanManageQuests() {
+        return canManageQuests;
+    }
+    public Boolean getCanWipeUsers() { return canWipeUsers; }
+    public Boolean getCanWipeGames() {
+        return canWipeGames;
+    }
+    public Boolean getCanBanUsers() {
+        return canBanUsers;
+    }
+    public Boolean getCanWipeSessions() {
+        return canWipeSessions;
+    }
+    public Boolean getCanManageGames() {
+        return canManageGames;
+    }
+    public Boolean getCanWipeQuests() {
+        return canWipeQuests;
     }
 
 
     public void setName(String name) {
         this.name = name;
     }
-
-    public Boolean getCanManageOwnData() {
-        return canManageOwnData;
-    }
+    public void setId(Long id) { this.id = id; }
 
     public void setCanManageOwnData(Boolean canManageOwnData) {
         this.canManageOwnData = canManageOwnData;
     }
-
-    public Boolean getCanManageService() {
-        return canManageService;
-    }
-
-
     public void setCanManageService(Boolean canManageService) {
         this.canManageService = canManageService;
     }
-
-    public Boolean getCanManageUsers() {
-        return canManageUsers;
-    }
-
     public void setCanManageUsers(Boolean canManageUsers) {
         this.canManageUsers = canManageUsers;
     }
-
-    public Boolean getCanManageQuests() {
-        return canManageQuests;
-    }
-
     public void setCanManageQuests(Boolean canManageQuests) {
         this.canManageQuests = canManageQuests;
     }
-
-    public Boolean getCanWipeUsers() {
-        return canWipeUsers;
-    }
-
     public void setCanWipeUsers(Boolean canWipeUsers) {
         this.canWipeUsers = canWipeUsers;
     }
-
-    public Boolean getCanWipeGames() {
-        return canWipeGames;
-    }
-
     public void setCanWipeGames(Boolean canWipeGames) {
         this.canWipeGames = canWipeGames;
     }
-
-    public Boolean getCanBanUsers() {
-        return canBanUsers;
-    }
-
     public void setCanBanUsers(Boolean canBanUsers) {
         this.canBanUsers = canBanUsers;
     }
-
-    public Boolean getCanWipeSessions() {
-        return canWipeSessions;
-    }
-
     public void setCanWipeSessions(Boolean canWipeSessions) {
         this.canWipeSessions = canWipeSessions;
+    }
+    public void setCanManageGames(Boolean canManageGames) {
+        this.canManageGames = canManageGames;
+    }
+    public void setCanWipeQuests(Boolean canWipeQuests) {
+        this.canWipeQuests = canWipeQuests;
     }
 }

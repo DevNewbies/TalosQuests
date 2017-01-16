@@ -73,7 +73,7 @@ public class UserManagementController extends AdminController {
             if (!session.getUser().hashStr(password.get()).equals(session.getUser().getPassWord()))
                 return Response.fail("Incorrect Password.", HttpStatus.FORBIDDEN);
 
-            userService.wipe();
+            userService.wipe(session.getUser());
             return Response.success(null, 200, "User Database Wiped.");
         } else {
             User user = userService.getUserById(param.get());
@@ -81,7 +81,7 @@ public class UserManagementController extends AdminController {
                 return Response.fail("User not found.", HttpStatus.NOT_FOUND);
             if (user.equals(session.getUser()))
                 return Response.fail("You cannot delete your self.", HttpStatus.FORBIDDEN);
-            userService.delete(user);
+            userService.delete(session.getUser(),user);
             return Response.success(null, 200, "User Deleted.");
 
         }

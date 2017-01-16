@@ -81,6 +81,11 @@ public class GameServiceTests extends AbstractServiceTest {
     }
 
     @Test(expected = TalosQuestsNullArgumentException.class)
+    public void testDeleteWhenGameIsValidOriginIsNull() throws TalosQuestsException {
+        gameService.delete(null, testGameForUserWithSession);
+    }
+
+    @Test(expected = TalosQuestsNullArgumentException.class)
     public void testDeleteWhenTargetIsNull() throws TalosQuestsException {
         gameService.delete(testUserWithSession, (User) null);
     }
