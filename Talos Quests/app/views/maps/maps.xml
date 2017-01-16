@@ -11,17 +11,25 @@
                     </StackLayout>
                 </TabViewItem.view>
             </TabViewItem>
-            <TabViewItem title="Quest Info">
+            <TabViewItem title="Quest">
                 <TabViewItem.view>
-                    <ListView items="{{ QuestInfo }}">
-                        <ListView.itemTemplate>
-                            <StackLayout>
-                                <Label text="{{ QuestTitle }}" textWrap="true"/>
-                                <Label text="{{ QuestDesc }}" textWrap="true"/>
-                                <Label text="{{ QuestDone }}" textWrap="true"/>
+                    <StackLayout>
+                        <StackLayout>
+                            <Label text="{{ QuestTitle }}"/>
+                            <Label text="{{ QuestExp }}"/>
+                            <Label text="{{ QuestQuestion }}"/>
+                        </StackLayout>
+                        <GridLayout columns="auto,auto">
+                            <StackLayout col="0">
+                                <Button text="{{ QuestChoiceA }}" ontap="submitChoice"/>
+                                <Button text="{{ QuestChoiceC }}" ontap="submitChoice"/>
                             </StackLayout>
-                        </ListView.itemTemplate>
-                    </ListView>
+                            <StackLayout col="1">
+                                <Button text="{{ QuestChoiceB }}" ontap="submitChoice"/>
+                                <Button text="{{ QuestChoiceD }}" ontap="submitChoice"/>
+                            </StackLayout>
+                        </GridLayout>
+                    </StackLayout>
                 </TabViewItem.view>
             </TabViewItem>
             <TabViewItem title="Settings">
@@ -39,7 +47,7 @@
                         </StackLayout>
 
                         <StackLayout class="SwitchTheme" orientation="horizontal">
-                            <Button text="Logout"/>
+                            <Button text="Stop Game" ontap="stopGame"/>
                         </StackLayout>
 
                     </StackLayout>
