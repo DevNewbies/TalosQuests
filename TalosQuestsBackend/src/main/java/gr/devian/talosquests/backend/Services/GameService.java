@@ -88,7 +88,7 @@ public class GameService {
             if (user.getActiveGame().equals(game))
                 user.setActiveGame(null);
         game.setUser(null);
-
+        gameRepository.save(game);
         userService.save(user);
 
         gameRepository.delete(game);
