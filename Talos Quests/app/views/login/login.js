@@ -18,7 +18,7 @@ exports.loaded = function(args) {
 function signIn(){
     showIndicator(); 
     user.readCookie().catch(function(error){
-       // console.log("error " + error);
+        console.log("error " + error);
         hideIndicator();
         anime.multiFadeAnimation(page,"child","StackLayout",1000);
         return Promise.reject();
@@ -27,9 +27,9 @@ function signIn(){
                 frameModule.topmost().navigate("views/main/main");
             }
         });
-    timer.setTimeout(() => {
-        hideIndicator();
-    }, 2000);
+        timer.setTimeout(() => {
+            hideIndicator();
+            }, 2000);
 }
 function hideIndicator(){
     user.isLoading= false;
