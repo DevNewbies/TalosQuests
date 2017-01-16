@@ -1,0 +1,51 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" xmlns:maps="nativescript-google-maps-sdk" navigatingTo="onNavigatingTo">
+    <TabView selectedIndexChanged="changeTab">
+        <TabView.items>
+            <TabViewItem title="Map">
+                <TabViewItem.view>
+                    <StackLayout>
+                        <Button text="Find Me" class="findMeButton" ontap="findMe"/>
+                        <GridLayout >
+                            <maps:mapView latitude="{{ mapLatitude }}" longitude="{{ mapLongitude }}" zoom="{{ mapZoom }}" mapReady="mapIsReady"/>
+                        </GridLayout>
+                    </StackLayout>
+                </TabViewItem.view>
+            </TabViewItem>
+            <TabViewItem title="Quest Info">
+                <TabViewItem.view>
+                    <ListView items="{{ QuestInfo }}">
+                        <ListView.itemTemplate>
+                            <StackLayout>
+                                <Label text="{{ QuestTitle }}" textWrap="true"/>
+                                <Label text="{{ QuestDesc }}" textWrap="true"/>
+                                <Label text="{{ QuestDone }}" textWrap="true"/>
+                            </StackLayout>
+                        </ListView.itemTemplate>
+                    </ListView>
+                </TabViewItem.view>
+            </TabViewItem>
+            <TabViewItem title="Settings">
+                <TabViewItem.view>
+                    <StackLayout>
+
+                        <StackLayout class="SwitchTheme" orientation="horizontal">
+                            <Label text="Sound Effects"/>
+                            <Switch checked="{{ SoundEffectsEnabled }}"/>
+                        </StackLayout>
+
+                        <StackLayout class="SwitchTheme" orientation="horizontal">
+                            <Label text="Music"/>
+                            <Switch checked="{{ MusicEnabled }}"/>
+                        </StackLayout>
+
+                        <StackLayout class="SwitchTheme" orientation="horizontal">
+                            <Button text="Logout"/>
+                        </StackLayout>
+
+                    </StackLayout>
+                </TabViewItem.view>
+            </TabViewItem>
+        </TabView.items>
+    </TabView>
+
+</Page>

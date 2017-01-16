@@ -1,0 +1,18 @@
+.SwitchTheme {
+    font-size: 24;
+    color: black;
+    horizontal-align: center;
+    text-align: center;
+}
+
+.findMeButton {
+    background-color: black;
+    font-size: 16px;
+    height: 36px;
+}
+
+.solveButton {
+  background-color: black;
+  font-size: 16px;
+  height: 36px;
+}
