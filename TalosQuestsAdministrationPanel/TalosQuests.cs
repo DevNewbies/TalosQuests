@@ -27,6 +27,7 @@ namespace TalosQuestsAdministrationPanel
         public List<Quest> Quests => _quests;
 
         public List<User> Users => _users;
+        public List<AccessLevel> AccessLevels => _accessLevels;
 
         public long Uptime => _uptime;
 
@@ -44,6 +45,7 @@ namespace TalosQuestsAdministrationPanel
         private User _user;
         private List<Quest> _quests;
         private List<User> _users;
+        private List<AccessLevel> _accessLevels;
 
         private long _uptime;
         private string _version;
@@ -79,6 +81,17 @@ namespace TalosQuestsAdministrationPanel
                 return false;
             }
         }
+
+        public async Task<Boolean> DeleteGame(Game game)
+        {
+            var request = new RestRequest("/Admin/Game/" + game.id, Method.DELETE);
+            request.AddParameter("token", _token);
+
+            var response = await _client.ExecuteTaskAsync<Response<String>>(request);
+            if (response.Data.state != 200) throw new TalosQuestsException(response.Data.message, response.Data.state);
+            return true;
+
+        }
         public async Task FetchInfo()
         {
 
@@ -106,6 +119,21 @@ namespace TalosQuestsAdministrationPanel
 
             var response = await _client.ExecuteTaskAsync<Response<List<User>>>(request);
             _users = response.Data.response;
+
+            foreach (User user in _users)
+            {
+                request = new RestRequest("/Admin/Game/User/"+user.id, Method.GET);
+                request.AddParameter("token", _token);
+                try
+                {
+                    var response_game = await _client.ExecuteTaskAsync<Response<List<Game>>>(request);
+                    user.games = response_game.Data.response;
+                }
+                catch (Exception)
+                {
+                    
+                }
+            }
 
 
             request = new RestRequest("/Admin/Quest", Method.GET);

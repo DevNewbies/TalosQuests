@@ -10,8 +10,8 @@ namespace TalosQuestsAdministrationPanel.Model
     {
         public long id { get; set; }
 
-        public DateTime started { get; set; }
-        public DateTime completed { get; set; }
+        public long started { get; set; }
+        public long completed { get; set; }
 
         public Duration duration { get; set; }
         public Boolean succeed { get; set; }

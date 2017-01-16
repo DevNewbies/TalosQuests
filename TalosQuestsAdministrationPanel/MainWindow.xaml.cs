@@ -59,7 +59,9 @@ namespace TalosQuestsAdministrationPanel
             clientCanWipeQuests.IsChecked = TalosQuests.Instance.User.access.canWipeQuests;
             clientCanWipeGames.IsChecked = TalosQuests.Instance.User.access.canWipeGames;
             clientCanWipeSessions.IsChecked = TalosQuests.Instance.User.access.canWipeSessions;
-
+            wipeUsers.IsEnabled = TalosQuests.Instance.User.access.canWipeUsers;
+            wipeQuests.IsEnabled = TalosQuests.Instance.User.access.canWipeQuests;
+            wipeSessions.IsEnabled = TalosQuests.Instance.User.access.canWipeSessions;
             userGrid.SelectionMode = DataGridSelectionMode.Single;
             userGrid.SelectionUnit = DataGridSelectionUnit.FullRow;
             userGrid.CanUserAddRows = false;
@@ -85,10 +87,21 @@ namespace TalosQuestsAdministrationPanel
                     userCanWipeQuests.IsChecked = usr.access.canWipeQuests;
                     userCanWipeUsers.IsChecked = usr.access.canWipeUsers;
                     userCanWipeSessions.IsChecked = usr.access.canWipeSessions;
+                    userCanManageGames.IsChecked = usr.access.canManageGames;
                     userBanned.IsChecked = usr.banned;
-                    wipeUsers.IsEnabled = usr.access.canWipeUsers;
-                    wipeQuests.IsEnabled = usr.access.canWipeQuests;
-                    wipeSessions.IsEnabled = usr.access.canWipeSessions;
+                    userGames.ItemsSource = usr.games;
+
+                    int completedGames=0;
+                    double completedProgress=0;
+                    foreach (Game game in usr.games)
+                    {
+                        if (game.incompleteUserQuests.Count == 0)
+                            completedGames++;
+                    }
+                    completedProgress = (double)(completedGames*100)/usr.games.Count;
+
+                    userCompletedProgress.Value = Double.IsNaN(completedProgress)?0:completedProgress;
+                    userCompletedGames.Content = $"Games: ({completedGames}/{usr.games.Count}) Completed";
 
                     userBan.Content = usr.banned ? "Unban" : "Ban";
 
@@ -97,6 +110,19 @@ namespace TalosQuestsAdministrationPanel
 
                     userBan.IsEnabled = TalosQuests.Instance.User.access.canBanUsers;
                     userDelete.IsEnabled = TalosQuests.Instance.User.access.canManageUsers;
+
+                    userGames.SelectionChanged += (o, eventArgs) =>
+                    {
+                        if (userGames.SelectedIndex > -1)
+                        {
+                            
+                            userDeleteGame.IsEnabled = true;
+                        }
+                        else
+                        {
+                            userDeleteGame.IsEnabled = false;
+                        }
+                    };
                 }
                 else
                 {
@@ -179,7 +205,7 @@ namespace TalosQuestsAdministrationPanel
                 Quest model = new Quest();
                 model.content = questContent.Text;
                 model.exp = Int32.Parse(questExp.Text);
-                model.location = new LatLng() { lat = Double.Parse(questLat.Text.Replace(".",",")), lng = Double.Parse(questLng.Text.Replace(".", ",")) };
+                model.location = new LatLng() { lat = Double.Parse(questLat.Text.Replace(".", ",")), lng = Double.Parse(questLng.Text.Replace(".", ",")) };
                 model.name = questName.Text;
                 model.availableChoices = Choices;
                 model.correctChoice = (QuestChoice)questCorrectChoice.SelectedItem;
@@ -260,7 +286,7 @@ namespace TalosQuestsAdministrationPanel
             userEmail.Text = String.Empty;
             userIMEI.Text = String.Empty;
             userRole.Text = String.Empty;
-            userPassword.Password = String.Empty;
+            
 
             userBan.Content = "Ban";
             userCanBanUsers.IsChecked = false;
@@ -271,8 +297,10 @@ namespace TalosQuestsAdministrationPanel
             userCanWipeGames.IsChecked = false;
             userCanWipeQuests.IsChecked = false;
             userCanWipeUsers.IsChecked = false;
+            userCanManageGames.IsChecked = false;
             userCanWipeSessions.IsChecked = false;
             userBan.IsEnabled = false;
+            userDeleteGame.IsEnabled = false;
             userDelete.IsEnabled = false;
 
         }
@@ -611,7 +639,7 @@ namespace TalosQuestsAdministrationPanel
                 try
                 {
 
-                    var state = await TalosQuests.Instance.UpdateQuest(quest.id,getQuestModel());
+                    var state = await TalosQuests.Instance.UpdateQuest(quest.id, getQuestModel());
                     await Task.Run(() =>
                     {
                         Dispatcher.Invoke(DispatcherPriority.Normal, new Action(async () =>
@@ -728,6 +756,46 @@ namespace TalosQuestsAdministrationPanel
                             {
                                 MainDialogController.SetMessage("Quests Wiped.");
                                 await TalosQuests.Instance.FetchInfo();
+                            }
+                        }));
+                    });
+                    await MainDialogController.CloseAsync();
+                }
+                catch (TalosQuestsException exc)
+                {
+                    MainDialogController.SetMessage("Error: \n" + exc.Message);
+                    MainDialogController.SetCancelable(true);
+                    MainDialogController.Canceled += (o, args) => MainDialogController.CloseAsync();
+                }
+            }));
+        }
+
+        private async void userDeleteGame_Click(object sender, RoutedEventArgs e)
+        {
+            
+            MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+            await Dispatcher.InvokeAsync(new Action(async () =>
+            {
+                Game game = (Game) userGames.SelectedItem;
+                MainDialogController =
+                    await this.ShowProgressAsync("Deleting Game " + game.id, "Please Wait...");
+                MainDialogController.SetIndeterminate();
+                try
+                {
+
+                    var state = await TalosQuests.Instance.DeleteGame(game);
+                    await Task.Run(() =>
+                    {
+                        Dispatcher.Invoke(DispatcherPriority.Normal, new Action(async () =>
+                        {
+                            if (state)
+                            {
+                                MainDialogController.SetMessage("Game Deleted.");
+                                await TalosQuests.Instance.FetchInfo();
+                                userGames.ItemsSource = null;
+                                userGames.Items.Refresh();
+                                userGames.ItemsSource = ((User) userGrid.SelectedItem).games;
+                                userGames.Items.Refresh();
                             }
                         }));
                     });
