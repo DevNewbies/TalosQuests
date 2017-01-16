@@ -1,11 +1,36 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo">
   <StackLayout>
-    <ListView id="MenuItems" items="{{ MenuItems }}" itemTap="MainMenuTap">
-	    <ListView.itemTemplate>
-	      <StackLayout>
-	        <Label class="MenuItems" text="{{ $value }}" />
-	      </StackLayout>
-	    </ListView.itemTemplate>
-  </ListView>
+    <StackLayout>
+        <Button text="Log Out" ontap="logOut"/>
+        <Button text="Add Game" ontap="addGame"/>
+        <ListView loaded="loadGames">
+            <ListView.itemTemplate>
+                <StackLayout>
+                    <GridLayout columns="auto, auto, auto">
+                        <StackLayout col="0">
+                            <GridLayout columns="auto, auto">
+                                <Label col="0" text="Game ID = "/>
+                                <Label col="1" text="{{ id }}"/>
+                            </GridLayout>
+
+                            <GridLayout columns="auto, auto">
+                                <Label col="0" text="XP Points = "/>
+                                <Label col="1" text="{{ experiencePoints }}"/>
+                            </GridLayout>
+
+                            <GridLayout columns="auto, auto">
+                                <Label col="0" text="Enabled = "/>
+                                <Label col="1" text="{{ active }}"/>
+                            </GridLayout>
+
+                        </StackLayout>
+
+                        <Button col="1" text="Start Game" ontap="startGame" id="{{ id }}"/>
+                        <Button col="2" text="Delete Game" ontap="deleteGame" id="{{ id }}"/>
+                    </GridLayout>
+                </StackLayout>
+            </ListView.itemTemplate>
+        </ListView>
+    </StackLayout>
   </StackLayout>
 </Page>

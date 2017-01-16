@@ -1,86 +1,90 @@
 // Init View
 var Observable = require("data/observable").Observable;
+var frameModule = require("ui/frame");
+var GeoLocation = require("nativescript-geolocation");
+var gameQueries = require("../maps/gameQueries/gameQueries");
+var cookies = require("../../shared/view-models/cookies");
 var CurrentPage;
+var ListView;
 
-var Status = "JustStarted";
-exports.Status = Status;
-
-// Define Menu's Data
-var Menu = new Observable({
-    MenuItems : ["Start Game", "My Avatar", "Archivements", "Settings", "Exit"]
+var userLocation = new Observable({
+    userLatitude: 0,
+    userLongitude: 0,
 });
 
 // Unit Functions
 function onNavigatingTo(args) {
     CurrentPage = args.object;
-    CurrentPage.bindingContext = Menu;
+    CurrentPage.bindingContext = userLocation;
+    enableLocation();
 }
 exports.onNavigatingTo = onNavigatingTo;
 
-function RunTrigger(IndexOf) {
-    switch(IndexOf) {
-        case 0: {
-            Status = "Start Game";
-            alert(Status);
-            StartGameProcess();
-            break;
+function enableLocation() {
+    if (!GeoLocation.isEnabled()) {
+        alert("Can't use GPS info.\nYou may see void map !!!\nPlease enable your GPS and open our game again!");
+    } else {
+        trackLocation();
+    }
+}
+exports.enableLocation = enableLocation;
+
+function trackLocation() {
+    watchId = GeoLocation.watchLocation(
+        function(loc) {
+            if (loc) {
+                userLocation.userLatitude = loc.latitude;
+                userLocation.userLongitude = loc.longitude;
+            }
+        },
+        function(e) {
+            alert("Can't use GPS info.\nYou may see void map !!!\nPlease enable your GPS and open our game again!");
+        }, {
+            desiredAccuracy: 3,
+            updateDistance: 10,
+            minimumUpdateTime: 1000 * 2
         }
-        case 1: {
-            Status = "My Avatar";
-            alert(Status);
-            MyAvatarProcess();
-            break;
-        }
-        case 2: {
-            Status = "Achievements";
-            alert(Status);
-            AchievementsProcess();
-            break;
-        }
-        case 3: {
-            Status = "Settings";
-            alert(Status);
-            SettingsProcess();
-            break;
-        }
-        case 4: {
-            Status = "Exit";
-            alert(Status);
-            ExitProcess();
-            break;
-        }
-        default: {
-            Status = "Default";
-            alert(Status);
-            break;
+    );
+}
+exports.trackLocation = trackLocation;
+
+function loadGames(args) {
+    ListView = args.object;
+    refreshGames();
+}
+exports.loadGames = loadGames;
+
+function refreshGames() {
+    gameQueries.getGame().then(function(data) {
+        ListView.items = data;
+    });
+}
+
+function logOut() {
+    cookies.deleteCookie();
+    frameModule.topmost().navigate("views/login/login");
+}
+exports.logOut = logOut;
+
+function addGame(args) {
+    gameQueries.createGame(userLocation.userLatitude, userLocation.userLongitude);
+    refreshGames();
+}
+exports.addGame = addGame;
+
+function startGame(args) {
+    var navigationOptions = {
+        moduleName: 'views/maps/maps',
+        context: {
+            GameID: args.object.id
         }
     }
-    exports.Status = Status;
+    frameModule.topmost().navigate(navigationOptions);
 }
-exports.RunTrigger = RunTrigger;
+exports.startGame = startGame;
 
-function StartGameProcess() {
-	// topmost.navigate("views/startgame/startgame");
+function deleteGame(args) {
+    gameQueries.deleteGame(args.object.id);
+    refreshGames();
 }
-
-function MyAvatarProcess() {
-	// topmost.navigate("views/myavatar/myavatar");
-}
-
-function AchievementsProcess() {
-	// topmost.navigate("views/achievements/achievements");
-}
-
-function SettingsProcess() {
-	// topmost.navigate("views/settings/settings");
-}
-
-function ExitProcess() {
-	android.os.Process.killProcess(android.os.Process.myPid());
-}
-
-// UI Functions
-function MainMenuTap(TappedItem) {
-  RunTrigger(TappedItem.index);
-}
-exports.MainMenuTap = MainMenuTap;
+exports.deleteGame = deleteGame;
