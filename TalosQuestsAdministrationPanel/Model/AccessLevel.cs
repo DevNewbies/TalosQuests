@@ -19,5 +19,6 @@ namespace TalosQuestsAdministrationPanel.Model
         public Boolean canWipeQuests { get; set; }
         public Boolean canBanUsers { get; set; }
         public Boolean canWipeSessions { get; set; }
+        public Boolean canManageGames { get; set; }
     }
 }
