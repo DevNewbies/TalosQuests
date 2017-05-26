@@ -11,5 +11,4 @@ before_install:
 - mysql -e 'CREATE DATABASE talosquests;'
 script: mvn clean test cobertura:cobertura coveralls:report | egrep -v "(maps\.googleapis\.com|^Hibernate:|^\[DEBUG\])"
 after_success:
-
 - bash <(curl -s https://codecov.io/bash)
