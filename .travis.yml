@@ -9,6 +9,7 @@ branches:
 before_install:
 - cd TalosQuestsBackend
 - mysql -e 'CREATE DATABASE talosquests;'
-script: mvn cobertura:cobertura coveralls:report | egrep -v "(maps\.googleapis\.com|^Hibernate:|^\[DEBUG\])"
+script: mvn 
 after_success:
+- mvn clean test cobertura:cobertura coveralls:report | egrep -v "(maps\.googleapis\.com|^Hibernate:|^\[DEBUG\])"
 - bash <(curl -s https://codecov.io/bash)
